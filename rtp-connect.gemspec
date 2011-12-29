@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.author = "Christoffer Lervag"
   s.email = "chris.lervag@gmail.com"
-  s.homepage = "http://rtp-connect.rubyforge.org/"
+  s.homepage = "https://github.com/dicom/rtp-connect"
   s.licenses = ["GPL3"]
   s.description = "RTPConnect is a file format used in radiotherapy for export & import of treatment planning data."
   s.files = Dir["{lib}/**/*", "[A-Z]*"]
