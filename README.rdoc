@@ -103,7 +103,7 @@ If you encounter an RTP file with an unsupported record type, please contact me.
 
 == COPYRIGHT
 
-Copyright 2011 Christoffer Lervåg
+Copyright 2011 Christoffer Lervag
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/ .
 
 == ABOUT THE AUTHOR
 
-* Name: Christoffer Lervåg
+* Name: Christoffer Lervag
 * Location: Norway
 * Email: chris.lervag [@nospam.com] @gmail.com
 

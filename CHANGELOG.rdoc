@@ -1,0 +1,9 @@
+= 1.0
+
+=== 29th December, 2011
+
+First public release.
+The library, although missing support for a number of record types, should be usable
+for people interested in working with RTPConnect files in Ruby. The library features
+a complete test suite: In addition to basic unit tests, it has been tested successfully
+with a small selection of RTPConnect files, and is believed to be fairly robust.
