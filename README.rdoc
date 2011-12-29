@@ -83,7 +83,7 @@ Example:
 === Supported records
 
 * Plan definition [PLAN_DEF]
-* Prescription site RX_DEF]
+* Prescription site [RX_DEF]
 * Site setup [SITE_SETUP_DEF]
 * Treatment field [FIELD_DEF]
 * Extended treatment field [EXTENDED_FIELD_DEF]
