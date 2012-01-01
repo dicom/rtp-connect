@@ -56,9 +56,9 @@ external dependencies.
 
 === Scripts
 
-For more thorough examples, check out the scripts folder which contains
-numerous ruby scripts that shows of real world usage scenarios of the
-RTPConnect library.
+For more comprehensive and useful examples, check out the scripts folder
+which contains various Ruby scripts that intends to show off real world
+usage scenarios of the RTPConnect library.
 
 === IRB Tip
 
@@ -103,7 +103,7 @@ If you encounter an RTP file with an unsupported record type, please contact me.
 
 == COPYRIGHT
 
-Copyright 2011 Christoffer Lervag
+Copyright 2011 Christoffer Lervåg
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/ .
 
 == ABOUT THE AUTHOR
 
-* Name: Christoffer Lervag
+* Name: Christoffer Lervåg
 * Location: Norway
 * Email: chris.lervag [@nospam.com] @gmail.com
 
