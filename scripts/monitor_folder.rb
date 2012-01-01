@@ -89,7 +89,7 @@ while run do
       # Plan and prescription site:
       p.prescriptions.each do |rx|
         # PRESCRIPTION SITE:
-          # Course id is defined for each prescription:
+        # Course id is defined for each prescription:
         rx.course_id = default_course_id
         # Set dose specification:
         rx.dose_spec = default_dose_specification
