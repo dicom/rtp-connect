@@ -1,14 +1,15 @@
 # encoding: UTF-8
 
-# This is a Ruby script which reads a Mosaiq RTPConnect file and
-# manipulates it using some predefined default values.
+# This is a simple Ruby script which reads a Mosaiq RTPConnect file
+# and manipulates it using a set of predefined, default values.
 #
-# Author: Christoffer Lervåg, December 2011 (chris.lervag@gmail.com)
+# Author:
+# Christoffer Lervåg (chris.lervag [@nospam.com] @gmail.com)
 
 
-###########
+#############
 ### SETUP ###
-##########
+#############
 
 # Load the rtp-connect gem:
 require 'rtp-connect'
@@ -18,9 +19,9 @@ include RTP
 file = '../samples/oncentra_columna_dose.rtp'
 
 
-#############
+################
 ### SETTINGS ###
-#############
+################
 
 # COURSE ID:
 default_course_id = '1'
@@ -39,9 +40,9 @@ default_site_tolerance_table = '10'
 default_field_tolerance_table = '1'
 
 
-##############
+################
 ### EXECUTION ##
-#############
+################
 
 # Load a Plan object from the RTP file:
 p = Plan.read(file)
