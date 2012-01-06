@@ -164,6 +164,14 @@ module RTP
         p.to_str.should eql str
       end
 
+      it "should return a string that matches the original string (which contains a unique value for each element)" do
+        values = '"PLAN_DEF",' + Array.new(26){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        p = Plan.load(str)
+        p.to_str.should eql str
+      end
+
     end
 
 

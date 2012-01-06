@@ -141,6 +141,14 @@ module RTP
         f = Field.load(str, @p)
         f.to_str.should eql str
       end
+      
+      it "should return a string that matches the original string (which contains a unique value for each element)" do
+        values = '"FIELD_DEF",' + Array.new(47){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        f = Field.load(str, @p)
+        f.to_str.should eql str
+      end
 
     end
 

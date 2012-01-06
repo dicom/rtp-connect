@@ -86,6 +86,14 @@ module RTP
         ss = SiteSetup.load(str, @p)
         ss.to_str.should eql str
       end
+      
+      it "should return a string that matches the original string (which contains a unique value for each element)" do
+        values = '"SITE_SETUP_DEF",' + Array.new(14){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        ss = SiteSetup.load(str, @p)
+        ss.to_str.should eql str
+      end
 
     end
 

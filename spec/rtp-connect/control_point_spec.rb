@@ -95,6 +95,14 @@ module RTP
         cp.to_str.should eql str
       end
 
+      it "should return a string that matches the original string (which contains a unique value for each element)" do
+        values = '"CONTROL_PT_DEF",' + Array.new(231){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        cp = ControlPoint.load(str, @f)
+        cp.to_str.should eql str
+      end
+
     end
 
 

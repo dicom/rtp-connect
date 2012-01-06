@@ -88,6 +88,14 @@ module RTP
         ef = ExtendedField.load(str, @f)
         ef.to_str.should eql str
       end
+      
+      it "should return a string that matches the original string (which contains a unique value for each element)" do
+        values = '"EXTENDED_FIELD_DEF",' + Array.new(4){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        ef = ExtendedField.load(str, @f)
+        ef.to_str.should eql str
+      end
 
     end
 
