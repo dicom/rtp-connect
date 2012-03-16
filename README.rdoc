@@ -13,7 +13,7 @@ external dependencies.
 
 == REQUIREMENTS
 
-* Ruby 1.9.2
+* Ruby 1.9.2 (or higher)
 
 
 == BASIC USAGE
