@@ -1,10 +1,10 @@
-# For developers:
-# Test the specification:
-#   rake spec
-# Build gem from source:
-#   rake package
+# Available commands:
+# Testing the specification:
+#   bundle exec rake spec
+# Building a gem package from source:
+#   bundle exec rake package
 # Create documentation files (html):
-#   rake rdoc
+#   bundle exec rake rdoc
 
 require 'rubygems/package_task'
 require 'rdoc/task'
