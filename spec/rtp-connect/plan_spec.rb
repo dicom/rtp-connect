@@ -156,6 +156,25 @@ module RTP
     end
 
 
+    describe "to_s" do
+
+      it "should return a string which matches the original string" do
+        str = '"PLAN_DEF","","John, Doe","","","","","","","","","","","","","","","","","","","","","","","","","47717"' + "\r\n"
+        p = Plan.load(str)
+        p.to_s.should eql str
+      end
+
+      it "should return a string that matches the original string (which contains a unique value for each element)" do
+        values = '"PLAN_DEF",' + Array.new(26){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        p = Plan.load(str)
+        p.to_s.should eql str
+      end
+
+    end
+
+
     describe "to_str" do
 
       it "should return a string which matches the original string" do

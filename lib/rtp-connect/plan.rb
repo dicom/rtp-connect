@@ -236,13 +236,15 @@ module RTP
     # Writes the Plan object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
     #
-    def to_str
+    def to_s
       str = encode #.force_encoding('utf-8')
       children.each do |child|
         str += child.to_str #.force_encoding('utf-8')
       end
       return str
     end
+
+    alias :to_str :to_s
 
     # Writes the Plan object, along with its hiearchy of child objects,
     # to a properly formatted RTPConnect ascii file.
