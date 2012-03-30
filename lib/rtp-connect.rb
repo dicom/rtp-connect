@@ -18,3 +18,6 @@ require_relative 'rtp-connect/version'
 require_relative 'rtp-connect/constants'
 require_relative 'rtp-connect/methods'
 require_relative 'rtp-connect/variables'
+
+# Load the CSV library:
+require 'csv'

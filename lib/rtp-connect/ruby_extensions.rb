@@ -37,7 +37,7 @@ class String
   # and the resulting quote-less value strings are returned in an array.
   #
   def values
-    original = self.split(',')
+    original = CSV.parse(self).first
     processed = Array.new
     original.collect {|element| processed << element.gsub('"', '')}
     return processed

@@ -99,6 +99,11 @@ module RTP
         str.checksum.should eql 4676
       end
 
+      it "should return the exact CRC which is expected for the given string" do
+        str = '"EXTENDED_FIELD_DEF","","","","Anterior, Left",'
+        str.checksum.should eql 35786
+      end
+
     end
 
 
@@ -133,6 +138,12 @@ module RTP
       it "should return the double-quote-less elements of a RTP string line (an array of string elements)" do
         str = '"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","17677"'
         arr = ['RX_DEF', '20', 'STE:0-20:4', '', 'Xrays', '', '' ,'', '', '', '', '1', '17677']
+        str.values.should eql arr
+      end
+
+      it "should return the double-quote-less elements of a RTP string line (an array of string elements)" do
+        str = '"EXTENDED_FIELD_DEF","","","","Anterior, Left","35786"'
+        arr = ['EXTENDED_FIELD_DEF', '', '', '', 'Anterior, Left', '35786']
         str.values.should eql arr
       end
 
