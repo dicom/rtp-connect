@@ -2,6 +2,9 @@
 
 === (Unreleased)
 
+* Added the #to_s method to records which is intended to replace the #to_str methods.
+* Added dynamic string conversion of parameters, e.g. numeric parameters can be passed to records.
+* Fixed an issue where reading string values containing a comma would lead to a crash.
 * Fixed an issue where reading a string with a single digit checksum would fail.
 
 = 1.0
