@@ -81,20 +81,20 @@ module RTP
     end
 
 
-    describe "to_str" do
+    describe "to_s" do
 
       it "should return a string which matches the original string" do
         str = '"EXTENDED_FIELD_DEF","BAKFR","1.3.6.1.4","8","BAKFRA","10442"' + "\r\n"
         ef = ExtendedField.load(str, @f)
-        ef.to_str.should eql str
+        ef.to_s.should eql str
       end
-      
+
       it "should return a string that matches the original string (which contains a unique value for each element)" do
         values = '"EXTENDED_FIELD_DEF",' + Array.new(4){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ef = ExtendedField.load(str, @f)
-        ef.to_str.should eql str
+        ef.to_s.should eql str
       end
 
     end

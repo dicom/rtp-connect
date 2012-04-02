@@ -79,20 +79,20 @@ module RTP
     end
 
 
-    describe "to_str" do
+    describe "to_s" do
 
       it "should return a string which matches the original string" do
         str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"' + "\r\n"
         ss = SiteSetup.load(str, @p)
-        ss.to_str.should eql str
+        ss.to_s.should eql str
       end
-      
+
       it "should return a string that matches the original string (which contains a unique value for each element)" do
         values = '"SITE_SETUP_DEF",' + Array.new(14){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ss = SiteSetup.load(str, @p)
-        ss.to_str.should eql str
+        ss.to_s.should eql str
       end
 
     end

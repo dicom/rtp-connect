@@ -239,7 +239,7 @@ module RTP
     def to_s
       str = encode #.force_encoding('utf-8')
       children.each do |child|
-        str += child.to_str #.force_encoding('utf-8')
+        str += child.to_s #.force_encoding('utf-8')
       end
       return str
     end
@@ -255,198 +255,172 @@ module RTP
     #
     def write(file)
       f = open_file(file)
-      f.write(to_str)
+      f.write(to_s)
       f.close
     end
 
     # Sets the keyword attribute.
     #
     def keyword=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      raise ArgumentError, "Invalid keyword. Expected 'PLAN_DEF', got #{value}." unless value.upcase == "PLAN_DEF"
+      value = value.to_s.upcase
+      raise ArgumentError, "Invalid keyword. Expected 'PLAN_DEF', got #{value}." unless value == "PLAN_DEF"
       @keyword = value
     end
 
     # Sets the patient_id attribute.
     #
     def patient_id=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @patient_id = value
+      @patient_id = value && value.to_s
     end
 
     # Sets the patient_last_name attribute.
     #
     def patient_last_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @patient_last_name = value
+      @patient_last_name = value && value.to_s
     end
 
     # Sets the patient_first_name attribute.
     #
     def patient_first_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @patient_first_name = value
+      @patient_first_name = value && value.to_s
     end
 
     # Sets the patient_middle_initial attribute.
     #
     def patient_middle_initial=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @patient_middle_initial = value
+      @patient_middle_initial = value && value.to_s
     end
 
     # Sets the plan_id attribute.
     #
     def plan_id=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @plan_id = value
+      @plan_id = value && value.to_s
     end
 
     # Sets the plan_date attribute.
     #
     def plan_date=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @plan_date = value
+      @plan_date = value && value.to_s
     end
 
     # Sets the plan_time attribute.
     #
     def plan_time=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @plan_time = value
+      @plan_time = value && value.to_s
     end
 
     # Sets the course_id attribute.
     #
     def course_id=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @course_id = value
+      @course_id = value && value.to_s
     end
 
     # Sets the diagnosis attribute.
     #
     def diagnosis=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @diagnosis = value
+      @diagnosis = value && value.to_s
     end
 
     # Sets the md_last_name attribute.
     #
     def md_last_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @md_last_name = value
+      @md_last_name = value && value.to_s
     end
 
     # Sets the md_first_name attribute.
     #
     def md_first_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @md_first_name = value
+      @md_first_name = value && value.to_s
     end
 
     # Sets the md_middle_initial attribute.
     #
     def md_middle_initial=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @md_middle_initial = value
+      @md_middle_initial = value && value.to_s
     end
 
     # Sets the md_approve_last_name attribute.
     #
     def md_approve_last_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @md_approve_last_name = value
+      @md_approve_last_name = value && value.to_s
     end
 
     # Sets the md_approve_first_name attribute.
     #
     def md_approve_first_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @md_approve_first_name = value
+      @md_approve_first_name = value && value.to_s
     end
 
     # Sets the md_approve_middle_initial attribute.
     #
     def md_approve_middle_initial=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @md_approve_middle_initial = value
+      @md_approve_middle_initial = value && value.to_s
     end
 
     # Sets the phy_approve_last_name attribute.
     #
     def phy_approve_last_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @phy_approve_last_name = value
+      @phy_approve_last_name = value && value.to_s
     end
 
     # Sets the phy_approve_first_name attribute.
     #
     def phy_approve_first_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @phy_approve_first_name = value
+      @phy_approve_first_name = value && value.to_s
     end
 
     # Sets the phy_approve_middle_initial attribute.
     #
     def phy_approve_middle_initial=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @phy_approve_middle_initial = value
+      @phy_approve_middle_initial = value && value.to_s
     end
 
     # Sets the author_last_name attribute.
     #
     def author_last_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @author_last_name = value
+      @author_last_name = value && value.to_s
     end
 
     # Sets the author_first_name attribute.
     #
     def author_first_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @author_first_name = value
+      @author_first_name = value && value.to_s
     end
 
     # Sets the author_middle_initial attribute.
     #
     def author_middle_initial=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @author_middle_initial = value
+      @author_middle_initial = value && value.to_s
     end
 
     # Sets the rtp_mfg attribute.
     #
     def rtp_mfg=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rtp_mfg = value
+      @rtp_mfg = value && value.to_s
     end
 
     # Sets the rtp_model attribute.
     #
     def rtp_model=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rtp_model = value
+      @rtp_model = value && value.to_s
     end
 
     # Sets the rtp_version attribute.
     #
     def rtp_version=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rtp_version = value
+      @rtp_version = value && value.to_s
     end
 
     # Sets the rtp_if_protocol attribute.
     #
     def rtp_if_protocol=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rtp_if_protocol = value
+      @rtp_if_protocol = value && value.to_s
     end
 
     # Sets the rtp_if_version attribute.
     #
     def rtp_if_version=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rtp_if_version = value
+      @rtp_if_version = value && value.to_s
     end
 
 

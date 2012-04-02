@@ -28,8 +28,7 @@ module RTP
     # Setting the keyword attribute.
     #
     def crc=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @crc = value
+      @crc = value.to_s
     end
 
   end

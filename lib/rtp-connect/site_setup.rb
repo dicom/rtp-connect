@@ -106,120 +106,108 @@ module RTP
     # Writes the SiteSetup object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
     #
-    def to_str
+    def to_s
       str = encode
       if children
         children.each do |child|
-          str += child.to_str
+          str += child.to_s
         end
       end
       return str
     end
 
+    alias :to_str :to_s
+
     # Sets the keyword attribute.
     #
     def keyword=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      raise ArgumentError, "Invalid keyword. Expected 'SITE_SETUP_DEF', got #{value}." unless value.upcase == "SITE_SETUP_DEF"
+      value = value.to_s.upcase
+      raise ArgumentError, "Invalid keyword. Expected 'SITE_SETUP_DEF', got #{value}." unless value == "SITE_SETUP_DEF"
       @keyword = value
     end
 
     # Sets the rx_site_name attribute.
     #
     def rx_site_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rx_site_name = value
+      @rx_site_name = value && value.to_s
     end
 
     # Sets the patient_orientation attribute.
     #
     def patient_orientation=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @patient_orientation = value
+      @patient_orientation = value && value.to_s
     end
 
     # Sets the treatment_machine attribute.
     #
     def treatment_machine=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @treatment_machine = value
+      @treatment_machine = value && value.to_s
     end
 
     # Sets the tolerance_table attribute.
     #
     def tolerance_table=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @tolerance_table = value
+      @tolerance_table = value && value.to_s
     end
 
     # Sets the iso_pos_x attribute.
     #
     def iso_pos_x=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @iso_pos_x = value
+      @iso_pos_x = value && value.to_s
     end
 
     # Sets the iso_pos_y attribute.
     #
     def iso_pos_y=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @iso_pos_y = value
+      @iso_pos_y = value && value.to_s
     end
 
     # Sets the iso_pos_z attribute.
     #
     def iso_pos_z=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @iso_pos_z = value
+      @iso_pos_z = value && value.to_s
     end
 
     # Sets the structure_set_uid attribute.
     #
     def structure_set_uid=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @structure_set_uid = value
+      @structure_set_uid = value && value.to_s
     end
 
     # Sets the frame_of_ref_uid attribute.
     #
     def frame_of_ref_uid=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @frame_of_ref_uid = value
+      @frame_of_ref_uid = value && value.to_s
     end
 
     # Sets the couch_vertical attribute.
     #
     def couch_vertical=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_vertical = value
+      @couch_vertical = value && value.to_s
     end
 
     # Sets the couch_lateral attribute.
     #
     def couch_lateral=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_lateral = value
+      @couch_lateral = value && value.to_s
     end
 
     # Sets the couch_longitudinal attribute.
     #
     def couch_longitudinal=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_longitudinal = value
+      @couch_longitudinal = value && value.to_s
     end
 
     # Sets the couch_angle attribute.
     #
     def couch_angle=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_angle = value
+      @couch_angle = value && value.to_s
     end
 
     # Sets the couch_pedestal attribute.
     #
     def couch_pedestal=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_pedestal = value
+      @couch_pedestal = value && value.to_s
     end
 
   end

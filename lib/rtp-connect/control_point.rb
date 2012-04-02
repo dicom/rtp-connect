@@ -174,15 +174,17 @@ module RTP
     # Writes the ControlPoint object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
     #
-    def to_str
+    def to_s
       str = encode
       if children
         children.each do |child|
-          str += child.to_str
+          str += child.to_s
         end
       end
       return str
     end
+
+    alias :to_str :to_s
 
     # Sets the mlc_a attribute.
     #
@@ -192,11 +194,9 @@ module RTP
     # contains an array holding all 100 MLC leaf 'A' string values.
     #
     def mlc_lp_a=(array)
-      raise ArgumentError, "Invalid argument 'array'. Expected Array, got #{array.class}." unless array.is_a?(Array)
-      raise ArgumentError, "Invalid argument 'array'. Expected array with length 100, got #{array.length}." unless array.length == 100
-      unexpected_types = array.collect{|i| i.class}.uniq - [String, NilClass]
-      raise ArgumentError, "Invalid argument 'array'. Array must contain only string or nil values, got unexpected class #{unexpected_types}." if unexpected_types.length > 0
-      @mlc_lp_a = array
+      array = array.to_a
+      raise ArgumentError, "Invalid argument 'array'. Expected length 100, got #{array.length}." unless array.length == 100
+      @mlc_lp_a = array.collect! {|e| e && e.to_s}
     end
 
     # Sets the mlc_b attribute.
@@ -207,236 +207,203 @@ module RTP
     # contains an array holding all 100 MLC leaf 'A' string values.
     #
     def mlc_lp_b=(array)
-      raise ArgumentError, "Invalid argument 'array'. Expected Array, got #{array.class}." unless array.is_a?(Array)
-      raise ArgumentError, "Invalid argument 'array'. Expected array with length 100, got #{array.length}." unless array.length == 100
-      unexpected_types = array.collect{|i| i.class}.uniq - [String, NilClass]
-      raise ArgumentError, "Invalid argument 'array'. Array must contain only string or nil values, got unexpected class #{unexpected_types}." if unexpected_types.length > 0
-      @mlc_lp_b = array
+      array = array.to_a
+      raise ArgumentError, "Invalid argument 'array'. Expected length 100, got #{array.length}." unless array.length == 100
+      @mlc_lp_b = array.collect! {|e| e && e.to_s}
     end
 
     # Sets the keyword attribute.
     #
     def keyword=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      raise ArgumentError, "Invalid keyword. Expected 'CONTROL_PT_DEF', got #{value}." unless value.upcase == "CONTROL_PT_DEF"
+      value = value.to_s.upcase
+      raise ArgumentError, "Invalid keyword. Expected 'CONTROL_PT_DEF', got #{value}." unless value == "CONTROL_PT_DEF"
       @keyword = value
     end
 
     # Sets the field_id attribute.
     #
     def field_id=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @field_id = value
+      @field_id = value && value.to_s
     end
 
     # Sets the mlc_type attribute.
     #
     def mlc_type=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @mlc_type = value
+      @mlc_type = value && value.to_s
     end
 
     # Sets the mlc_leaves attribute.
     #
     def mlc_leaves=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @mlc_leaves = value
+      @mlc_leaves = value && value.to_s
     end
 
     # Sets the total_control_points attribute.
     #
     def total_control_points=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @total_control_points = value
+      @total_control_points = value && value.to_s
     end
 
     # Sets the control_pt_number attribute.
     #
     def control_pt_number=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @control_pt_number = value
+      @control_pt_number = value && value.to_s
     end
 
     # Sets the mu_convention attribute.
     #
     def mu_convention=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @mu_convention = value
+      @mu_convention = value && value.to_s
     end
 
     # Sets the monitor_units attribute.
     #
     def monitor_units=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @monitor_units = value
+      @monitor_units = value && value.to_s
     end
 
     # Sets the wedge_position attribute.
     #
     def wedge_position=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @wedge_position = value
+      @wedge_position = value && value.to_s
     end
 
     # Sets the energy attribute.
     #
     def energy=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @energy = value
+      @energy = value && value.to_s
     end
 
     # Sets the doserate attribute.
     #
     def doserate=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @doserate = value
+      @doserate = value && value.to_s
     end
 
     # Sets the ssd attribute.
     #
     def ssd=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @ssd = value
+      @ssd = value && value.to_s
     end
 
     # Sets the scale_convention attribute.
     #
     def scale_convention=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @scale_convention = value
+      @scale_convention = value && value.to_s
     end
 
     # Sets the gantry_angle attribute.
     #
     def gantry_angle=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @gantry_angle = value
+      @gantry_angle = value && value.to_s
     end
 
     # Sets the gantry_dir attribute.
     #
     def gantry_dir=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @gantry_dir = value
+      @gantry_dir = value && value.to_s
     end
 
     # Sets the collimator_angle attribute.
     #
     def collimator_angle=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @collimator_angle = value
+      @collimator_angle = value && value.to_s
     end
 
     # Sets the collimator_dir attribute.
     #
     def collimator_dir=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @collimator_dir = value
+      @collimator_dir = value && value.to_s
     end
 
     # Sets the field_x_mode attribute.
     #
     def field_x_mode=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @field_x_mode = value
+      @field_x_mode = value && value.to_s
     end
 
     # Sets the field_x attribute.
     #
     def field_x=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @field_x = value
+      @field_x = value && value.to_s
     end
 
     # Sets the collimator_x1 attribute.
     #
     def collimator_x1=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @collimator_x1 = value
+      @collimator_x1 = value && value.to_s
     end
 
     # Sets the collimator_x2 attribute.
     #
     def collimator_x2=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @collimator_x2 = value
+      @collimator_x2 = value && value.to_s
     end
 
     # Sets the field_y_mode attribute.
     #
     def field_y_mode=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @field_y_mode = value
+      @field_y_mode = value && value.to_s
     end
 
     # Sets the field_y attribute.
     #
     def field_y=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @field_y = value
+      @field_y = value && value.to_s
     end
 
     # Sets the collimator_y1 attribute.
     #
     def collimator_y1=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @collimator_y1 = value
+      @collimator_y1 = value && value.to_s
     end
 
     # Sets the collimator_y2 attribute.
     #
     def collimator_y2=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @collimator_y2 = value
+      @collimator_y2 = value && value.to_s
     end
 
     # Sets the couch_vertical attribute.
     #
     def couch_vertical=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_vertical = value
+      @couch_vertical = value && value.to_s
     end
 
     # Sets the couch_lateral attribute.
     #
     def couch_lateral=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_lateral = value
+      @couch_lateral = value && value.to_s
     end
 
     # Sets the couch_longitudinal attribute.
     #
     def couch_longitudinal=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_longitudinal = value
+      @couch_longitudinal = value && value.to_s
     end
 
     # Sets the couch_angle attribute.
     #
     def couch_angle=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_angle = value
+      @couch_angle = value && value.to_s
     end
 
     # Sets the couch_dir attribute.
     #
     def couch_dir=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_dir = value
+      @couch_dir = value && value.to_s
     end
 
     # Sets the couch_pedestal attribute.
     #
     def couch_pedestal=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_pedestal = value
+      @couch_pedestal = value && value.to_s
     end
 
     # Sets the couch_ped_dir attribute.
     #
     def couch_ped_dir=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @couch_ped_dir = value
+      @couch_ped_dir = value && value.to_s
     end
 
   end

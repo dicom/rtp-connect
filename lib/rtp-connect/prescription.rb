@@ -118,99 +118,90 @@ module RTP
     # Writes the Prescription object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
     #
-    def to_str
+    def to_s
       str = encode
       if children
         children.each do |child|
-          str += child.to_str
+          str += child.to_s
         end
       end
       return str
     end
 
+    alias :to_str :to_s
+
     # Sets the keyword attribute.
     #
     def keyword=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      raise ArgumentError, "Invalid keyword. Expected 'RX_DEF', got #{value}." unless value.upcase == "RX_DEF"
+      value = value.to_s.upcase
+      raise ArgumentError, "Invalid keyword. Expected 'RX_DEF', got #{value}." unless value == "RX_DEF"
       @keyword = value
     end
 
     # Sets the course_id attribute.
     #
     def course_id=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @course_id = value
+      @course_id = value && value.to_s
     end
 
     # Sets the rx_site_name attribute.
     #
     def rx_site_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rx_site_name = value
+      @rx_site_name = value && value.to_s
     end
 
     # Sets the technique attribute.
     #
     def technique=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @technique = value
+      @technique = value && value.to_s
     end
 
     # Sets the modality attribute.
     #
     def modality=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @modality = value
+      @modality = value && value.to_s
     end
 
     # Sets the dose_spec attribute.
     #
     def dose_spec=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @dose_spec = value
+      @dose_spec = value && value.to_s
     end
 
     # Sets the rx_depth attribute.
     #
     def rx_depth=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rx_depth = value
+      @rx_depth = value && value.to_s
     end
 
     # Sets the dose_ttl attribute.
     #
     def dose_ttl=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @dose_ttl = value
+      @dose_ttl = value && value.to_s
     end
 
     # Sets the dose_tx attribute.
     #
     def dose_tx=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @dose_tx = value
+      @dose_tx = value && value.to_s
     end
 
     # Sets the pattern attribute.
     #
     def pattern=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @pattern = value
+      @pattern = value && value.to_s
     end
 
     # Sets the rx_note attribute.
     #
     def rx_note=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @rx_note = value
+      @rx_note = value && value.to_s
     end
 
     # Sets the number_of_fields attribute.
     #
     def number_of_fields=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @number_of_fields = value
+      @number_of_fields = value && value.to_s
     end
 
   end

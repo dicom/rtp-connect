@@ -87,12 +87,12 @@ module RTP
     end
 
 
-    describe "to_str" do
+    describe "to_s" do
 
       it "should return a string which matches the original string" do
         str = '"CONTROL_PT_DEF","BAKFR","11","40","1","0","1","0.000000","","15","0","96.3","2","180.0","","0.0","","","","","","","","","","0.0","0.0","0.0","0.0","","0.0","","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","7923"' + "\r\n"
         cp = ControlPoint.load(str, @f)
-        cp.to_str.should eql str
+        cp.to_s.should eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
@@ -100,7 +100,7 @@ module RTP
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         cp = ControlPoint.load(str, @f)
-        cp.to_str.should eql str
+        cp.to_s.should eql str
       end
 
     end
@@ -108,22 +108,12 @@ module RTP
 
     describe "#mlc_lp_a=()" do
 
-      it "should raise an error if a non-array is given as an argument" do
-        expect {@cp.mlc_lp_a=('not-an-array')}.to raise_error(ArgumentError, /'array'/)
-      end
-
       it "should raise an error if the specified array has less than 100 elements" do
         expect {@cp.mlc_lp_a=(Array.new(99, ''))}.to raise_error(ArgumentError, /'array'/)
       end
 
       it "should raise an error if the specified array has more than 100 elements" do
         expect {@cp.mlc_lp_a=(Array.new(101, ''))}.to raise_error(ArgumentError, /'array'/)
-      end
-
-      it "should raise an error if the specified array contains anything else than string or nil elements" do
-        arr = Array.new(100)
-        arr[10] = false
-        expect {@cp.mlc_lp_a=(arr)}.to raise_error(ArgumentError, /'array'/)
       end
 
       it "should transfer the array (containing string and nil values) to the mlc_lp_a attribute" do
@@ -145,10 +135,6 @@ module RTP
 
     describe "#mlc_lp_b=()" do
 
-      it "should raise an error if a non-array is given as an argument" do
-        expect {@cp.mlc_lp_b=('not-an-array')}.to raise_error(ArgumentError, /'array'/)
-      end
-
       it "should raise an error if the specified array has less than 100 elements" do
         expect {@cp.mlc_lp_b=(Array.new(99, ''))}.to raise_error(ArgumentError, /'array'/)
       end
@@ -157,14 +143,7 @@ module RTP
         expect {@cp.mlc_lp_b=(Array.new(101, ''))}.to raise_error(ArgumentError, /'array'/)
       end
 
-      it "should raise an error if the specified array contains anything else than string or nil elements" do
-        arr = Array.new(100)
-        arr[10] = true
-        arr[11] = '9.0'
-        expect {@cp.mlc_lp_b=(arr)}.to raise_error(ArgumentError, /'array'/)
-      end
-
-      it "should transfer the array (containing string and nil values) to the mlc_lp_a attribute" do
+      it "should transfer the array (containing string and nil values) to the mlc_lp_b attribute" do
         arr = Array.new(100)
         arr[10] = '15.00'
         arr[90] = '-15.00'
@@ -172,7 +151,7 @@ module RTP
         @cp.mlc_lp_b.should eql arr
       end
 
-      it "should transfer the array (containing only string values) to the mlc_lp_a attribute" do
+      it "should transfer the array (containing only string values) to the mlc_lp_b attribute" do
         arr =Array.new(100) {|i| (i-50).to_f.to_s}
         @cp.mlc_lp_b = arr
         @cp.mlc_lp_b.should eql arr

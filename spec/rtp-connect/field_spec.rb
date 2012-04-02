@@ -134,20 +134,20 @@ module RTP
     end
 
 
-    describe "to_str" do
+    describe "to_s" do
 
       it "should return a string which matches the original string" do
         str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"' + "\r\n"
         f = Field.load(str, @p)
-        f.to_str.should eql str
+        f.to_s.should eql str
       end
-      
+
       it "should return a string that matches the original string (which contains a unique value for each element)" do
         values = '"FIELD_DEF",' + Array.new(47){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         f = Field.load(str, @p)
-        f.to_str.should eql str
+        f.to_s.should eql str
       end
 
     end

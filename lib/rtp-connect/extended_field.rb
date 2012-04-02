@@ -76,50 +76,48 @@ module RTP
     # Writes the ExtendedField object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
     #
-    def to_str
+    def to_s
       str = encode
       if children
         children.each do |child|
-          str += child.to_str
+          str += child.to_s
         end
       end
       return str
     end
 
+    alias :to_str :to_s
+
     # Sets the keyword attribute.
     #
     def keyword=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      raise ArgumentError, "Invalid keyword. Expected 'EXTENDED_FIELD_DEF', got #{value}." unless value.upcase == "EXTENDED_FIELD_DEF"
+      value = value.to_s.upcase
+      raise ArgumentError, "Invalid keyword. Expected 'EXTENDED_FIELD_DEF', got #{value}." unless value == "EXTENDED_FIELD_DEF"
       @keyword = value
     end
 
     # Sets the field_id attribute.
     #
     def field_id=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @field_id = value
+      @field_id = value && value.to_s
     end
 
     # Sets the original_plan_uid attribute.
     #
     def original_plan_uid=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @original_plan_uid = value
+      @original_plan_uid = value && value.to_s
     end
 
     # Sets the original_beam_number attribute.
     #
     def original_beam_number=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @original_beam_number = value
+      @original_beam_number = value && value.to_s
     end
 
     # Sets the original_beam_name attribute.
     #
     def original_beam_name=(value)
-      raise ArgumentError, "Invalid argument 'value'. Expected String, got #{value.class}." unless value.is_a?(String)
-      @original_beam_name = value
+      @original_beam_name = value && value.to_s
     end
 
   end
