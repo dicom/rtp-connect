@@ -41,7 +41,7 @@ external dependencies.
   # Set the Patient's ID attribute:
   rtp.patient_id = "12345"
   # Export the instance to an RTP string (with CRC):
-  output = rtp.to_str
+  output = rtp.to_s
 
 === Log settings
 
