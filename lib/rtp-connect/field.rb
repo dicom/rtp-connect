@@ -71,10 +71,8 @@ module RTP
     # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
     #
     def self.load(string, parent)
-      raise ArgumentError, "Invalid argument 'string'. Expected String, got #{string.class}." unless string.is_a?(String)
-      raise ArgumentError, "Invalid argument 'parent'. Expected RTP::Record, got #{parent.class}." unless parent.is_a?(RTP::Record)
       # Get the quote-less values:
-      values = string.values
+      values = string.to_s.values
       raise ArgumentError, "Invalid argument 'string': Expected exactly 49 elements, got #{values.length}." unless values.length == 49
       f = self.new(parent)
       # Assign the values to attributes:
@@ -137,34 +135,47 @@ module RTP
     # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
     #
     def initialize(parent)
-      raise ArgumentError, "Invalid argument 'parent'. Expected RTP::Record, got #{parent.class}." unless parent.is_a?(RTP::Record)
       # Child records:
       @control_points = Array.new
       @extended_field = nil
-      # Parent relation:
-      @parent = get_parent(parent, Prescription)
+      # Parent relation (may get more than one type of record here):
+      @parent = get_parent(parent.to_record, Prescription)
       @parent.add_field(self)
       @keyword = 'FIELD_DEF'
     end
 
+    # Returns true if the argument is an instance with attributes equal to self.
+    #
+    def ==(other)
+      if other.respond_to?(:to_field)
+        other.send(:state) == state
+      end
+    end
+
+    alias_method :eql?, :==
+
     # Adds a control point record to this instance.
     #
     def add_control_point(child)
-      raise ArgumentError, "Invalid argument 'child'. Expected RTP::ControlPoint, got #{child.class}." unless child.is_a?(RTP::ControlPoint)
-      @control_points << child
+      @control_points << child.to_control_point
     end
 
     # Connects an extended treatment field record to this instance.
     #
     def add_extended_field(child)
-      raise ArgumentError, "Invalid argument 'child'. Expected RTP::ExtendedField, got #{child.class}." unless child.is_a?(RTP::ExtendedField)
-      @extended_field = child
+      @extended_field = child.to_extended_field
     end
 
     # Returns nil, as these instances are child-less by definition.
     #
     def children
       return [@extended_field, @control_points].flatten.compact
+    end
+
+    # Generates a Fixnum hash value for this instance.
+    #
+    def hash
+      state.hash
     end
 
     # Returns the values of this instance in an array.
@@ -221,6 +232,12 @@ module RTP
         @portfilm_mu_treat,
         @portfilm_coeff_treat
       ]
+    end
+
+    # Returns self.
+    #
+    def to_field
+      self
     end
 
     # Writes the Field object + any hiearchy of child objects,
@@ -527,6 +544,14 @@ module RTP
     def portfilm_coeff_treat=(value)
       @portfilm_coeff_treat = value && value.to_s
     end
+
+
+    private
+
+
+    # Returns the attributes of this instance in an array (for comparison purposes).
+    #
+    alias_method :state, :values
 
   end
 

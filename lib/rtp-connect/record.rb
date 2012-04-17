@@ -5,6 +5,12 @@ module RTP
     attr_reader :keyword
     attr_reader :crc
 
+    # Setting the keyword attribute.
+    #
+    def crc=(value)
+      @crc = value.to_s
+    end
+
     # Encodes a string from the contents of this instance.
     # This produces the full line, including a computed CRC checksum.
     #
@@ -25,10 +31,10 @@ module RTP
       end
     end
 
-    # Setting the keyword attribute.
+    # Returns self.
     #
-    def crc=(value)
-      @crc = value.to_s
+    def to_record
+      self
     end
 
   end

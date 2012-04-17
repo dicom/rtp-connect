@@ -18,19 +18,19 @@ module RTP
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
-        str = '"PLAN_DEF","091111 12345","ALDERSON","TANGMAM ÅLESUND","51870"'
+        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","6993"'
         expect {Plan.load(str)}.to raise_error(ArgumentError, /'string'/)
       end
 
       it "should create a Plan object when given a valid string" do
-        str = '"PLAN_DEF","091111 12345","ALDERSON","TANGMAM ÅLESUND","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","51870"'
+        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"'
         Plan.load(str).class.should eql Plan
       end
 
       it "should set attributes from the given string" do
-        str = '"PLAN_DEF","091111 12345","ALDERSON","TANGMAM ÅLESUND","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","51870"'
+        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"'
         p = Plan.load(str)
-        p.patient_id.should eql '091111 12345'
+        p.patient_id.should eql '12345'
         p.rtp_if_version.should eql '2.20.08D7'
       end
 
@@ -39,8 +39,8 @@ module RTP
 
     describe "::parse" do
 
-      it "should raise an ArgumentError when a non-String is passed as the 'string' argument" do
-        expect {Plan.parse(42)}.to raise_error(ArgumentError, /'string'/)
+      it "should raise an error when a non-String is passed as the 'string' argument" do
+        expect {Plan.parse(42)}.to raise_error
       end
 
       it "should raise an ArgumentError when an invalid RTP string is passed as the 'string' argument" do
@@ -110,10 +110,33 @@ module RTP
     end
 
 
+    describe "#==()" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        rtp_other = Plan.new
+        rtp_other.patient_id = '123'
+        @rtp.patient_id = '123'
+        (@rtp == rtp_other).should be_true
+      end
+
+      it "should be false when comparing two instances having the different attribute values" do
+        rtp_other = Plan.new
+        rtp_other.patient_id = '123'
+        @rtp.patient_id = '456'
+        (@rtp == rtp_other).should be_false
+      end
+
+      it "should be false when comparing against an instance of incompatible type" do
+        (@rtp == 42).should be_false
+      end
+
+    end
+
+
     describe "#add_prescription" do
 
-      it "should raise an ArgumentError when a non-Prescription is passed as the 'child' argument" do
-        expect {@rtp.add_prescription(42)}.to raise_error(ArgumentError, /'child'/)
+      it "should raise an error when a non-Prescription is passed as the 'child' argument" do
+        expect {@rtp.add_prescription(42)}.to raise_error
       end
 
       it "should add the prescription" do
@@ -146,6 +169,41 @@ module RTP
     end
 
 
+    describe "#eql?" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        rtp_other = Plan.new
+        rtp_other.patient_last_name = 'John'
+        @rtp.patient_last_name = 'John'
+        (@rtp == rtp_other).should be_true
+      end
+
+    end
+
+
+    describe "#hash" do
+
+      it "should return the same Fixnum for two instances having the same attribute values" do
+        values = '"PLAN_DEF",' + Array.new(26){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        rtp1 = Plan.load(str)
+        rtp2 = Plan.load(str)
+        (rtp1.hash == rtp2.hash).should be_true
+      end
+
+    end
+
+
+    describe "#to_plan" do
+
+      it "should return itself" do
+        @rtp.to_plan.equal?(@rtp).should be_true
+      end
+
+    end
+
+
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
@@ -159,7 +217,7 @@ module RTP
     describe "to_s" do
 
       it "should return a string which matches the original string" do
-        str = '"PLAN_DEF","091111 12345","ALDERSON","TANGMAM ÅLESUND","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","51870"' + "\r\n"
+        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"' + "\r\n"
         p = Plan.load(str)
         p.to_s.should eql str
       end
@@ -178,7 +236,7 @@ module RTP
     describe "#write" do
 
       it "should write the Plan object to file" do
-        str = '"PLAN_DEF","091111 12345","ALDERSON","TANGMAM ÅLESUND","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","51870"' + "\r\n"
+        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"' + "\r\n"
         plan = Plan.load(str)
         file = TMPDIR + 'plan.rtp'
         plan.write(file)

@@ -20,9 +20,9 @@ module RTP
         expect {ExtendedField.load(42, @f)}.to raise_error(ArgumentError, /'string'/)
       end
 
-      it "should raise an ArgumentError when a non-Field is passed as the 'parent' argument" do
+      it "should raise an error when a non-Field is passed as the 'parent' argument" do
         str = '"EXTENDED_FIELD_DEF","BAKFR","1.3.6.1.4","8","BAKFRA","10442"'
-        expect {ExtendedField.load(str, 'not-a-field')}.to raise_error(ArgumentError, /'parent'/)
+        expect {ExtendedField.load(str, 'not-a-field')}.to raise_error
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
@@ -62,10 +62,59 @@ module RTP
     end
 
 
+    describe "#==()" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        ef_other = ExtendedField.new(@f)
+        ef_other.field_id = '33'
+        @ef.field_id = '33'
+        (@ef == ef_other).should be_true
+      end
+
+      it "should be false when comparing two instances having the different attribute values" do
+        ef_other = ExtendedField.new(@f)
+        ef_other.field_id = '22'
+        @ef.field_id = '2'
+        (@ef == ef_other).should be_false
+      end
+
+      it "should be false when comparing against an instance of incompatible type" do
+        (@ef == 42).should be_false
+      end
+
+    end
+
+
     describe "#children" do
 
       it "should return an empty array when called on a child-less instance" do
         @ef.children.should eql Array.new
+      end
+
+    end
+
+
+    describe "#eql?" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        ef_other = ExtendedField.new(@f)
+        ef_other.field_id = '1'
+        @ef.field_id = '1'
+        (@ef == ef_other).should be_true
+      end
+
+    end
+
+
+    describe "#hash" do
+
+      it "should return the same Fixnum for two instances having the same attribute values" do
+        values = '"EXTENDED_FIELD_DEF",' + Array.new(4){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        ef1 = ExtendedField.load(str, @f)
+        ef2 = ExtendedField.load(str, @f)
+        (ef1.hash == ef2.hash).should be_true
       end
 
     end
@@ -76,6 +125,15 @@ module RTP
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
         arr = ["EXTENDED_FIELD_DEF", [nil]*4].flatten
         @ef.values.should eql arr
+      end
+
+    end
+
+
+    describe "#to_extended_field" do
+
+      it "should return itself" do
+        @ef.to_extended_field.equal?(@ef).should be_true
       end
 
     end

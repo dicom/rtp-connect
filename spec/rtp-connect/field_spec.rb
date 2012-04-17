@@ -19,8 +19,8 @@ module RTP
         expect {Field.load(42, @p)}.to raise_error(ArgumentError, /'string'/)
       end
 
-      it "should raise an ArgumentError when a non-Prescription is passed as the 'parent' argument" do
-        expect {Field.load('"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"', 'not-an-rx')}.to raise_error(ArgumentError, /'parent'/)
+      it "should raise an error when a non-Prescription is passed as the 'parent' argument" do
+        expect {Field.load('"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"', 'not-an-rx')}.to raise_error
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
@@ -66,10 +66,33 @@ module RTP
     end
 
 
+    describe "#==()" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        f_other = Field.new(@p)
+        f_other.field_id = '33'
+        @f.field_id = '33'
+        (@f == f_other).should be_true
+      end
+
+      it "should be false when comparing two instances having the different attribute values" do
+        f_other = Field.new(@p)
+        f_other.field_id = '11'
+        @f.field_id = '1'
+        (@f == f_other).should be_false
+      end
+
+      it "should be false when comparing against an instance of incompatible type" do
+        (@f == 42).should be_false
+      end
+
+    end
+
+
     describe "#add_control_point" do
 
-      it "should raise an ArgumentError when a non-ControlPoint is passed as the 'child' argument" do
-        expect {@f.add_control_point(42)}.to raise_error(ArgumentError, /'child'/)
+      it "should raise an error when a non-ControlPoint is passed as the 'child' argument" do
+        expect {@f.add_control_point(42)}.to raise_error
       end
 
       it "should add the control point" do
@@ -84,8 +107,8 @@ module RTP
 
     describe "#add_extended_field" do
 
-      it "should raise an ArgumentError when a non-ExtendedField is passed as the 'child' argument" do
-        expect {@f.add_extended_field(42)}.to raise_error(ArgumentError, /'child'/)
+      it "should raise an error when a non-ExtendedField is passed as the 'child' argument" do
+        expect {@f.add_extended_field(42)}.to raise_error
       end
 
       it "should add the extended field" do
@@ -124,11 +147,46 @@ module RTP
     end
 
 
+    describe "#eql?" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        f_other = Field.new(@p)
+        f_other.field_id = '1'
+        @f.field_id = '1'
+        (@f == f_other).should be_true
+      end
+
+    end
+
+
+    describe "#hash" do
+
+      it "should return the same Fixnum for two instances having the same attribute values" do
+        values = '"FIELD_DEF",' + Array.new(47){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        f1 = Field.load(str, @p)
+        f2 = Field.load(str, @p)
+        (f1.hash == f2.hash).should be_true
+      end
+
+    end
+
+
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
         arr = ["FIELD_DEF", [nil]*47].flatten
         @f.values.should eql arr
+      end
+
+    end
+
+
+    context "#to_field" do
+
+      it "should return itself" do
+        @f.to_field.equal?(@f).should be_true
       end
 
     end

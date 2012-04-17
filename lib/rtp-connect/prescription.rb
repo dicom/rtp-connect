@@ -35,10 +35,8 @@ module RTP
     # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
     #
     def self.load(string, parent)
-      raise ArgumentError, "Invalid argument 'string'. Expected String, got #{string.class}." unless string.is_a?(String)
-      raise ArgumentError, "Invalid argument 'parent'. Expected RTP::Record, got #{parent.class}." unless parent.is_a?(RTP::Record)
       # Get the quote-less values:
-      values = string.values
+      values = string.to_s.values
       raise ArgumentError, "Invalid argument 'string': Expected exactly 13 elements, got #{values.length}." unless values.length == 13
       p = self.new(parent)
       # Assign the values to attributes:
@@ -65,34 +63,47 @@ module RTP
     # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
     #
     def initialize(parent)
-      raise ArgumentError, "Invalid argument 'parent'. Expected RTP::Record, got #{parent.class}." unless parent.is_a?(RTP::Record)
       # Child objects:
       @site_setup = nil
       @fields = Array.new
-      # Parent relation:
-      @parent = get_parent(parent, Plan)
+      # Parent relation (may get more than one type of record here):
+      @parent = get_parent(parent.to_record, Plan)
       @parent.add_prescription(self)
       @keyword = 'RX_DEF'
     end
 
+    # Returns true if the argument is an instance with attributes equal to self.
+    #
+    def ==(other)
+      if other.respond_to?(:to_prescription)
+        other.send(:state) == state
+      end
+    end
+
+    alias_method :eql?, :==
+
     # Adds a treatment Field record to this instance.
     #
     def add_field(child)
-      raise ArgumentError, "Invalid argument 'child'. Expected RTP::Field, got #{child.class}." unless child.is_a?(RTP::Field)
-      @fields << child
+      @fields << child.to_field
     end
 
     # Connects a Site setup record to this instance.
     #
     def add_site_setup(child)
-      raise ArgumentError, "Invalid argument 'child'. Expected RTP::SiteSetup, got #{child.class}." unless child.is_a?(RTP::SiteSetup)
-      @site_setup = child
+      @site_setup = child.to_site_setup
     end
 
     # Returns the a properly sorted array of the child records of this instance.
     #
     def children
       return [@site_setup, @fields].flatten.compact
+    end
+
+    # Generates a Fixnum hash value for this instance.
+    #
+    def hash
+      state.hash
     end
 
     # Returns the values of this instance in an array.
@@ -113,6 +124,12 @@ module RTP
         @rx_note,
         @number_of_fields
       ]
+    end
+
+    # Returns self.
+    #
+    def to_prescription
+      self
     end
 
     # Writes the Prescription object + any hiearchy of child objects,
@@ -203,6 +220,14 @@ module RTP
     def number_of_fields=(value)
       @number_of_fields = value && value.to_s
     end
+
+
+    private
+
+
+    # Returns the attributes of this instance in an array (for comparison purposes).
+    #
+    alias_method :state, :values
 
   end
 

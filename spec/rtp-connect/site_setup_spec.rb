@@ -19,8 +19,8 @@ module RTP
         expect {SiteSetup.load(42, @p)}.to raise_error(ArgumentError, /'string'/)
       end
 
-      it "should raise an ArgumentError when a non-Prescription is passed as the 'parent' argument" do
-        expect {SiteSetup.load('"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"', 'not-an-rx')}.to raise_error(ArgumentError, /'parent'/)
+      it "should raise an error when a non-Prescription is passed as the 'parent' argument" do
+        expect {SiteSetup.load('"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"', 'not-an-rx')}.to raise_error
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
@@ -60,10 +60,59 @@ module RTP
     end
 
 
+    describe "#==()" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        ss_other = SiteSetup.new(@p)
+        ss_other.rx_site_name = 'PROST'
+        @ss.rx_site_name = 'PROST'
+        (@ss == ss_other).should be_true
+      end
+
+      it "should be false when comparing two instances having the different attribute values" do
+        ss_other = SiteSetup.new(@p)
+        ss_other.rx_site_name = 'PROST'
+        @ss.rx_site_name = 'MAM'
+        (@ss == ss_other).should be_false
+      end
+
+      it "should be false when comparing against an instance of incompatible type" do
+        (@ss == 42).should be_false
+      end
+
+    end
+
+
     describe "#children" do
 
       it "should return an empty array when called on a child-less instance" do
         @ss.children.should eql Array.new
+      end
+
+    end
+
+
+    describe "#eql?" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        ss_other = SiteSetup.new(@p)
+        ss_other.rx_site_name = 'MAM'
+        @ss.rx_site_name = 'MAM'
+        (@ss == ss_other).should be_true
+      end
+
+    end
+
+
+    describe "#hash" do
+
+      it "should return the same Fixnum for two instances having the same attribute values" do
+        values = '"SITE_SETUP_DEF",' + Array.new(14){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        ss1 = SiteSetup.load(str, @p)
+        ss2 = SiteSetup.load(str, @p)
+        (ss1.hash == ss2.hash).should be_true
       end
 
     end
@@ -93,6 +142,15 @@ module RTP
         str = values + crc + "\r\n"
         ss = SiteSetup.load(str, @p)
         ss.to_s.should eql str
+      end
+
+    end
+
+
+    context "#to_site_setup" do
+
+      it "should return itself" do
+        @ss.to_site_setup.equal?(@ss).should be_true
       end
 
     end

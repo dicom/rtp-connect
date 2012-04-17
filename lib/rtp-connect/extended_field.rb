@@ -24,10 +24,8 @@ module RTP
     # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
     #
     def self.load(string, parent)
-      raise ArgumentError, "Invalid argument 'string'. Expected String, got #{string.class}." unless string.is_a?(String)
-      raise ArgumentError, "Invalid argument 'parent'. Expected RTP::Record, got #{parent.class}." unless parent.is_a?(RTP::Record)
       # Get the quote-less values:
-      values = string.values
+      values = string.to_s.values
       raise ArgumentError, "Invalid argument 'string': Expected exactly 6 elements, got #{values.length}." unless values.length == 6
       f = self.new(parent)
       # Assign the values to attributes:
@@ -47,17 +45,32 @@ module RTP
     # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
     #
     def initialize(parent)
-      raise ArgumentError, "Invalid argument 'parent'. Expected RTP::Record, got #{parent.class}." unless parent.is_a?(RTP::Record)
-      # Parent relation:
-      @parent = get_parent(parent, Field)
+      # Parent relation (may get more than one type of record here):
+      @parent = get_parent(parent.to_record, Field)
       @parent.add_extended_field(self)
       @keyword = 'EXTENDED_FIELD_DEF'
     end
+
+    # Returns true if the argument is an instance with attributes equal to self.
+    #
+    def ==(other)
+      if other.respond_to?(:to_extended_field)
+        other.send(:state) == state
+      end
+    end
+
+    alias_method :eql?, :==
 
     # Returns an empty array, as these instances are child-less by definition.
     #
     def children
       return Array.new
+    end
+
+    # Generates a Fixnum hash value for this instance.
+    #
+    def hash
+      state.hash
     end
 
     # Returns the values of this instance in an array.
@@ -71,6 +84,12 @@ module RTP
         @original_beam_number,
         @original_beam_name
       ]
+    end
+
+    # Returns self.
+    #
+    def to_extended_field
+      self
     end
 
     # Writes the ExtendedField object + any hiearchy of child objects,
@@ -119,6 +138,14 @@ module RTP
     def original_beam_name=(value)
       @original_beam_name = value && value.to_s
     end
+
+
+    private
+
+
+    # Returns the attributes of this instance in an array (for comparison purposes).
+    #
+    alias_method :state, :values
 
   end
 

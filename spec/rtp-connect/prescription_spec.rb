@@ -18,8 +18,8 @@ module RTP
         expect {Prescription.load(42, @rtp)}.to raise_error(ArgumentError, /'string'/)
       end
 
-      it "should raise an ArgumentError when a non-Plan is passed as the 'parent' argument" do
-        expect {Prescription.load('"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","17677"', 'not-a-plan')}.to raise_error(ArgumentError, /'parent'/)
+      it "should raise an error when a non-Plan is passed as the 'parent' argument" do
+        expect {Prescription.load('"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","17677"', 'not-a-plan')}.to raise_error
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
@@ -74,10 +74,33 @@ module RTP
     end
 
 
+    describe "#==()" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        p_other = Prescription.new(@rtp)
+        p_other.course_id = '7'
+        @p.course_id = '7'
+        (@p == p_other).should be_true
+      end
+
+      it "should be false when comparing two instances having the different attribute values" do
+        p_other = Prescription.new(@rtp)
+        p_other.course_id = '12'
+        @p.course_id = '1'
+        (@p == p_other).should be_false
+      end
+
+      it "should be false when comparing against an instance of incompatible type" do
+        (@p == 42).should be_false
+      end
+
+    end
+
+
     describe "#add_field" do
 
-      it "should raise an ArgumentError when a non-Field is passed as the 'child' argument" do
-        expect {@p.add_field(42)}.to raise_error(ArgumentError, /'child'/)
+      it "should raise an error when a non-Field is passed as the 'child' argument" do
+        expect {@p.add_field(42)}.to raise_error
       end
 
       it "should add the field" do
@@ -92,8 +115,8 @@ module RTP
 
     describe "#add_site_setup" do
 
-      it "should raise an ArgumentError when a non-SiteSetup is passed as the 'child' argument" do
-        expect {@p.add_site_setup(42)}.to raise_error(ArgumentError, /'child'/)
+      it "should raise an error when a non-SiteSetup is passed as the 'child' argument" do
+        expect {@p.add_site_setup(42)}.to raise_error
       end
 
       it "should add the site setup" do
@@ -132,11 +155,46 @@ module RTP
     end
 
 
+    describe "#eql?" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        p_other = Prescription.new(@rtp)
+        p_other.course_id = '1'
+        @p.course_id = '1'
+        (@p == p_other).should be_true
+      end
+
+    end
+
+
+    describe "#hash" do
+
+      it "should return the same Fixnum for two instances having the same attribute values" do
+        values = '"RX_DEF",' + Array.new(11){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        p1 = Prescription.load(str, @rtp)
+        p2 = Prescription.load(str, @rtp)
+        (p1.hash == p2.hash).should be_true
+      end
+
+    end
+
+
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
         arr = ["RX_DEF", [nil]*11].flatten
         @p.values.should eql arr
+      end
+
+    end
+
+
+    context "#to_prescription" do
+
+      it "should return itself" do
+        @p.to_prescription.equal?(@p).should be_true
       end
 
     end

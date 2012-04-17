@@ -20,9 +20,9 @@ module RTP
         expect {ControlPoint.load(42, @f)}.to raise_error(ArgumentError, /'string'/)
       end
 
-      it "should raise an ArgumentError when a non-Field is passed as the 'parent' argument" do
+      it "should raise an error when a non-Field is passed as the 'parent' argument" do
         str = '"CONTROL_PT_DEF","BAKFR","11","40","1","0","1","0.000000","","15","0","96.3","2","180.0","","0.0","","","","","","","","","","0.0","0.0","0.0","0.0","","0.0","","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","7923"'
-        expect {ControlPoint.load(str, 'not-a-field')}.to raise_error(ArgumentError, /'parent'/)
+        expect {ControlPoint.load(str, 'not-a-field')}.to raise_error
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
@@ -68,10 +68,59 @@ module RTP
     end
 
 
+    describe "#==()" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        cp_other = ControlPoint.new(@f)
+        cp_other.field_id = '123'
+        @cp.field_id = '123'
+        (@cp == cp_other).should be_true
+      end
+
+      it "should be false when comparing two instances having the different attribute values" do
+        cp_other = ControlPoint.new(@f)
+        cp_other.field_id = '123'
+        @cp.field_id = '456'
+        (@cp == cp_other).should be_false
+      end
+
+      it "should be false when comparing against an instance of incompatible type" do
+        (@cp == 42).should be_false
+      end
+
+    end
+
+
     describe "#children" do
 
       it "should return an empty array when called on a child-less instance" do
         @cp.children.should eql Array.new
+      end
+
+    end
+
+
+    describe "#eql?" do
+
+      it "should be true when comparing two instances having the same attribute values" do
+        cp_other = ControlPoint.new(@f)
+        cp_other.field_id = '1'
+        @cp.field_id = '1'
+        (@cp == cp_other).should be_true
+      end
+
+    end
+
+
+    describe "#hash" do
+
+      it "should return the same Fixnum for two instances having the same attribute values" do
+        values = '"CONTROL_PT_DEF",' + Array.new(231){|i| i.to_s}.encode + ','
+        crc = values.checksum.to_s.wrap
+        str = values + crc + "\r\n"
+        cp1 = ControlPoint.load(str, @f)
+        cp2 = ControlPoint.load(str, @f)
+        (cp1.hash == cp2.hash).should be_true
       end
 
     end
@@ -82,6 +131,15 @@ module RTP
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
         arr = ["CONTROL_PT_DEF", [nil]*231].flatten
         @cp.values.should eql arr
+      end
+
+    end
+
+
+    describe "#to_control_point" do
+
+      it "should return itself" do
+        @cp.to_control_point.equal?(@cp).should be_true
       end
 
     end

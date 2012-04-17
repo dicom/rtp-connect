@@ -71,9 +71,8 @@ module RTP
     # * <tt>string</tt> -- A string containing a plan definition record.
     #
     def self.load(string)
-      raise ArgumentError, "Invalid argument 'string'. Expected String, got #{string.class}." unless string.is_a?(String)
       # Get the quote-less values:
-      values = string.values
+      values = string.to_s.values
       raise ArgumentError, "Invalid argument 'string': Expected exactly 28 elements, got #{values.length}." unless values.length == 28
       rtp = self.new
       # Assign the values to attributes:
@@ -116,10 +115,7 @@ module RTP
     # * <tt>string</tt> -- An RTPConnect ascii string.
     #
     def self.parse(string)
-      raise ArgumentError, "Invalid argument 'string'. Expected String, got #{string.class}." unless string.is_a?(String)
-      raise ArgumentError, "Invalid argument 'string': String too short to contain valid RTP data (length: #{string.length})." if string.length < 10
-      #lines = string.lines
-      lines = string.split("\r\n")
+      lines = string.to_s.split("\r\n")
       # Create the Plan object:
       line = lines.first
       RTP::verify(line)
@@ -185,17 +181,32 @@ module RTP
       @keyword = 'PLAN_DEF'
     end
 
+    # Returns true if the argument is an instance with attributes equal to self.
+    #
+    def ==(other)
+      if other.respond_to?(:to_plan)
+        other.send(:state) == state
+      end
+    end
+
+    alias_method :eql?, :==
+
     # Adds a prescription site record to this instance.
     #
     def add_prescription(child)
-      raise ArgumentError, "Invalid argument 'child'. Expected RTP::Prescription, got #{child.class}." unless child.is_a?(RTP::Prescription)
-      @prescriptions << child
+      @prescriptions << child.to_prescription
     end
 
     # Returns the a properly sorted array of the child records of this instance.
     #
     def children
       return [@prescriptions, @dose_trackings].flatten.compact
+    end
+
+    # Generates a Fixnum hash value for this instance.
+    #
+    def hash
+      state.hash
     end
 
     # Returns the values of this instance in an array.
@@ -231,6 +242,12 @@ module RTP
         @rtp_if_protocol,
         @rtp_if_version
       ]
+    end
+
+    # Returns self.
+    #
+    def to_plan
+      self
     end
 
     # Writes the Plan object + any hiearchy of child objects,
@@ -504,6 +521,10 @@ module RTP
       s = SiteSetup.load(string, @current_parent)
       @current_parent = s
     end
+
+    # Returns the attributes of this instance in an array (for comparison purposes).
+    #
+    alias_method :state, :values
 
     # Creates a treatment field record from the given string.
     #
