@@ -1,8 +1,10 @@
 = 1.1
 
-=== (Unreleased)
+=== 18th April, 2012
 
-* Added the #to_s method to records which is intended to replace the #to_str methods.
+* Added to_* methods for all records to complete the implementation of dynamic typing
+* Added comparison related methods to the record classes: #==, #eql? and #hash
+* Added the #to_s method to records which may replace the #to_str methods.
 * Added dynamic string conversion of parameters, e.g. numeric parameters can be passed to records.
 * Fixed an issue where reading string values containing a comma would lead to a crash.
 * Fixed an issue where reading a string with a single digit checksum would fail.
