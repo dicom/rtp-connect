@@ -23,6 +23,8 @@ suppress_warnings do
   RTP::RTP_PROSTATE = 'samples/oncentra_prostate_dose_imrt.rtp'
   RTP::RTP_IMRT = 'samples/oncentra_prostate_nodose_boost.rtp'
   RTP::RTP_TANGMAM = 'samples/oncentra_tangmam_nodose.rtp'
+  # File exported from Mosaiq 2.2:
+  RTP::RTP_ELECTRON = 'samples/mosaiq_electron_dt.rtp'
   # Other:
   RTP::RTP_COMMA = 'samples/values_with_comma.rtp'
   # Directory for writing temporary files:

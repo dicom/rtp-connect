@@ -1,3 +1,10 @@
+= 1.2
+
+=== NOT RELEASED YET
+
+* Added support for the Dose Tracking record.
+
+
 = 1.1
 
 === 18th April, 2012
@@ -8,6 +15,7 @@
 * Added dynamic string conversion of parameters, e.g. numeric parameters can be passed to records.
 * Fixed an issue where reading string values containing a comma would lead to a crash.
 * Fixed an issue where reading a string with a single digit checksum would fail.
+
 
 = 1.0
 

@@ -89,6 +89,7 @@ Example:
 * Treatment field [FIELD_DEF]
 * Extended treatment field [EXTENDED_FIELD_DEF]
 * Control point record [CONTROL_PT_DEF]
+* Dose tracking record [DOSE_DEF]
 
 === Unsupported records
 
@@ -96,7 +97,6 @@ Example:
 * Document based treatment field [PDF_FIELD_DEF]
 * Multileaf collimator [MLC_DEF]
 * MLC shape [MLC_SHAPE_DEF]
-* Dose tracking record [DOSE_DEF]
 * Dose action points [DOSE_ACTION]
 
 If you encounter an RTP file with an unsupported record type, please contact me.

@@ -191,6 +191,12 @@ module RTP
 
     alias_method :eql?, :==
 
+    # Adds a dose tracking record to this instance.
+    #
+    def add_dose_tracking(child)
+      @dose_trackings << child.to_dose_tracking
+    end
+
     # Adds a prescription site record to this instance.
     #
     def add_prescription(child)
@@ -453,6 +459,17 @@ module RTP
     def control_point(string)
       cp = ControlPoint.load(string, @current_parent)
       @current_parent = cp
+    end
+
+    # Creates a dose tracking record from the given string.
+    #
+    # === Parameters
+    #
+    # * <tt>string</tt> -- An single line string from an RTPConnect ascii file.
+    #
+    def dose_tracking(string)
+      dt = DoseTracking.load(string, @current_parent)
+      @current_parent = dt
     end
 
     # Creates an extended treatment field record from the given string.

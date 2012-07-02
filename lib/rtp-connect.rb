@@ -11,6 +11,7 @@ require_relative 'rtp-connect/site_setup'
 require_relative 'rtp-connect/field'
 require_relative 'rtp-connect/extended_field'
 require_relative 'rtp-connect/control_point'
+require_relative 'rtp-connect/dose_tracking'
 # Extensions to the Ruby library:
 require_relative 'rtp-connect/ruby_extensions'
 # Module settings:
