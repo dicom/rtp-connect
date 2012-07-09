@@ -27,15 +27,15 @@ module RTP
       # Get the quote-less values:
       values = string.to_s.values
       raise ArgumentError, "Invalid argument 'string': Expected exactly 6 elements, got #{values.length}." unless values.length == 6
-      f = self.new(parent)
+      ef = self.new(parent)
       # Assign the values to attributes:
-      f.keyword = values[0]
-      f.field_id = values[1]
-      f.original_plan_uid = values[2]
-      f.original_beam_number = values[3]
-      f.original_beam_name = values[4]
-      f.crc = values[5]
-      return f
+      ef.keyword = values[0]
+      ef.field_id = values[1]
+      ef.original_plan_uid = values[2]
+      ef.original_beam_number = values[3]
+      ef.original_beam_name = values[4]
+      ef.crc = values[5]
+      return ef
     end
 
     # Creates a new (treatment) ExtendedField.

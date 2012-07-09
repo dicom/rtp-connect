@@ -195,6 +195,32 @@ module RTP
     end
 
 
+    describe "#to_dcm" do
+
+      it "should return a DICOM::DObject" do
+        p = Plan.read(RTP_COLUMNA)
+        p.to_dcm.class.should eql DICOM::DObject
+      end
+
+      it "should create a valid RTPLAN DICOM file" do
+        p = Plan.read(RTP_COLUMNA)
+        p.to_dcm.write(TMPDIR + "rtplan.dcm")
+        dcm = DICOM::DObject.read(TMPDIR + "rtplan.dcm")
+        dcm.class.should eql DICOM::DObject
+        dcm.read?.should be_true
+      end
+
+      it "should return an (incomplete) RTPLAN DObject when given a Plan object with no child records" do
+        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"'
+        p = Plan.load(str)
+        dcm = p.to_dcm
+        dcm.class.should eql DICOM::DObject
+        dcm.write('test.dcm')
+      end
+
+    end
+
+
     describe "#to_plan" do
 
       it "should return itself" do
