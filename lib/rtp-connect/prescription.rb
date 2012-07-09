@@ -194,13 +194,13 @@ module RTP
     # Sets the dose_ttl attribute.
     #
     def dose_ttl=(value)
-      @dose_ttl = value && value.to_s
+      @dose_ttl = value && value.to_s.strip
     end
 
     # Sets the dose_tx attribute.
     #
     def dose_tx=(value)
-      @dose_tx = value && value.to_s
+      @dose_tx = value && value.to_s.strip
     end
 
     # Sets the pattern attribute.
@@ -218,7 +218,7 @@ module RTP
     # Sets the number_of_fields attribute.
     #
     def number_of_fields=(value)
-      @number_of_fields = value && value.to_s
+      @number_of_fields = value && value.to_s.strip
     end
 
 

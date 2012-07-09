@@ -290,19 +290,19 @@ module RTP
     # Sets the field_dose attribute.
     #
     def field_dose=(value)
-      @field_dose = value && value.to_s
+      @field_dose = value && value.to_s.strip
     end
 
     # Sets the field_monitor_units attribute.
     #
     def field_monitor_units=(value)
-      @field_monitor_units = value && value.to_s
+      @field_monitor_units = value && value.to_s.strip
     end
 
     # Sets the wedge_monitor_units attribute.
     #
     def wedge_monitor_units=(value)
-      @wedge_monitor_units = value && value.to_s
+      @wedge_monitor_units = value && value.to_s.strip
     end
 
     # Sets the treatment_machine attribute.
@@ -332,37 +332,37 @@ module RTP
     # Sets the time attribute.
     #
     def time=(value)
-      @time = value && value.to_s
+      @time = value && value.to_s.strip
     end
 
     # Sets the doserate attribute.
     #
     def doserate=(value)
-      @doserate = value && value.to_s
+      @doserate = value && value.to_s.strip
     end
 
     # Sets the sad attribute.
     #
     def sad=(value)
-      @sad = value && value.to_s
+      @sad = value && value.to_s.strip
     end
 
     # Sets the ssd attribute.
     #
     def ssd=(value)
-      @ssd = value && value.to_s
+      @ssd = value && value.to_s.strip
     end
 
     # Sets the gantry_angle attribute.
     #
     def gantry_angle=(value)
-      @gantry_angle = value && value.to_s
+      @gantry_angle = value && value.to_s.strip
     end
 
     # Sets the collimator_angle attribute.
     #
     def collimator_angle=(value)
-      @collimator_angle = value && value.to_s
+      @collimator_angle = value && value.to_s.strip
     end
 
     # Sets the field_x_mode attribute.
@@ -374,19 +374,19 @@ module RTP
     # Sets the field_x attribute.
     #
     def field_x=(value)
-      @field_x = value && value.to_s
+      @field_x = value && value.to_s.strip
     end
 
     # Sets the collimator_x1 attribute.
     #
     def collimator_x1=(value)
-      @collimator_x1 = value && value.to_s
+      @collimator_x1 = value && value.to_s.strip
     end
 
     # Sets the collimator_x2 attribute.
     #
     def collimator_x2=(value)
-      @collimator_x2 = value && value.to_s
+      @collimator_x2 = value && value.to_s.strip
     end
 
     # Sets the field_y_mode attribute.
@@ -398,55 +398,55 @@ module RTP
     # Sets the field_y attribute.
     #
     def field_y=(value)
-      @field_y = value && value.to_s
+      @field_y = value && value.to_s.strip
     end
 
     # Sets the collimator_y1 attribute.
     #
     def collimator_y1=(value)
-      @collimator_y1 = value && value.to_s
+      @collimator_y1 = value && value.to_s.strip
     end
 
     # Sets the collimator_y2 attribute.
     #
     def collimator_y2=(value)
-      @collimator_y2 = value && value.to_s
+      @collimator_y2 = value && value.to_s.strip
     end
 
     # Sets the couch_vertical attribute.
     #
     def couch_vertical=(value)
-      @couch_vertical = value && value.to_s
+      @couch_vertical = value && value.to_s.strip
     end
 
     # Sets the couch_lateral attribute.
     #
     def couch_lateral=(value)
-      @couch_lateral = value && value.to_s
+      @couch_lateral = value && value.to_s.strip
     end
 
     # Sets the couch_longitudinal attribute.
     #
     def couch_longitudinal=(value)
-      @couch_longitudinal = value && value.to_s
+      @couch_longitudinal = value && value.to_s.strip
     end
 
     # Sets the couch_angle attribute.
     #
     def couch_angle=(value)
-      @couch_angle = value && value.to_s
+      @couch_angle = value && value.to_s.strip.strip
     end
 
     # Sets the couch_pedestal attribute.
     #
     def couch_pedestal=(value)
-      @couch_pedestal = value && value.to_s
+      @couch_pedestal = value && value.to_s.strip
     end
 
     # Sets the tolerance_table attribute.
     #
     def tolerance_table=(value)
-      @tolerance_table = value && value.to_s
+      @tolerance_table = value && value.to_s.strip
     end
 
     # Sets the arc_direction attribute.
@@ -458,19 +458,19 @@ module RTP
     # Sets the arc_start_angle attribute.
     #
     def arc_start_angle=(value)
-      @arc_start_angle = value && value.to_s
+      @arc_start_angle = value && value.to_s.strip
     end
 
     # Sets the arc_stop_angle attribute.
     #
     def arc_stop_angle=(value)
-      @arc_stop_angle = value && value.to_s
+      @arc_stop_angle = value && value.to_s.strip
     end
 
     # Sets the arc_mu_degree attribute.
     #
     def arc_mu_degree=(value)
-      @arc_mu_degree = value && value.to_s
+      @arc_mu_degree = value && value.to_s.strip
     end
 
     # Sets the wedge attribute.

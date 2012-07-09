@@ -60,44 +60,44 @@ module RTP
       # Get the quote-less values:
       values = string.to_s.values
       raise ArgumentError, "Invalid argument 'string': Expected exactly 233 elements, got #{values.length}." unless values.length == 233
-      f = self.new(parent)
+      cp = self.new(parent)
       # Assign the values to attributes:
-      f.keyword = values[0]
-      f.field_id = values[1]
-      f.mlc_type = values[2]
-      f.mlc_leaves = values[3]
-      f.total_control_points = values[4]
-      f.control_pt_number = values[5]
-      f.mu_convention = values[6]
-      f.monitor_units = values[7]
-      f.wedge_position = values[8]
-      f.energy = values[9]
-      f.doserate = values[10]
-      f.ssd = values[11]
-      f.scale_convention = values[12]
-      f.gantry_angle = values[13]
-      f.gantry_dir = values[14]
-      f.collimator_angle = values[15]
-      f.collimator_dir = values[16]
-      f.field_x_mode = values[17]
-      f.field_x = values[18]
-      f.collimator_x1 = values[19]
-      f.collimator_x2 = values[20]
-      f.field_y_mode = values[21]
-      f.field_y = values[22]
-      f.collimator_y1 = values[23]
-      f.collimator_y2 = values[24]
-      f.couch_vertical = values[25]
-      f.couch_lateral = values[26]
-      f.couch_longitudinal = values[27]
-      f.couch_angle = values[28]
-      f.couch_dir = values[29]
-      f.couch_pedestal = values[30]
-      f.couch_ped_dir = values[31]
-      f.mlc_lp_a = [*values[32..131]]
-      f.mlc_lp_b = [*values[132..231]]
-      f.crc = values[232]
-      return f
+      cp.keyword = values[0]
+      cp.field_id = values[1]
+      cp.mlc_type = values[2]
+      cp.mlc_leaves = values[3]
+      cp.total_control_points = values[4]
+      cp.control_pt_number = values[5]
+      cp.mu_convention = values[6]
+      cp.monitor_units = values[7]
+      cp.wedge_position = values[8]
+      cp.energy = values[9]
+      cp.doserate = values[10]
+      cp.ssd = values[11]
+      cp.scale_convention = values[12]
+      cp.gantry_angle = values[13]
+      cp.gantry_dir = values[14]
+      cp.collimator_angle = values[15]
+      cp.collimator_dir = values[16]
+      cp.field_x_mode = values[17]
+      cp.field_x = values[18]
+      cp.collimator_x1 = values[19]
+      cp.collimator_x2 = values[20]
+      cp.field_y_mode = values[21]
+      cp.field_y = values[22]
+      cp.collimator_y1 = values[23]
+      cp.collimator_y2 = values[24]
+      cp.couch_vertical = values[25]
+      cp.couch_lateral = values[26]
+      cp.couch_longitudinal = values[27]
+      cp.couch_angle = values[28]
+      cp.couch_dir = values[29]
+      cp.couch_pedestal = values[30]
+      cp.couch_ped_dir = values[31]
+      cp.mlc_lp_a = [*values[32..131]]
+      cp.mlc_lp_b = [*values[132..231]]
+      cp.crc = values[232]
+      return cp
     end
 
     # Creates a new ControlPoint.
@@ -140,6 +140,13 @@ module RTP
     #
     def hash
       state.hash
+    end
+
+    # Returns the index of this ControlPoint.
+    # (i.e. its index among the control points belonging to the parent Field)
+    #
+    def index
+      @parent.control_points.index(self)
     end
 
     # Returns the values of this instance in an array.
@@ -205,7 +212,7 @@ module RTP
 
     alias :to_str :to_s
 
-    # Sets the mlc_a attribute.
+    # Sets the mlc_lp_a attribute.
     #
     # === Notes
     #
@@ -215,10 +222,10 @@ module RTP
     def mlc_lp_a=(array)
       array = array.to_a
       raise ArgumentError, "Invalid argument 'array'. Expected length 100, got #{array.length}." unless array.length == 100
-      @mlc_lp_a = array.collect! {|e| e && e.to_s}
+      @mlc_lp_a = array.collect! {|e| e && e.to_s.strip}
     end
 
-    # Sets the mlc_b attribute.
+    # Sets the mlc_lp_b attribute.
     #
     # === Notes
     #
@@ -228,7 +235,7 @@ module RTP
     def mlc_lp_b=(array)
       array = array.to_a
       raise ArgumentError, "Invalid argument 'array'. Expected length 100, got #{array.length}." unless array.length == 100
-      @mlc_lp_b = array.collect! {|e| e && e.to_s}
+      @mlc_lp_b = array.collect! {|e| e && e.to_s.strip}
     end
 
     # Sets the keyword attribute.
@@ -254,19 +261,19 @@ module RTP
     # Sets the mlc_leaves attribute.
     #
     def mlc_leaves=(value)
-      @mlc_leaves = value && value.to_s
+      @mlc_leaves = value && value.to_s.strip
     end
 
     # Sets the total_control_points attribute.
     #
     def total_control_points=(value)
-      @total_control_points = value && value.to_s
+      @total_control_points = value && value.to_s.strip
     end
 
     # Sets the control_pt_number attribute.
     #
     def control_pt_number=(value)
-      @control_pt_number = value && value.to_s
+      @control_pt_number = value && value.to_s.strip
     end
 
     # Sets the mu_convention attribute.
@@ -296,7 +303,7 @@ module RTP
     # Sets the doserate attribute.
     #
     def doserate=(value)
-      @doserate = value && value.to_s
+      @doserate = value && value.to_s.strip
     end
 
     # Sets the ssd attribute.
@@ -314,7 +321,7 @@ module RTP
     # Sets the gantry_angle attribute.
     #
     def gantry_angle=(value)
-      @gantry_angle = value && value.to_s
+      @gantry_angle = value && value.to_s.strip
     end
 
     # Sets the gantry_dir attribute.
@@ -326,7 +333,7 @@ module RTP
     # Sets the collimator_angle attribute.
     #
     def collimator_angle=(value)
-      @collimator_angle = value && value.to_s
+      @collimator_angle = value && value.to_s.strip
     end
 
     # Sets the collimator_dir attribute.
@@ -344,19 +351,19 @@ module RTP
     # Sets the field_x attribute.
     #
     def field_x=(value)
-      @field_x = value && value.to_s
+      @field_x = value && value.to_s.strip
     end
 
     # Sets the collimator_x1 attribute.
     #
     def collimator_x1=(value)
-      @collimator_x1 = value && value.to_s
+      @collimator_x1 = value && value.to_s.strip
     end
 
     # Sets the collimator_x2 attribute.
     #
     def collimator_x2=(value)
-      @collimator_x2 = value && value.to_s
+      @collimator_x2 = value && value.to_s.strip
     end
 
     # Sets the field_y_mode attribute.
@@ -368,43 +375,43 @@ module RTP
     # Sets the field_y attribute.
     #
     def field_y=(value)
-      @field_y = value && value.to_s
+      @field_y = value && value.to_s.strip
     end
 
     # Sets the collimator_y1 attribute.
     #
     def collimator_y1=(value)
-      @collimator_y1 = value && value.to_s
+      @collimator_y1 = value && value.to_s.strip
     end
 
     # Sets the collimator_y2 attribute.
     #
     def collimator_y2=(value)
-      @collimator_y2 = value && value.to_s
+      @collimator_y2 = value && value.to_s.strip
     end
 
     # Sets the couch_vertical attribute.
     #
     def couch_vertical=(value)
-      @couch_vertical = value && value.to_s
+      @couch_vertical = value && value.to_s.strip
     end
 
     # Sets the couch_lateral attribute.
     #
     def couch_lateral=(value)
-      @couch_lateral = value && value.to_s
+      @couch_lateral = value && value.to_s.strip
     end
 
     # Sets the couch_longitudinal attribute.
     #
     def couch_longitudinal=(value)
-      @couch_longitudinal = value && value.to_s
+      @couch_longitudinal = value && value.to_s.strip
     end
 
     # Sets the couch_angle attribute.
     #
     def couch_angle=(value)
-      @couch_angle = value && value.to_s
+      @couch_angle = value && value.to_s.strip
     end
 
     # Sets the couch_dir attribute.
@@ -416,7 +423,7 @@ module RTP
     # Sets the couch_pedestal attribute.
     #
     def couch_pedestal=(value)
-      @couch_pedestal = value && value.to_s
+      @couch_pedestal = value && value.to_s.strip
     end
 
     # Sets the couch_ped_dir attribute.

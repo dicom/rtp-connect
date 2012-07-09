@@ -166,25 +166,25 @@ module RTP
     # Sets the tolerance_table attribute.
     #
     def tolerance_table=(value)
-      @tolerance_table = value && value.to_s
+      @tolerance_table = value && value.to_s.strip
     end
 
     # Sets the iso_pos_x attribute.
     #
     def iso_pos_x=(value)
-      @iso_pos_x = value && value.to_s
+      @iso_pos_x = value && value.to_s.strip
     end
 
     # Sets the iso_pos_y attribute.
     #
     def iso_pos_y=(value)
-      @iso_pos_y = value && value.to_s
+      @iso_pos_y = value && value.to_s.strip
     end
 
     # Sets the iso_pos_z attribute.
     #
     def iso_pos_z=(value)
-      @iso_pos_z = value && value.to_s
+      @iso_pos_z = value && value.to_s.strip
     end
 
     # Sets the structure_set_uid attribute.
@@ -202,31 +202,31 @@ module RTP
     # Sets the couch_vertical attribute.
     #
     def couch_vertical=(value)
-      @couch_vertical = value && value.to_s
+      @couch_vertical = value && value.to_s.strip
     end
 
     # Sets the couch_lateral attribute.
     #
     def couch_lateral=(value)
-      @couch_lateral = value && value.to_s
+      @couch_lateral = value && value.to_s.strip
     end
 
     # Sets the couch_longitudinal attribute.
     #
     def couch_longitudinal=(value)
-      @couch_longitudinal = value && value.to_s
+      @couch_longitudinal = value && value.to_s.strip
     end
 
     # Sets the couch_angle attribute.
     #
     def couch_angle=(value)
-      @couch_angle = value && value.to_s
+      @couch_angle = value && value.to_s.strip
     end
 
     # Sets the couch_pedestal attribute.
     #
     def couch_pedestal=(value)
-      @couch_pedestal = value && value.to_s
+      @couch_pedestal = value && value.to_s.strip
     end
 
 
