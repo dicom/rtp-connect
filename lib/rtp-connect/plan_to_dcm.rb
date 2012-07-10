@@ -14,7 +14,7 @@ module RTP
       DICOM.logger.level = Logger::FATAL
       p = @prescriptions.first
       # If no prescription is present, we are not going to be able to make a valid DICOM object:
-      logger.warn("No Prescription Record present. Unable to build a valid RTPLAN DICOM object.") unless p
+      logger.error("No Prescription Record present. Unable to build a valid RTPLAN DICOM object.") unless p
       dcm = DICOM::DObject.new
       #
       # TOP LEVEL TAGS:
@@ -44,6 +44,12 @@ module RTP
       DICOM::Element.new('0008,0060', 'RTPLAN', :parent => dcm)
       # Manufacturer:
       DICOM::Element.new('0008,0070', 'rtp-connect', :parent => dcm)
+      # Referring Physician's Name:
+      DICOM::Element.new('0008,0070', 'rtp-connect', :parent => dcm)
+      # Referring Physician's Name:
+      DICOM::Element.new('0008,0090', "#{@md_last_name}^#{@md_first_name}^#{@md_middle_name}^^", :parent => dcm)
+      # Operator's Name:
+      DICOM::Element.new('0008,1070', "#{@phy_approve_last_name}^#{@phy_approve_first_name}^#{@phy_approve_middle_name}^^", :parent => dcm)
       # Patient's Name:
       DICOM::Element.new('0010,0010', "#{@patient_last_name}^#{@patient_first_name}^#{@patient_middle_name}^^", :parent => dcm)
       # Patient ID:
@@ -61,7 +67,7 @@ module RTP
       # Series Instance UID:
       DICOM::Element.new('0020,000E', DICOM.generate_uid, :parent => dcm)
       # Study ID:
-      DICOM::Element.new('0020,0010', '', :parent => dcm)
+      DICOM::Element.new('0020,0010', '1', :parent => dcm)
       # Series Number:
       DICOM::Element.new('0020,0011', '1', :parent => dcm)
       # Frame of Reference UID (if an original UID is not present, we make up a UID):
@@ -73,16 +79,21 @@ module RTP
       DICOM::Element.new('0020,0052', for_uid, :parent => dcm)
       # Position Reference Indicator:
       DICOM::Element.new('0020,1040', '', :parent => dcm)
-      # RT Plan Label:
-      DICOM::Element.new('300A,0002', @plan_id, :parent => dcm)
+      # RT Plan Label (max 16 characters):
+      plan_label = p ? p.rx_site_name[0..15] : @course_id
+      DICOM::Element.new('300A,0002', plan_label, :parent => dcm)
       # RT Plan Name:
-      DICOM::Element.new('300A,0003', @plan_id, :parent => dcm)
+      plan_name = p ? p.rx_site_name : @course_id
+      DICOM::Element.new('300A,0003', plan_name, :parent => dcm)
       # RT Plan Description:
-      DICOM::Element.new('300A,0004', '', :parent => dcm)
+      plan_desc = p ? p.technique : @diagnosis
+      DICOM::Element.new('300A,0004', plan_desc, :parent => dcm)
       # RT Plan Date:
-      DICOM::Element.new('300A,0006', @plan_date, :parent => dcm)
+      plan_date = @plan_date.empty? ? Time.now.strftime("%Y%m%d") : @plan_date
+      DICOM::Element.new('300A,0006', plan_date, :parent => dcm)
       # RT Plan Time:
-      DICOM::Element.new('300A,0007', @plan_time, :parent => dcm)
+      plan_time = @plan_time.empty? ? Time.now.strftime("%H%M%S") : @plan_time
+      DICOM::Element.new('300A,0007', plan_time, :parent => dcm)
       # RT Plan Geometry:
       DICOM::Element.new('300A,000C', 'PATIENT', :parent => dcm)
       # Approval Status:
@@ -137,6 +148,8 @@ module RTP
       # Number of Beams:
       num_beams = p ? p.fields.length : 0
       DICOM::Element.new('300A,0080', "#{num_beams}", :parent => fg_item)
+      # Number of Brachy Application Setups:
+      DICOM::Element.new('300A,00A0', "0", :parent => fg_item)
       # Referenced Beam Sequence (items created for each beam below):
       rb_seq = DICOM::Sequence.new('300C,0004', :parent => fg_item)
       #
@@ -145,7 +158,7 @@ module RTP
       b_seq = DICOM::Sequence.new('300A,00B0', :parent => dcm)
       if p
         # If no fields are present, we are not going to be able to make a valid DICOM object:
-        logger.warn("No Field Record present. Unable to build a valid RTPLAN DICOM object.") unless p.fields.length > 0
+        logger.error("No Field Record present. Unable to build a valid RTPLAN DICOM object.") unless p.fields.length > 0
         p.fields.each_with_index do |field, i|
           # If this is an electron beam, a warning should be printed, as these are less reliably converted:
           logger.warn("This is not a photon beam (#{field.modality}). Beware that DICOM conversion of Electron beams are experimental, and other modalities are unsupported.") if field.modality != 'Xrays'
@@ -160,8 +173,8 @@ module RTP
           DICOM::Element.new('300C,0006', beam_number, :parent => rb_item)
           # Beam Item:
           b_item = DICOM::Item.new(:parent => b_seq)
-          # Treatment Machine Name:
-          DICOM::Element.new('300A,00B2', field.treatment_machine, :parent => b_item)
+          # Treatment Machine Name (max 16 characters):
+          DICOM::Element.new('300A,00B2', field.treatment_machine[0..15], :parent => b_item)
           # Primary Dosimeter Unit:
           DICOM::Element.new('300A,00B3', 'MU', :parent => b_item)
           # Source-Axis Distance (convert to mm):
@@ -173,11 +186,17 @@ module RTP
           # Beam Description:
           DICOM::Element.new('300A,00C3', field.field_note, :parent => b_item)
           # Beam Type:
-          DICOM::Element.new('300A,00C4', field.treatment_type.upcase, :parent => b_item)
+          beam_type = case field.treatment_type
+            when 'Static' then 'STATIC'
+            when 'StepNShoot' then 'STATIC'
+            else logger.error("The beam type (treatment type) #{field.treatment_type} is not yet supported.")
+          end
+          DICOM::Element.new('300A,00C4', beam_type, :parent => b_item)
           # Radiation Type:
           rad_type = case field.modality
             when 'Elect' then 'ELECTRON'
             when 'Xrays' then 'PHOTON'
+            else logger.error("The radiation type (modality) #{field.modality} is not yet supported.")
           end
           DICOM::Element.new('300A,00C6', rad_type, :parent => b_item)
           # Treatment Delivery Type:
