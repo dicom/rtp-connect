@@ -215,7 +215,6 @@ module RTP
         p = Plan.load(str)
         dcm = p.to_dcm
         dcm.class.should eql DICOM::DObject
-        dcm.write('test.dcm')
       end
 
     end
