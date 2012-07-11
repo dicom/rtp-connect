@@ -165,6 +165,9 @@ module RTP
           beam_name = field.extended_field ? field.extended_field.original_beam_name : field.field_name
           # Ref Beam Item:
           rb_item = DICOM::Item.new(:parent => rb_seq)
+          # Beam Dose (convert from cGy to Gy):
+          field_dose = field.field_dose.empty? ? '' : (field.field_dose.to_f * 0.01).round(4).to_s
+          DICOM::Element.new('300A,0084', field_dose, :parent => rb_item)
           # Beam Meterset:
           DICOM::Element.new('300A,0086', field.field_monitor_units, :parent => rb_item)
           # Referenced Beam Number:
@@ -346,7 +349,7 @@ module RTP
               # Nominal Beam Energy:
               DICOM::Element.new('300A,0114', "#{cp1.energy.to_f}", :parent => cp_item1)
               # Dose Rate Set:
-              DICOM::Element.new('300A,0115', cp1.doserate, :parent => cp_item)
+              DICOM::Element.new('300A,0115', cp1.doserate, :parent => cp_item1)
               # Gantry Angle:
               DICOM::Element.new('300A,011E', cp1.gantry_angle, :parent => cp_item1)
               # Gantry Rotation Direction:
@@ -408,7 +411,7 @@ module RTP
               # Nominal Beam Energy:
               DICOM::Element.new('300A,0114', "#{cp2.energy.to_f}", :parent => cp_item2) if cp2.energy != cp1.energy
               # Dose Rate Set:
-              DICOM::Element.new('300A,0115', cp1.doserate, :parent => cp_item) if cp2.doserate != cp1.doserate
+              DICOM::Element.new('300A,0115', cp1.doserate, :parent => cp_item2) if cp2.doserate != cp1.doserate
               # Gantry Angle:
               DICOM::Element.new('300A,011E', cp2.gantry_angle, :parent => cp_item2) if cp2.gantry_angle != cp1.gantry_angle
               # Gantry Rotation Direction:
