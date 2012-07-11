@@ -45,11 +45,9 @@ module RTP
       # Manufacturer:
       DICOM::Element.new('0008,0070', 'rtp-connect', :parent => dcm)
       # Referring Physician's Name:
-      DICOM::Element.new('0008,0070', 'rtp-connect', :parent => dcm)
-      # Referring Physician's Name:
       DICOM::Element.new('0008,0090', "#{@md_last_name}^#{@md_first_name}^#{@md_middle_name}^^", :parent => dcm)
       # Operator's Name:
-      DICOM::Element.new('0008,1070', "#{@phy_approve_last_name}^#{@phy_approve_first_name}^#{@phy_approve_middle_name}^^", :parent => dcm)
+      DICOM::Element.new('0008,1070', "#{@author_last_name}^#{@author_first_name}^#{@author_middle_name}^^", :parent => dcm)
       # Patient's Name:
       DICOM::Element.new('0010,0010', "#{@patient_last_name}^#{@patient_first_name}^#{@patient_middle_name}^^", :parent => dcm)
       # Patient ID:
@@ -59,9 +57,9 @@ module RTP
       # Patient's Sex:
       DICOM::Element.new('0010,0040', '', :parent => dcm)
       # Manufacturer's Model Name:
-      DICOM::Element.new('0008,1090', 'RTP auto-conversion', :parent => dcm)
+      DICOM::Element.new('0008,1090', 'RTP-to-DICOM', :parent => dcm)
       # Software Version(s):
-      DICOM::Element.new('0018,1020', "rtp-connect #{VERSION}", :parent => dcm)
+      DICOM::Element.new('0018,1020', "RubyRTP#{VERSION}", :parent => dcm)
       # Study Instance UID:
       DICOM::Element.new('0020,000D', DICOM.generate_uid, :parent => dcm)
       # Series Instance UID:
@@ -276,6 +274,8 @@ module RTP
             DICOM::Element.new('300A,0112', "0", :parent => cp_item)
             # Nominal Beam Energy:
             DICOM::Element.new('300A,0114', "#{field.energy.to_f}", :parent => cp_item)
+            # Dose Rate Set:
+            DICOM::Element.new('300A,0115', field.doserate, :parent => cp_item)
             # Gantry Angle:
             DICOM::Element.new('300A,011E', field.gantry_angle, :parent => cp_item)
             # Gantry Rotation Direction:
@@ -293,11 +293,14 @@ module RTP
             # Table Top Eccentric Rotation Direction:
             DICOM::Element.new('300A,0126', 'NONE', :parent => cp_item)
             # Table Top Vertical Position:
-            DICOM::Element.new('300A,0128', "#{field.couch_vertical.to_f * 10}", :parent => cp_item)
+            couch_vert = field.couch_vertical.empty? ? '' : (field.couch_vertical.to_f * 10).to_s
+            DICOM::Element.new('300A,0128', couch_vert, :parent => cp_item)
             # Table Top Longitudinal Position:
-            DICOM::Element.new('300A,0129', "#{field.couch_longitudinal.to_f * 10}", :parent => cp_item)
+            couch_long = field.couch_longitudinal.empty? ? '' : (field.couch_longitudinal.to_f * 10).to_s
+            DICOM::Element.new('300A,0129', couch_long, :parent => cp_item)
             # Table Top Lateral Position:
-            DICOM::Element.new('300A,012A', "#{field.couch_lateral.to_f * 10}", :parent => cp_item)
+            couch_lat = field.couch_lateral.empty? ? '' : (field.couch_lateral.to_f * 10).to_s
+            DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item)
             # Isocenter Position (x\y\z):
             DICOM::Element.new('300A,012C', "#{(p.site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item)
             # Source to Surface Distance:
@@ -342,6 +345,8 @@ module RTP
               DICOM::Element.new('300A,0112', "#{cp1.index}", :parent => cp_item1)
               # Nominal Beam Energy:
               DICOM::Element.new('300A,0114', "#{cp1.energy.to_f}", :parent => cp_item1)
+              # Dose Rate Set:
+              DICOM::Element.new('300A,0115', cp1.doserate, :parent => cp_item)
               # Gantry Angle:
               DICOM::Element.new('300A,011E', cp1.gantry_angle, :parent => cp_item1)
               # Gantry Rotation Direction:
@@ -359,11 +364,14 @@ module RTP
               # Table Top Eccentric Rotation Direction:
               DICOM::Element.new('300A,0126', (cp1.couch_dir.empty? ? 'NONE' : cp1.couch_dir), :parent => cp_item1)
               # Table Top Vertical Position:
-              DICOM::Element.new('300A,0128', "#{cp1.couch_vertical.to_f * 10}", :parent => cp_item1)
+              couch_vert = cp1.couch_vertical.empty? ? '' : (cp1.couch_vertical.to_f * 10).to_s
+              DICOM::Element.new('300A,0128', couch_vert, :parent => cp_item1)
               # Table Top Longitudinal Position:
-              DICOM::Element.new('300A,0129', "#{cp1.couch_longitudinal.to_f * 10}", :parent => cp_item1)
+              couch_long = cp1.couch_longitudinal.empty? ? '' : (cp1.couch_longitudinal.to_f * 10).to_s
+              DICOM::Element.new('300A,0129', couch_long, :parent => cp_item1)
               # Table Top Lateral Position:
-              DICOM::Element.new('300A,012A', "#{cp1.couch_lateral.to_f * 10}", :parent => cp_item1)
+              couch_lat = cp1.couch_lateral.empty? ? '' : (cp1.couch_lateral.to_f * 10).to_s
+              DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item1)
               # Isocenter Position (x\y\z):
               DICOM::Element.new('300A,012C', "#{(p.site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item1)
               # Source to Surface Distance:
@@ -399,6 +407,8 @@ module RTP
               # The other parameters are only included if they have changed from the previous control point:
               # Nominal Beam Energy:
               DICOM::Element.new('300A,0114', "#{cp2.energy.to_f}", :parent => cp_item2) if cp2.energy != cp1.energy
+              # Dose Rate Set:
+              DICOM::Element.new('300A,0115', cp1.doserate, :parent => cp_item) if cp2.doserate != cp1.doserate
               # Gantry Angle:
               DICOM::Element.new('300A,011E', cp2.gantry_angle, :parent => cp_item2) if cp2.gantry_angle != cp1.gantry_angle
               # Gantry Rotation Direction:
@@ -416,11 +426,14 @@ module RTP
               # Table Top Eccentric Rotation Direction:
               DICOM::Element.new('300A,0126', (cp2.couch_dir.empty? ? 'NONE' : cp2.couch_dir), :parent => cp_item2) if cp2.couch_dir != cp1.couch_dir
               # Table Top Vertical Position:
-              DICOM::Element.new('300A,0128', "#{cp2.couch_vertical.to_f * 10}", :parent => cp_item2) if cp2.couch_vertical != cp1.couch_vertical
+              couch_vert = cp2.couch_vertical.empty? ? '' : (cp2.couch_vertical.to_f * 10).to_s
+              DICOM::Element.new('300A,0128', couch_vert, :parent => cp_item2) if cp2.couch_vertical != cp1.couch_vertical
               # Table Top Longitudinal Position:
-              DICOM::Element.new('300A,0129', "#{cp2.couch_longitudinal.to_f * 10}", :parent => cp_item2) if cp2.couch_longitudinal != cp1.couch_longitudinal
+              couch_long = cp2.couch_longitudinal.empty? ? '' : (cp2.couch_longitudinal.to_f * 10).to_s
+              DICOM::Element.new('300A,0129', couch_long, :parent => cp_item2) if cp2.couch_longitudinal != cp1.couch_longitudinal
               # Table Top Lateral Position:
-              DICOM::Element.new('300A,012A', "#{cp2.couch_lateral.to_f * 10}", :parent => cp_item2) if cp2.couch_lateral != cp1.couch_lateral
+              couch_lat = cp2.couch_lateral.empty? ? '' : (cp2.couch_lateral.to_f * 10).to_s
+              DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item2) if cp2.couch_lateral != cp1.couch_lateral
               # Source to Surface Distance:
               DICOM::Element.new('300A,0130', "#{cp2.ssd.to_f * 10}", :parent => cp_item2) if cp2.ssd != cp1.ssd
               # Beam Limiting Device Position Sequence:
