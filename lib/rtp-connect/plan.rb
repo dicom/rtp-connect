@@ -256,6 +256,12 @@ module RTP
       self
     end
 
+    # Returns self.
+    #
+    def to_rtp
+      self
+    end
+
     # Writes the Plan object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
     #

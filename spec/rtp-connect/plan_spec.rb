@@ -229,6 +229,15 @@ module RTP
     end
 
 
+    describe "#to_rtp" do
+
+      it "should return itself" do
+        @rtp.to_rtp.equal?(@rtp).should be_true
+      end
+
+    end
+
+
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
