@@ -130,6 +130,19 @@ module RTP
       # Setup Technique (assume Isocentric):
       DICOM::Element.new('300A,01B0', 'ISOCENTRIC', :parent => ps_item)
       #
+      # Dose Reference Sequence:
+      #
+      dr_seq = DICOM::Sequence.new('300A,0010', :parent => dcm)
+      dr_item = DICOM::Item.new(:parent => dr_seq)
+      # Dose Reference Number:
+      DICOM::Element.new('300A,0012', '1', :parent => dr_item)
+      # Dose Reference Structure Type:
+      DICOM::Element.new('300A,0014', 'SITE', :parent => dr_item)
+      # Dose Reference Description:
+      DICOM::Element.new('300A,0016', plan_name, :parent => dr_item)
+      # Dose Reference Type:
+      DICOM::Element.new('300A,0020', 'TARGET', :parent => dr_item)
+      #
       # Fraction Group Sequence:
       #
       fg_seq = DICOM::Sequence.new('300A,0070', :parent => dcm)
@@ -332,6 +345,13 @@ module RTP
               leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
               DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
             end
+            # Referenced Dose Reference Sequence:
+            rd_seq = DICOM::Sequence.new('300C,0050', :parent => cp_item)
+            rd_item = DICOM::Item.new(:parent => rd_seq)
+            # Cumulative Dose Reference Coeffecient:
+            DICOM::Element.new('300A,010C', '', :parent => rd_item)
+            # Referenced Dose Reference Number:
+            DICOM::Element.new('300C,0051', '1', :parent => rd_item)
             # Second CP:
             cp_item = DICOM::Item.new(:parent => cp_seq)
             # Control Point Index:
@@ -402,6 +422,13 @@ module RTP
               pos_b = cp1.mlc_lp_b.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
               leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
               DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
+              # Referenced Dose Reference Sequence:
+              rd_seq = DICOM::Sequence.new('300C,0050', :parent => cp_item1)
+              rd_item = DICOM::Item.new(:parent => rd_seq)
+              # Cumulative Dose Reference Coeffecient:
+              DICOM::Element.new('300A,010C', '', :parent => rd_item)
+              # Referenced Dose Reference Number:
+              DICOM::Element.new('300C,0051', '1', :parent => rd_item)
               # Second control point:
               # Always include index and cumulative weight:
               DICOM::Element.new('300A,0112', "#{cp2.index}", :parent => cp_item2)
