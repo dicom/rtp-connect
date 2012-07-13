@@ -5,6 +5,12 @@ module RTP
     # Converts the Plan (and child) records to a
     # DICOM::DObject of modality RTPLAN.
     #
+    # @note Only static photon plans have been tested.
+    #   Electron beams or dynamic photon beams may give an invalid DICOM file.
+    #   Also note that, due to limitations in the RTP file format, some original
+    #   values can not be recreated, like e.g. Study UID or Series UID.
+    # @return [DICOM::DObject] the converted DICOM object
+    #
     def to_dcm
       #
       # FIXME: This method is rather big, with a few sections of somewhat similar, repeating code.
