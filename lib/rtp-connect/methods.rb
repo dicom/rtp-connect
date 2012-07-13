@@ -8,11 +8,10 @@ module RTP
 
     # Computes the CRC checksum of the given line and verifies that
     # this value corresponds with the checksum given at the end of the line.
-    # Raises an error if the two values does not match.
     #
-    # === Parameters
-    #
-    # * <tt>line</tt> -- An single line string from an RTPConnect ascii file.
+    # @param [String] line a single line string from an RTPConnect ascii file
+    # @return [Boolean] true
+    # @raise [ArgumentError] if an invalid line/record is given or the string contains an invalid checksum
     #
     def verify(line)
       last_comma_pos = line.rindex(',')

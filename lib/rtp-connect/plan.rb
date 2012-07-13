@@ -1,4 +1,4 @@
-#    Copyright 2011 Christoffer Lervag
+#    Copyright 2011-2012 Christoffer Lervag
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,18 +15,17 @@
 #
 module RTP
 
-  # The Plan class is the highest level of objects in the RTPConnect hierarchy,
+  # The Plan class is the highest level Record in the RTPConnect records hierarchy,
   # and the one the user will interact with to read, modify and write files.
   #
-  # === Relations
-  #
-  # * Parent: none
-  # * Children: Prescription, DoseTracking
+  # @note Relations:
+  #   * Parent: nil
+  #   * Children: Prescription, DoseTracking
   #
   class Plan < Record
     include Logging
 
-    # The Record which this instance belongs to (nil by definition)
+    # The Record which this instance belongs to (nil by definition).
     attr_reader :parent
     # An array of Prescription records (if any) that belongs to this Plan.
     attr_reader :prescriptions
@@ -61,14 +60,11 @@ module RTP
 
     # Creates a new Plan by loading a plan definition string (i.e. a single line).
     #
-    # === Notes
-    #
-    # * This method does not perform crc verification on the given string.
-    # * If such verification is desired, use methods ::parse or ::read instead.
-    #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- A string containing a plan definition record.
+    # @note This method does not perform crc verification on the given string.
+    #   If such verification is desired, use methods ::parse or ::read instead.
+    # @param [#to_s] string the plan definition record string line
+    # @return [Plan] the created Plan instance
+    # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string)
       # Get the quote-less values:
@@ -107,12 +103,11 @@ module RTP
       return rtp
     end
 
-    # Creates an RTP::Plan instance by parsing a RTPConnect string
-    # (i.e. multiple lines, containing multiple definitions).
+    # Creates a Plan instance by parsing an RTPConnect string.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- An RTPConnect ascii string.
+    # @param [#to_s] string an RTPConnect ascii string (with single or multiple lines/records)
+    # @return [Plan] the created Plan instance
+    # @raise [ArgumentError] if given an invalid string record
     #
     def self.parse(string)
       lines = string.to_s.split("\r\n")
@@ -133,11 +128,11 @@ module RTP
       return rtp
     end
 
-    # Creates an RTP::Plan instance by reading and parsing an RTPConnect file.
+    # Creates an Plan instance by reading and parsing an RTPConnect file.
     #
-    # === Parameters
-    #
-    # * <tt>file</tt> -- A string which specifies the path of the RTPConnect file to be loaded.
+    # @param [String] file a string which specifies the path of the RTPConnect file to be loaded
+    # @return [Plan] the created Plan instance
+    # @raise [ArgumentError] if given an invalid file or the file given contains an invalid record
     #
     def self.read(file)
       raise ArgumentError, "Invalid argument 'file'. Expected String, got #{file.class}." unless file.is_a?(String)
@@ -181,7 +176,13 @@ module RTP
       @keyword = 'PLAN_DEF'
     end
 
-    # Returns true if the argument is an instance with attributes equal to self.
+    # Checks for equality.
+    #
+    # Other and self are considered equivalent if they are
+    # of compatible types and their attributes are equivalent.
+    #
+    # @param other an object to be compared with self.
+    # @return [Boolean] true if self and other are considered equivalent
     #
     def ==(other)
       if other.respond_to?(:to_plan)
@@ -193,30 +194,42 @@ module RTP
 
     # Adds a dose tracking record to this instance.
     #
+    # @param [DoseTracking] child a DoseTracking instance which is to be associated with self
+    #
     def add_dose_tracking(child)
       @dose_trackings << child.to_dose_tracking
     end
 
     # Adds a prescription site record to this instance.
     #
+    # @param [Prescription] child a Prescription instance which is to be associated with self
+    #
     def add_prescription(child)
       @prescriptions << child.to_prescription
     end
 
-    # Returns the a properly sorted array of the child records of this instance.
+    # Collects the child records of this instance in a properly sorted array.
+    #
+    # @return [Array<Prescription, DoseTracking>] a sorted array of self's child records
     #
     def children
       return [@prescriptions, @dose_trackings].flatten.compact
     end
 
-    # Generates a Fixnum hash value for this instance.
+    # Computes a hash code for this object.
+    #
+    # @note Two objects with the same attributes will have the same hash code.
+    #
+    # @return [Fixnum] the object's hash code
     #
     def hash
       state.hash
     end
 
-    # Returns the values of this instance in an array.
-    # The values does not include the CRC.
+    # Collects the values (attributes) of this instance.
+    #
+    # @note The CRC is not considered part of the actual values and is excluded.
+    # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
       return [
@@ -252,18 +265,24 @@ module RTP
 
     # Returns self.
     #
+    # @return [Plan] self
+    #
     def to_plan
       self
     end
 
     # Returns self.
     #
+    # @return [Plan] self
+    #
     def to_rtp
       self
     end
 
-    # Writes the Plan object + any hiearchy of child objects,
+    # Encodes the Plan object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
+    #
+    # @return [String] an RTP string with a single or multiple lines/records
     #
     def to_s
       str = encode #.force_encoding('utf-8')
@@ -278,9 +297,7 @@ module RTP
     # Writes the Plan object, along with its hiearchy of child objects,
     # to a properly formatted RTPConnect ascii file.
     #
-    # === Parameters
-    #
-    # * <tt>file</tt> -- A path/file string.
+    # @param [String] file a path/file string
     #
     def write(file)
       f = open_file(file)
@@ -290,6 +307,10 @@ module RTP
 
     # Sets the keyword attribute.
     #
+    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method
+    # @param [#to_s] value the new attribute value
+    # @raise [ArgumentError] if given an unexpected keyword
+    #
     def keyword=(value)
       value = value.to_s.upcase
       raise ArgumentError, "Invalid keyword. Expected 'PLAN_DEF', got #{value}." unless value == "PLAN_DEF"
@@ -297,6 +318,8 @@ module RTP
     end
 
     # Sets the patient_id attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def patient_id=(value)
       @patient_id = value && value.to_s
@@ -310,11 +333,15 @@ module RTP
 
     # Sets the patient_first_name attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def patient_first_name=(value)
       @patient_first_name = value && value.to_s
     end
 
     # Sets the patient_middle_initial attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def patient_middle_initial=(value)
       @patient_middle_initial = value && value.to_s
@@ -322,11 +349,15 @@ module RTP
 
     # Sets the plan_id attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def plan_id=(value)
       @plan_id = value && value.to_s
     end
 
     # Sets the plan_date attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def plan_date=(value)
       @plan_date = value && value.to_s
@@ -334,11 +365,15 @@ module RTP
 
     # Sets the plan_time attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def plan_time=(value)
       @plan_time = value && value.to_s
     end
 
     # Sets the course_id attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def course_id=(value)
       @course_id = value && value.to_s
@@ -346,11 +381,15 @@ module RTP
 
     # Sets the diagnosis attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def diagnosis=(value)
       @diagnosis = value && value.to_s
     end
 
     # Sets the md_last_name attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def md_last_name=(value)
       @md_last_name = value && value.to_s
@@ -358,11 +397,15 @@ module RTP
 
     # Sets the md_first_name attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def md_first_name=(value)
       @md_first_name = value && value.to_s
     end
 
     # Sets the md_middle_initial attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def md_middle_initial=(value)
       @md_middle_initial = value && value.to_s
@@ -370,11 +413,15 @@ module RTP
 
     # Sets the md_approve_last_name attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def md_approve_last_name=(value)
       @md_approve_last_name = value && value.to_s
     end
 
     # Sets the md_approve_first_name attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def md_approve_first_name=(value)
       @md_approve_first_name = value && value.to_s
@@ -382,11 +429,15 @@ module RTP
 
     # Sets the md_approve_middle_initial attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def md_approve_middle_initial=(value)
       @md_approve_middle_initial = value && value.to_s
     end
 
     # Sets the phy_approve_last_name attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def phy_approve_last_name=(value)
       @phy_approve_last_name = value && value.to_s
@@ -394,11 +445,15 @@ module RTP
 
     # Sets the phy_approve_first_name attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def phy_approve_first_name=(value)
       @phy_approve_first_name = value && value.to_s
     end
 
     # Sets the phy_approve_middle_initial attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def phy_approve_middle_initial=(value)
       @phy_approve_middle_initial = value && value.to_s
@@ -406,11 +461,15 @@ module RTP
 
     # Sets the author_last_name attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def author_last_name=(value)
       @author_last_name = value && value.to_s
     end
 
     # Sets the author_first_name attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def author_first_name=(value)
       @author_first_name = value && value.to_s
@@ -418,11 +477,15 @@ module RTP
 
     # Sets the author_middle_initial attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def author_middle_initial=(value)
       @author_middle_initial = value && value.to_s
     end
 
     # Sets the rtp_mfg attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def rtp_mfg=(value)
       @rtp_mfg = value && value.to_s
@@ -430,11 +493,15 @@ module RTP
 
     # Sets the rtp_model attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def rtp_model=(value)
       @rtp_model = value && value.to_s
     end
 
     # Sets the rtp_version attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def rtp_version=(value)
       @rtp_version = value && value.to_s
@@ -442,11 +509,15 @@ module RTP
 
     # Sets the rtp_if_protocol attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def rtp_if_protocol=(value)
       @rtp_if_protocol = value && value.to_s
     end
 
     # Sets the rtp_if_version attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def rtp_if_version=(value)
       @rtp_if_version = value && value.to_s
@@ -458,9 +529,7 @@ module RTP
 
     # Creates a control point record from the given string.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- An single line string from an RTPConnect ascii file.
+    # @param [String] string a string line containing a control point definition
     #
     def control_point(string)
       cp = ControlPoint.load(string, @current_parent)
@@ -469,9 +538,7 @@ module RTP
 
     # Creates a dose tracking record from the given string.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- An single line string from an RTPConnect ascii file.
+    # @param [String] string a string line containing a dose tracking definition
     #
     def dose_tracking(string)
       dt = DoseTracking.load(string, @current_parent)
@@ -480,9 +547,7 @@ module RTP
 
     # Creates an extended treatment field record from the given string.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- An single line string from an RTPConnect ascii file.
+    # @param [String] string a string line containing an extended treatment field definition
     #
     def extended_treatment_field(string)
       ef = ExtendedField.load(string, @current_parent)
@@ -491,9 +556,8 @@ module RTP
 
     # Tests if the path/file is writable, creates any folders if necessary, and opens the file for writing.
     #
-    # === Parameters
-    #
-    # * <tt>file</tt> -- A path/file string.
+    # @param [String] file a path/file string
+    # @raise if the given file cannot be created
     #
     def open_file(file)
       # Check if file already exists:
@@ -525,9 +589,7 @@ module RTP
 
     # Creates a prescription site record from the given string.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- An single line string from an RTPConnect ascii file.
+    # @param [String] string a string line containing a prescription site definition
     #
     def prescription_site(string)
       p = Prescription.load(string, @current_parent)
@@ -536,24 +598,23 @@ module RTP
 
     # Creates a site setup record from the given string.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- An single line string from an RTPConnect ascii file.
+    # @param [String] string a string line containing a site setup definition
     #
     def site_setup(string)
       s = SiteSetup.load(string, @current_parent)
       @current_parent = s
     end
 
-    # Returns the attributes of this instance in an array (for comparison purposes).
+    # Collects the attributes of this instance.
+    #
+    # @note The CRC is not considered part of the attributes of interest and is excluded
+    # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
 
     # Creates a treatment field record from the given string.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- An single line string from an RTPConnect ascii file.
+    # @param [String] string a string line containing a treatment field definition
     #
     def treatment_field(string)
       f = Field.load(string, @current_parent)

@@ -2,10 +2,9 @@ module RTP
 
   # The ExtendedField class.
   #
-  # === Relations
-  #
-  # * Parent: Field
-  # * Children: none
+  # @note Relations:
+  #   * Parent: Field
+  #   * Children: none
   #
   class ExtendedField < Record
 
@@ -18,10 +17,10 @@ module RTP
 
     # Creates a new (treatment) ExtendedField by parsing a RTPConnect string line.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- A string containing an extended treatment field record.
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [#to_s] string the extended treatment field definition record string line
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
+    # @return [ExtendedField] the created ExtendedField instance
+    # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
       # Get the quote-less values:
@@ -40,9 +39,7 @@ module RTP
 
     # Creates a new (treatment) ExtendedField.
     #
-    # === Parameters
-    #
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
       # Parent relation (may get more than one type of record here):
@@ -51,7 +48,13 @@ module RTP
       @keyword = 'EXTENDED_FIELD_DEF'
     end
 
-    # Returns true if the argument is an instance with attributes equal to self.
+    # Checks for equality.
+    #
+    # Other and self are considered equivalent if they are
+    # of compatible types and their attributes are equivalent.
+    #
+    # @param other an object to be compared with self.
+    # @return [Boolean] true if self and other are considered equivalent
     #
     def ==(other)
       if other.respond_to?(:to_extended_field)
@@ -61,20 +64,28 @@ module RTP
 
     alias_method :eql?, :==
 
-    # Returns an empty array, as these instances are child-less by definition.
+    # Gives an empty array, as these instances are child-less by definition.
+    #
+    # @return [Array] an emtpy array
     #
     def children
       return Array.new
     end
 
-    # Generates a Fixnum hash value for this instance.
+    # Computes a hash code for this object.
+    #
+    # @note Two objects with the same attributes will have the same hash code.
+    #
+    # @return [Fixnum] the object's hash code
     #
     def hash
       state.hash
     end
 
-    # Returns the values of this instance in an array.
-    # The values does not include the CRC.
+    # Collects the values (attributes) of this instance.
+    #
+    # @note The CRC is not considered part of the actual values and is excluded.
+    # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
       return [
@@ -88,12 +99,16 @@ module RTP
 
     # Returns self.
     #
+    # @return [ExtendedField] self
+    #
     def to_extended_field
       self
     end
 
-    # Writes the ExtendedField object + any hiearchy of child objects,
+    # Encodes the ExtendedField object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
+    #
+    # @return [String] an RTP string with a single or multiple lines/records
     #
     def to_s
       str = encode
@@ -109,6 +124,10 @@ module RTP
 
     # Sets the keyword attribute.
     #
+    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method
+    # @param [#to_s] value the new attribute value
+    # @raise [ArgumentError] if given an unexpected keyword
+    #
     def keyword=(value)
       value = value.to_s.upcase
       raise ArgumentError, "Invalid keyword. Expected 'EXTENDED_FIELD_DEF', got #{value}." unless value == "EXTENDED_FIELD_DEF"
@@ -117,11 +136,15 @@ module RTP
 
     # Sets the field_id attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def field_id=(value)
       @field_id = value && value.to_s
     end
 
     # Sets the original_plan_uid attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def original_plan_uid=(value)
       @original_plan_uid = value && value.to_s
@@ -129,11 +152,15 @@ module RTP
 
     # Sets the original_beam_number attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def original_beam_number=(value)
       @original_beam_number = value && value.to_s
     end
 
     # Sets the original_beam_name attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def original_beam_name=(value)
       @original_beam_name = value && value.to_s
@@ -143,7 +170,10 @@ module RTP
     private
 
 
-    # Returns the attributes of this instance in an array (for comparison purposes).
+    # Collects the attributes of this instance.
+    #
+    # @note The CRC is not considered part of the attributes of interest and is excluded
+    # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
 

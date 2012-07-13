@@ -2,10 +2,9 @@ module RTP
 
   # The treatment Field class.
   #
-  # === Relations
-  #
-  # * Parent: Prescription
-  # * Children: ExtendedField, ControlPoint
+  # @note Relations:
+  #   * Parent: Prescription
+  #   * Children: ExtendedField, ControlPoint
   #
   class Field < Record
 
@@ -65,10 +64,10 @@ module RTP
 
     # Creates a new (treatment) Field by parsing a RTPConnect string line.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- A string containing a treatment field record.
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [#to_s] string the treatment field definition record string line
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
+    # @return [Field] the created Field instance
+    # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
       # Get the quote-less values:
@@ -130,9 +129,7 @@ module RTP
 
     # Creates a new (treatment) Field.
     #
-    # === Parameters
-    #
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
       # Child records:
@@ -144,7 +141,13 @@ module RTP
       @keyword = 'FIELD_DEF'
     end
 
-    # Returns true if the argument is an instance with attributes equal to self.
+    # Checks for equality.
+    #
+    # Other and self are considered equivalent if they are
+    # of compatible types and their attributes are equivalent.
+    #
+    # @param other an object to be compared with self.
+    # @return [Boolean] true if self and other are considered equivalent
     #
     def ==(other)
       if other.respond_to?(:to_field)
@@ -156,30 +159,42 @@ module RTP
 
     # Adds a control point record to this instance.
     #
+    # @param [ControlPoint] child a ControlPoint instance which is to be associated with self
+    #
     def add_control_point(child)
       @control_points << child.to_control_point
     end
 
-    # Connects an extended treatment field record to this instance.
+    # Adds an extended treatment field record to this instance.
+    #
+    # @param [ExtendedField] child an ExtendedField instance which is to be associated with self
     #
     def add_extended_field(child)
       @extended_field = child.to_extended_field
     end
 
-    # Returns nil, as these instances are child-less by definition.
+    # Collects the child records of this instance in a properly sorted array.
+    #
+    # @return [Array<ExtendedField, ControlPoint>] a sorted array of self's child records
     #
     def children
       return [@extended_field, @control_points].flatten.compact
     end
 
-    # Generates a Fixnum hash value for this instance.
+    # Computes a hash code for this object.
+    #
+    # @note Two objects with the same attributes will have the same hash code.
+    #
+    # @return [Fixnum] the object's hash code
     #
     def hash
       state.hash
     end
 
-    # Returns the values of this instance in an array.
-    # The values does not include the CRC.
+    # Collects the values (attributes) of this instance.
+    #
+    # @note The CRC is not considered part of the actual values and is excluded.
+    # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
       return [
@@ -236,12 +251,16 @@ module RTP
 
     # Returns self.
     #
+    # @return [Field] self
+    #
     def to_field
       self
     end
 
-    # Writes the Field object + any hiearchy of child objects,
+    # Encodes the Field object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
+    #
+    # @return [String] an RTP string with a single or multiple lines/records
     #
     def to_s
       str = encode
@@ -257,6 +276,10 @@ module RTP
 
     # Sets the keyword attribute.
     #
+    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method
+    # @param [#to_s] value the new attribute value
+    # @raise [ArgumentError] if given an unexpected keyword
+    #
     def keyword=(value)
       value = value.to_s.upcase
       raise ArgumentError, "Invalid keyword. Expected 'FIELD_DEF', got #{value}." unless value == "FIELD_DEF"
@@ -265,11 +288,15 @@ module RTP
 
     # Sets the rx_site_name attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def rx_site_name=(value)
       @rx_site_name = value && value.to_s
     end
 
     # Sets the field_name attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def field_name=(value)
       @field_name = value && value.to_s
@@ -277,11 +304,15 @@ module RTP
 
     # Sets the field_id attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def field_id=(value)
       @field_id = value && value.to_s
     end
 
     # Sets the field_note attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def field_note=(value)
       @field_note = value && value.to_s
@@ -289,11 +320,15 @@ module RTP
 
     # Sets the field_dose attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def field_dose=(value)
       @field_dose = value && value.to_s.strip
     end
 
     # Sets the field_monitor_units attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def field_monitor_units=(value)
       @field_monitor_units = value && value.to_s.strip
@@ -301,11 +336,15 @@ module RTP
 
     # Sets the wedge_monitor_units attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def wedge_monitor_units=(value)
       @wedge_monitor_units = value && value.to_s.strip
     end
 
     # Sets the treatment_machine attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def treatment_machine=(value)
       @treatment_machine = value && value.to_s
@@ -313,11 +352,15 @@ module RTP
 
     # Sets the treatment_type attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def treatment_type=(value)
       @treatment_type = value && value.to_s
     end
 
     # Sets the modality attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def modality=(value)
       @modality = value && value.to_s
@@ -325,11 +368,15 @@ module RTP
 
     # Sets the energy attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def energy=(value)
       @energy = value && value.to_s
     end
 
     # Sets the time attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def time=(value)
       @time = value && value.to_s.strip
@@ -337,11 +384,15 @@ module RTP
 
     # Sets the doserate attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def doserate=(value)
       @doserate = value && value.to_s.strip
     end
 
     # Sets the sad attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def sad=(value)
       @sad = value && value.to_s.strip
@@ -349,11 +400,15 @@ module RTP
 
     # Sets the ssd attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def ssd=(value)
       @ssd = value && value.to_s.strip
     end
 
     # Sets the gantry_angle attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def gantry_angle=(value)
       @gantry_angle = value && value.to_s.strip
@@ -361,11 +416,15 @@ module RTP
 
     # Sets the collimator_angle attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def collimator_angle=(value)
       @collimator_angle = value && value.to_s.strip
     end
 
     # Sets the field_x_mode attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def field_x_mode=(value)
       @field_x_mode = value && value.to_s
@@ -373,11 +432,15 @@ module RTP
 
     # Sets the field_x attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def field_x=(value)
       @field_x = value && value.to_s.strip
     end
 
     # Sets the collimator_x1 attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def collimator_x1=(value)
       @collimator_x1 = value && value.to_s.strip
@@ -385,11 +448,15 @@ module RTP
 
     # Sets the collimator_x2 attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def collimator_x2=(value)
       @collimator_x2 = value && value.to_s.strip
     end
 
     # Sets the field_y_mode attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def field_y_mode=(value)
       @field_y_mode = value && value.to_s
@@ -397,11 +464,15 @@ module RTP
 
     # Sets the field_y attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def field_y=(value)
       @field_y = value && value.to_s.strip
     end
 
     # Sets the collimator_y1 attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def collimator_y1=(value)
       @collimator_y1 = value && value.to_s.strip
@@ -409,11 +480,15 @@ module RTP
 
     # Sets the collimator_y2 attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def collimator_y2=(value)
       @collimator_y2 = value && value.to_s.strip
     end
 
     # Sets the couch_vertical attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_vertical=(value)
       @couch_vertical = value && value.to_s.strip
@@ -421,11 +496,15 @@ module RTP
 
     # Sets the couch_lateral attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def couch_lateral=(value)
       @couch_lateral = value && value.to_s.strip
     end
 
     # Sets the couch_longitudinal attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_longitudinal=(value)
       @couch_longitudinal = value && value.to_s.strip
@@ -433,11 +512,15 @@ module RTP
 
     # Sets the couch_angle attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def couch_angle=(value)
       @couch_angle = value && value.to_s.strip.strip
     end
 
     # Sets the couch_pedestal attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_pedestal=(value)
       @couch_pedestal = value && value.to_s.strip
@@ -445,11 +528,15 @@ module RTP
 
     # Sets the tolerance_table attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def tolerance_table=(value)
       @tolerance_table = value && value.to_s.strip
     end
 
     # Sets the arc_direction attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def arc_direction=(value)
       @arc_direction = value && value.to_s
@@ -457,11 +544,15 @@ module RTP
 
     # Sets the arc_start_angle attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def arc_start_angle=(value)
       @arc_start_angle = value && value.to_s.strip
     end
 
     # Sets the arc_stop_angle attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def arc_stop_angle=(value)
       @arc_stop_angle = value && value.to_s.strip
@@ -469,11 +560,15 @@ module RTP
 
     # Sets the arc_mu_degree attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def arc_mu_degree=(value)
       @arc_mu_degree = value && value.to_s.strip
     end
 
     # Sets the wedge attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def wedge=(value)
       @wedge = value && value.to_s
@@ -481,11 +576,15 @@ module RTP
 
     # Sets the dynamic_wedge attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def dynamic_wedge=(value)
       @dynamic_wedge = value && value.to_s
     end
 
     # Sets the block attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def block=(value)
       @block = value && value.to_s
@@ -493,11 +592,15 @@ module RTP
 
     # Sets the compensator attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def compensator=(value)
       @compensator = value && value.to_s
     end
 
     # Sets the e_applicator attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def e_applicator=(value)
       @e_applicator = value && value.to_s
@@ -505,11 +608,15 @@ module RTP
 
     # Sets the e_field_def_aperture attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def e_field_def_aperture=(value)
       @e_field_def_aperture = value && value.to_s
     end
 
     # Sets the bolus attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def bolus=(value)
       @bolus = value && value.to_s
@@ -517,11 +624,15 @@ module RTP
 
     # Sets the portfilm_mu_open attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def portfilm_mu_open=(value)
       @portfilm_mu_open = value && value.to_s
     end
 
     # Sets the portfilm_coeff_open attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def portfilm_coeff_open=(value)
       @portfilm_coeff_open = value && value.to_s
@@ -529,17 +640,23 @@ module RTP
 
     # Sets the portfilm_delta_open attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def portfilm_delta_open=(value)
       @portfilm_delta_open = value && value.to_s
     end
 
     # Sets the portfilm_mu_treat attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def portfilm_mu_treat=(value)
       @portfilm_mu_treat = value && value.to_s
     end
 
     # Sets the portfilm_coeff_treat attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def portfilm_coeff_treat=(value)
       @portfilm_coeff_treat = value && value.to_s
@@ -549,7 +666,10 @@ module RTP
     private
 
 
-    # Returns the attributes of this instance in an array (for comparison purposes).
+    # Collects the attributes of this instance.
+    #
+    # @note The CRC is not considered part of the attributes of interest and is excluded
+    # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
 

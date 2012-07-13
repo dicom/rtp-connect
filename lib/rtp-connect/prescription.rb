@@ -2,10 +2,9 @@ module RTP
 
   # The Prescription site class.
   #
-  # === Relations
-  #
-  # * Parent: Plan
-  # * Children: SiteSetup, (SimulationField), Field
+  # @note Relations:
+  #   * Parent: Plan
+  #   * Children: SiteSetup, Field
   #
   class Prescription < Record
 
@@ -29,10 +28,10 @@ module RTP
 
     # Creates a new Prescription site by parsing a RTPConnect string line.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- A string containing a prescription site record.
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [#to_s] string the prescription site definition record string line
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
+    # @return [Prescription] the created Precription instance
+    # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
       # Get the quote-less values:
@@ -58,9 +57,7 @@ module RTP
 
     # Creates a new Prescription site.
     #
-    # === Parameters
-    #
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
       # Child objects:
@@ -72,7 +69,13 @@ module RTP
       @keyword = 'RX_DEF'
     end
 
-    # Returns true if the argument is an instance with attributes equal to self.
+    # Checks for equality.
+    #
+    # Other and self are considered equivalent if they are
+    # of compatible types and their attributes are equivalent.
+    #
+    # @param other an object to be compared with self.
+    # @return [Boolean] true if self and other are considered equivalent
     #
     def ==(other)
       if other.respond_to?(:to_prescription)
@@ -82,32 +85,44 @@ module RTP
 
     alias_method :eql?, :==
 
-    # Adds a treatment Field record to this instance.
+    # Adds a treatment field record to this instance.
+    #
+    # @param [Field] child a Field instance which is to be associated with self
     #
     def add_field(child)
       @fields << child.to_field
     end
 
-    # Connects a Site setup record to this instance.
+    # Adds a site setup record to this instance.
+    #
+    # @param [SiteSetup] child a SiteSetup instance which is to be associated with self
     #
     def add_site_setup(child)
       @site_setup = child.to_site_setup
     end
 
-    # Returns the a properly sorted array of the child records of this instance.
+    # Collects the child records of this instance in a properly sorted array.
+    #
+    # @return [Array<SiteSetup, Field>] a sorted array of self's child records
     #
     def children
       return [@site_setup, @fields].flatten.compact
     end
 
-    # Generates a Fixnum hash value for this instance.
+    # Computes a hash code for this object.
+    #
+    # @note Two objects with the same attributes will have the same hash code.
+    #
+    # @return [Fixnum] the object's hash code
     #
     def hash
       state.hash
     end
 
-    # Returns the values of this instance in an array.
-    # The values does not include the CRC.
+    # Collects the values (attributes) of this instance.
+    #
+    # @note The CRC is not considered part of the actual values and is excluded.
+    # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
       return [
@@ -128,12 +143,16 @@ module RTP
 
     # Returns self.
     #
+    # @return [Prescription] self
+    #
     def to_prescription
       self
     end
 
-    # Writes the Prescription object + any hiearchy of child objects,
+    # Encodes the Prescription object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
+    #
+    # @return [String] an RTP string with a single or multiple lines/records
     #
     def to_s
       str = encode
@@ -149,6 +168,10 @@ module RTP
 
     # Sets the keyword attribute.
     #
+    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method
+    # @param [#to_s] value the new attribute value
+    # @raise [ArgumentError] if given an unexpected keyword
+    #
     def keyword=(value)
       value = value.to_s.upcase
       raise ArgumentError, "Invalid keyword. Expected 'RX_DEF', got #{value}." unless value == "RX_DEF"
@@ -157,11 +180,15 @@ module RTP
 
     # Sets the course_id attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def course_id=(value)
       @course_id = value && value.to_s
     end
 
     # Sets the rx_site_name attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def rx_site_name=(value)
       @rx_site_name = value && value.to_s
@@ -169,11 +196,15 @@ module RTP
 
     # Sets the technique attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def technique=(value)
       @technique = value && value.to_s
     end
 
     # Sets the modality attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def modality=(value)
       @modality = value && value.to_s
@@ -181,11 +212,15 @@ module RTP
 
     # Sets the dose_spec attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def dose_spec=(value)
       @dose_spec = value && value.to_s
     end
 
     # Sets the rx_depth attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def rx_depth=(value)
       @rx_depth = value && value.to_s
@@ -193,11 +228,15 @@ module RTP
 
     # Sets the dose_ttl attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def dose_ttl=(value)
       @dose_ttl = value && value.to_s.strip
     end
 
     # Sets the dose_tx attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def dose_tx=(value)
       @dose_tx = value && value.to_s.strip
@@ -205,17 +244,23 @@ module RTP
 
     # Sets the pattern attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def pattern=(value)
       @pattern = value && value.to_s
     end
 
     # Sets the rx_note attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def rx_note=(value)
       @rx_note = value && value.to_s
     end
 
     # Sets the number_of_fields attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def number_of_fields=(value)
       @number_of_fields = value && value.to_s.strip
@@ -225,7 +270,10 @@ module RTP
     private
 
 
-    # Returns the attributes of this instance in an array (for comparison purposes).
+    # Collects the attributes of this instance.
+    #
+    # @note The CRC is not considered part of the attributes of interest and is excluded
+    # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
 

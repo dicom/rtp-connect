@@ -2,10 +2,9 @@ module RTP
 
   # The ControlPoint class.
   #
-  # === Relations
-  #
-  # * Parent: Field
-  # * Children: MLCShape
+  # @note Relations:
+  #   * Parent: Field
+  #   * Children: none
   #
   class ControlPoint < Record
 
@@ -51,10 +50,10 @@ module RTP
 
     # Creates a new ControlPoint by parsing a RTPConnect string line.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- A string containing a control point record.
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [#to_s] string the control point definition record string line
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
+    # @return [ControlPoint] the created ControlPoint instance
+    # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
       # Get the quote-less values:
@@ -102,9 +101,7 @@ module RTP
 
     # Creates a new ControlPoint.
     #
-    # === Parameters
-    #
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
       # Child:
@@ -117,7 +114,13 @@ module RTP
       @mlc_lp_b = Array.new(100)
     end
 
-    # Returns true if the argument is an instance with attributes equal to self.
+    # Checks for equality.
+    #
+    # Other and self are considered equivalent if they are
+    # of compatible types and their attributes are equivalent.
+    #
+    # @param other an object to be compared with self.
+    # @return [Boolean] true if self and other are considered equivalent
     #
     def ==(other)
       if other.respond_to?(:to_control_point)
@@ -127,30 +130,39 @@ module RTP
 
     alias_method :eql?, :==
 
-    # As of now, returns an empty array.
-    # However, by definition, this record may have an mlc shape record as child,
-    # but this is not implemented yet.
+    # As of now, gives an empty array. However, by definition, this record may
+    # have an mlc shape record as child, but this is not implemented yet.
+    #
+    # @return [Array] an emtpy array
     #
     def children
       #return [@mlc_shape]
       return Array.new
     end
 
-    # Generates a Fixnum hash value for this instance.
+    # Computes a hash code for this object.
+    #
+    # @note Two objects with the same attributes will have the same hash code.
+    #
+    # @return [Fixnum] the object's hash code
     #
     def hash
       state.hash
     end
 
-    # Returns the index of this ControlPoint.
-    # (i.e. its index among the control points belonging to the parent Field)
+    # Gives the index of this ControlPoint
+    # (i.e. its index among the control points belonging to the parent Field).
+    #
+    # @return [Fixnum] the control point's index
     #
     def index
       @parent.control_points.index(self)
     end
 
-    # Returns the values of this instance in an array.
-    # The values does not include the CRC.
+    # Collects the values (attributes) of this instance.
+    #
+    # @note The CRC is not considered part of the actual values and is excluded.
+    # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
       return [
@@ -193,12 +205,16 @@ module RTP
 
     # Returns self.
     #
+    # @return [ControlPoint] self
+    #
     def to_control_point
       self
     end
 
-    # Writes the ControlPoint object + any hiearchy of child objects,
+    # Encodes the ControlPoint object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
+    #
+    # @return [String] an RTP string with a single or multiple lines/records
     #
     def to_s
       str = encode
@@ -214,10 +230,9 @@ module RTP
 
     # Sets the mlc_lp_a attribute.
     #
-    # === Notes
-    #
-    # As opposed to the ordinary (string) attributes, this attribute
-    # contains an array holding all 100 MLC leaf 'A' string values.
+    # @note As opposed to the ordinary (string) attributes, this attribute
+    #   contains an array holding all 100 MLC leaf 'A' string values.
+    # @param [Array<nil, #to_s>] array the new attribute values
     #
     def mlc_lp_a=(array)
       array = array.to_a
@@ -227,10 +242,9 @@ module RTP
 
     # Sets the mlc_lp_b attribute.
     #
-    # === Notes
-    #
-    # As opposed to the ordinary (string) attributes, this attribute
-    # contains an array holding all 100 MLC leaf 'A' string values.
+    # @note As opposed to the ordinary (string) attributes, this attribute
+    #   contains an array holding all 100 MLC leaf 'B' string values.
+    # @param [Array<nil, #to_s>] array the new attribute values
     #
     def mlc_lp_b=(array)
       array = array.to_a
@@ -240,6 +254,10 @@ module RTP
 
     # Sets the keyword attribute.
     #
+    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method
+    # @param [#to_s] value the new attribute value
+    # @raise [ArgumentError] if given an unexpected keyword
+    #
     def keyword=(value)
       value = value.to_s.upcase
       raise ArgumentError, "Invalid keyword. Expected 'CONTROL_PT_DEF', got #{value}." unless value == "CONTROL_PT_DEF"
@@ -248,11 +266,15 @@ module RTP
 
     # Sets the field_id attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def field_id=(value)
       @field_id = value && value.to_s
     end
 
     # Sets the mlc_type attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def mlc_type=(value)
       @mlc_type = value && value.to_s
@@ -260,11 +282,15 @@ module RTP
 
     # Sets the mlc_leaves attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def mlc_leaves=(value)
       @mlc_leaves = value && value.to_s.strip
     end
 
     # Sets the total_control_points attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def total_control_points=(value)
       @total_control_points = value && value.to_s.strip
@@ -272,11 +298,15 @@ module RTP
 
     # Sets the control_pt_number attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def control_pt_number=(value)
       @control_pt_number = value && value.to_s.strip
     end
 
     # Sets the mu_convention attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def mu_convention=(value)
       @mu_convention = value && value.to_s
@@ -284,11 +314,15 @@ module RTP
 
     # Sets the monitor_units attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def monitor_units=(value)
       @monitor_units = value && value.to_s
     end
 
     # Sets the wedge_position attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def wedge_position=(value)
       @wedge_position = value && value.to_s
@@ -296,11 +330,15 @@ module RTP
 
     # Sets the energy attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def energy=(value)
       @energy = value && value.to_s
     end
 
     # Sets the doserate attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def doserate=(value)
       @doserate = value && value.to_s.strip
@@ -308,11 +346,15 @@ module RTP
 
     # Sets the ssd attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def ssd=(value)
       @ssd = value && value.to_s
     end
 
     # Sets the scale_convention attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def scale_convention=(value)
       @scale_convention = value && value.to_s
@@ -320,11 +362,15 @@ module RTP
 
     # Sets the gantry_angle attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def gantry_angle=(value)
       @gantry_angle = value && value.to_s.strip
     end
 
     # Sets the gantry_dir attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def gantry_dir=(value)
       @gantry_dir = value && value.to_s
@@ -332,11 +378,15 @@ module RTP
 
     # Sets the collimator_angle attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def collimator_angle=(value)
       @collimator_angle = value && value.to_s.strip
     end
 
     # Sets the collimator_dir attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def collimator_dir=(value)
       @collimator_dir = value && value.to_s
@@ -344,11 +394,15 @@ module RTP
 
     # Sets the field_x_mode attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def field_x_mode=(value)
       @field_x_mode = value && value.to_s
     end
 
     # Sets the field_x attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def field_x=(value)
       @field_x = value && value.to_s.strip
@@ -356,11 +410,15 @@ module RTP
 
     # Sets the collimator_x1 attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def collimator_x1=(value)
       @collimator_x1 = value && value.to_s.strip
     end
 
     # Sets the collimator_x2 attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def collimator_x2=(value)
       @collimator_x2 = value && value.to_s.strip
@@ -368,11 +426,15 @@ module RTP
 
     # Sets the field_y_mode attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def field_y_mode=(value)
       @field_y_mode = value && value.to_s
     end
 
     # Sets the field_y attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def field_y=(value)
       @field_y = value && value.to_s.strip
@@ -380,11 +442,15 @@ module RTP
 
     # Sets the collimator_y1 attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def collimator_y1=(value)
       @collimator_y1 = value && value.to_s.strip
     end
 
     # Sets the collimator_y2 attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def collimator_y2=(value)
       @collimator_y2 = value && value.to_s.strip
@@ -392,11 +458,15 @@ module RTP
 
     # Sets the couch_vertical attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def couch_vertical=(value)
       @couch_vertical = value && value.to_s.strip
     end
 
     # Sets the couch_lateral attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_lateral=(value)
       @couch_lateral = value && value.to_s.strip
@@ -404,11 +474,15 @@ module RTP
 
     # Sets the couch_longitudinal attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def couch_longitudinal=(value)
       @couch_longitudinal = value && value.to_s.strip
     end
 
     # Sets the couch_angle attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_angle=(value)
       @couch_angle = value && value.to_s.strip
@@ -416,17 +490,23 @@ module RTP
 
     # Sets the couch_dir attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def couch_dir=(value)
       @couch_dir = value && value.to_s
     end
 
     # Sets the couch_pedestal attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def couch_pedestal=(value)
       @couch_pedestal = value && value.to_s.strip
     end
 
     # Sets the couch_ped_dir attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_ped_dir=(value)
       @couch_ped_dir = value && value.to_s
@@ -436,7 +516,10 @@ module RTP
     private
 
 
-    # Returns the attributes of this instance in an array (for comparison purposes).
+    # Collects the attributes of this instance.
+    #
+    # @note The CRC is not considered part of the attributes of interest and is excluded
+    # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
 

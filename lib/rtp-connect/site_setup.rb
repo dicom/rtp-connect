@@ -2,10 +2,9 @@ module RTP
 
   # The SiteSetup class.
   #
-  # === Relations
-  #
-  # * Parent: Prescription
-  # * Children: none
+  # @note Relations:
+  #   * Parent: Prescription
+  #   * Children: none
   #
   class SiteSetup < Record
 
@@ -26,12 +25,12 @@ module RTP
     attr_reader :couch_angle
     attr_reader :couch_pedestal
 
-    # Creates a new SiteSetup setup by parsing a RTPConnect string line.
+    # Creates a new SiteSetup by parsing a RTPConnect string line.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- A string containing a site setup record.
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [#to_s] string the site setup definition record string line
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
+    # @return [SiteSetup] the created SiteSetup instance
+    # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
       # Get the quote-less values:
@@ -60,9 +59,7 @@ module RTP
 
     # Creates a new SiteSetup.
     #
-    # === Parameters
-    #
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
       # Parent relation (always expecting a Prescription here):
@@ -71,7 +68,13 @@ module RTP
       @keyword = 'SITE_SETUP_DEF'
     end
 
-    # Returns true if the argument is an instance with attributes equal to self.
+    # Checks for equality.
+    #
+    # Other and self are considered equivalent if they are
+    # of compatible types and their attributes are equivalent.
+    #
+    # @param other an object to be compared with self.
+    # @return [Boolean] true if self and other are considered equivalent
     #
     def ==(other)
       if other.respond_to?(:to_site_setup)
@@ -81,20 +84,28 @@ module RTP
 
     alias_method :eql?, :==
 
-    # Returns an empty array, as these instances are child-less by definition.
+    # Gives an empty array, as these instances are child-less by definition.
+    #
+    # @return [Array] an emtpy array
     #
     def children
       return Array.new
     end
 
-    # Generates a Fixnum hash value for this instance.
+    # Computes a hash code for this object.
+    #
+    # @note Two objects with the same attributes will have the same hash code.
+    #
+    # @return [Fixnum] the object's hash code
     #
     def hash
       state.hash
     end
 
-    # Returns the values of this instance in an array.
-    # The values does not include the CRC.
+    # Collects the values (attributes) of this instance.
+    #
+    # @note The CRC is not considered part of the actual values and is excluded.
+    # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
       return [
@@ -116,8 +127,10 @@ module RTP
       ]
     end
 
-    # Writes the SiteSetup object + any hiearchy of child objects,
+    # Encodes the SiteSetup object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
+    #
+    # @return [String] an RTP string with a single or multiple lines/records
     #
     def to_s
       str = encode
@@ -133,11 +146,17 @@ module RTP
 
     # Returns self.
     #
+    # @return [SiteSetup] self
+    #
     def to_site_setup
       self
     end
 
     # Sets the keyword attribute.
+    #
+    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method
+    # @param [#to_s] value the new attribute value
+    # @raise [ArgumentError] if given an unexpected keyword
     #
     def keyword=(value)
       value = value.to_s.upcase
@@ -147,11 +166,15 @@ module RTP
 
     # Sets the rx_site_name attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def rx_site_name=(value)
       @rx_site_name = value && value.to_s
     end
 
     # Sets the patient_orientation attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def patient_orientation=(value)
       @patient_orientation = value && value.to_s
@@ -159,11 +182,15 @@ module RTP
 
     # Sets the treatment_machine attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def treatment_machine=(value)
       @treatment_machine = value && value.to_s
     end
 
     # Sets the tolerance_table attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def tolerance_table=(value)
       @tolerance_table = value && value.to_s.strip
@@ -171,11 +198,15 @@ module RTP
 
     # Sets the iso_pos_x attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def iso_pos_x=(value)
       @iso_pos_x = value && value.to_s.strip
     end
 
     # Sets the iso_pos_y attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def iso_pos_y=(value)
       @iso_pos_y = value && value.to_s.strip
@@ -183,11 +214,15 @@ module RTP
 
     # Sets the iso_pos_z attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def iso_pos_z=(value)
       @iso_pos_z = value && value.to_s.strip
     end
 
     # Sets the structure_set_uid attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def structure_set_uid=(value)
       @structure_set_uid = value && value.to_s
@@ -195,11 +230,15 @@ module RTP
 
     # Sets the frame_of_ref_uid attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def frame_of_ref_uid=(value)
       @frame_of_ref_uid = value && value.to_s
     end
 
     # Sets the couch_vertical attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_vertical=(value)
       @couch_vertical = value && value.to_s.strip
@@ -207,11 +246,15 @@ module RTP
 
     # Sets the couch_lateral attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def couch_lateral=(value)
       @couch_lateral = value && value.to_s.strip
     end
 
     # Sets the couch_longitudinal attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_longitudinal=(value)
       @couch_longitudinal = value && value.to_s.strip
@@ -219,11 +262,15 @@ module RTP
 
     # Sets the couch_angle attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def couch_angle=(value)
       @couch_angle = value && value.to_s.strip
     end
 
     # Sets the couch_pedestal attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def couch_pedestal=(value)
       @couch_pedestal = value && value.to_s.strip
@@ -233,7 +280,10 @@ module RTP
     private
 
 
-    # Returns the attributes of this instance in an array (for comparison purposes).
+    # Collects the attributes of this instance.
+    #
+    # @note The CRC is not considered part of the attributes of interest and is excluded
+    # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
 

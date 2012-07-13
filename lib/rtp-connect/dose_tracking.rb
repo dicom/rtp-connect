@@ -2,10 +2,9 @@ module RTP
 
   # The DoseTracking class.
   #
-  # === Relations
-  #
-  # * Parent: Plan
-  # * Children: DoseAction
+  # @note Relations:
+  #   * Parent: Plan
+  #   * Children: none
   #
   class DoseTracking < Record
 
@@ -24,10 +23,10 @@ module RTP
 
     # Creates a new DoseTracking by parsing a RTPConnect string line.
     #
-    # === Parameters
-    #
-    # * <tt>string</tt> -- A string containing a control point record.
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [#to_s] string the dose tracking definition record string line
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
+    # @return [DoseTracking] the created DoseTracking instance
+    # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
       # Get the quote-less values:
@@ -48,9 +47,7 @@ module RTP
 
     # Creates a new DoseTracking.
     #
-    # === Parameters
-    #
-    # * <tt>parent</tt> -- A Record which is used to determine the proper parent of this instance.
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
       # Child records:
@@ -63,7 +60,13 @@ module RTP
       @region_coeffs = Array.new(10)
     end
 
-    # Returns true if the argument is an instance with attributes equal to self.
+    # Checks for equality.
+    #
+    # Other and self are considered equivalent if they are
+    # of compatible types and their attributes are equivalent.
+    #
+    # @param other an object to be compared with self.
+    # @return [Boolean] true if self and other are considered equivalent
     #
     def ==(other)
       if other.respond_to?(:to_dose_tracking)
@@ -73,23 +76,30 @@ module RTP
 
     alias_method :eql?, :==
 
-    # As of now, returns an empty array.
-    # However, by definition, this record may have dose action (points) as children,
-    # but this is not implemented yet.
+    # As of now, gives an empty array. However, by definition, this record may
+    # have dose action (point) records as children, but this is not implemented yet.
+    #
+    # @return [Array] an emtpy array
     #
     def children
       #return @dose_actions
       return Array.new
     end
 
-    # Generates a Fixnum hash value for this instance.
+    # Computes a hash code for this object.
+    #
+    # @note Two objects with the same attributes will have the same hash code.
+    #
+    # @return [Fixnum] the object's hash code
     #
     def hash
       state.hash
     end
 
-    # Returns the values of this instance in an array.
-    # The values does not include the CRC.
+    # Collects the values (attributes) of this instance.
+    #
+    # @note The CRC is not considered part of the actual values and is excluded.
+    # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
       return [
@@ -105,12 +115,16 @@ module RTP
 
     # Returns self.
     #
+    # @return [DoseTracking] self
+    #
     def to_dose_tracking
       self
     end
 
-    # Writes the DoseTracking object + any hiearchy of child objects,
+    # Encodes the DoseTracking object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
+    #
+    # @return [String] an RTP string with a single or multiple lines/records
     #
     def to_s
       str = encode
@@ -126,10 +140,9 @@ module RTP
 
     # Sets the field_ids attribute.
     #
-    # === Notes
-    #
-    # As opposed to the ordinary (string) attributes, this attribute
-    # contains an array holding all 10 Field ID string values.
+    # @note As opposed to the ordinary (string) attributes, this attribute
+    #   contains an array holding all 10 Field ID string values.
+    # @param [Array<nil, #to_s>] array the new attribute values
     #
     def field_ids=(array)
       array = array.to_a
@@ -139,10 +152,9 @@ module RTP
 
     # Sets the region_coeffs attribute.
     #
-    # === Notes
-    #
-    # As opposed to the ordinary (string) attributes, this attribute
-    # contains an array holding all 10 Region Coeff string values.
+    # @note As opposed to the ordinary (string) attributes, this attribute
+    #   contains an array holding all 10 Region Coeff string values.
+    # @param [Array<nil, #to_s>] array the new attribute values
     #
     def region_coeffs=(array)
       array = array.to_a
@@ -152,6 +164,10 @@ module RTP
 
     # Sets the keyword attribute.
     #
+    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method
+    # @param [#to_s] value the new attribute value
+    # @raise [ArgumentError] if given an unexpected keyword
+    #
     def keyword=(value)
       value = value.to_s.upcase
       raise ArgumentError, "Invalid keyword. Expected 'DOSE_DEF', got #{value}." unless value == "DOSE_DEF"
@@ -160,11 +176,15 @@ module RTP
 
     # Sets the region_name attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def region_name=(value)
       @region_name = value && value.to_s
     end
 
     # Sets the region_prior_dose attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def region_prior_dose=(value)
       @region_prior_dose = value && value.to_s
@@ -172,11 +192,15 @@ module RTP
 
     # Sets the actual_dose attribute.
     #
+    # @param [nil, #to_s] value the new attribute value
+    #
     def actual_dose=(value)
       @actual_dose = value && value.to_s
     end
 
     # Sets the actual_fractions attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
     #
     def actual_fractions=(value)
       @actual_fractions = value && value.to_s
@@ -186,7 +210,10 @@ module RTP
     private
 
 
-    # Returns the attributes of this instance in an array (for comparison purposes).
+    # Collects the attributes of this instance.
+    #
+    # @note The CRC is not considered part of the attributes of interest and is excluded
+    # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
 

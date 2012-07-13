@@ -25,4 +25,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rake', '>= 0.9.2.2')
   s.add_development_dependency('rspec', '>= 2.9.0')
   s.add_development_dependency('mocha', '>= 0.10.5')
+  s.add_development_dependency('yard', '>= 0.8.2')
 end

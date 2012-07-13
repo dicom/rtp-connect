@@ -2,11 +2,13 @@
 
 # This file contains extensions to the Ruby library which are used by the RTPConnect library.
 
-# Extension to the String class. These extensions are focused on analyzing RTPConnect strings.
+# Extension to the String class. These facilitate processing and analysis of RTPConnect strings.
 #
 class String
 
-  # Returns the CRC checksum (16 bit unsigned integer) for a given string.
+  # Determines the checksum (CRC) for a given string.
+  #
+  # @return [Fixnum] the checksum (a 16 bit unsigned integer)
   #
   def checksum
     crc = RTP::CRC_SEED
@@ -16,25 +18,26 @@ class String
     return crc
   end
 
-  # Returns the elements of a line from the RTPConnect ascii string.
-  # The line consists of elements (surrounded by double quotes), separated by comma.
-  # This method performs a split based on comma and returns the element strings in an array.
+  # Splits the elements of a string separated by comma.
+  #
+  # @return [Array<String>] an array of the string values originally separated by a comma
   #
   def elements
-    return self.split(',')
+    self.split(',')
   end
 
   # Removes double quotes from a string.
-  # Returns the quote-less string.
+  #
+  # @return [String] the string stripped of double-quotes
   #
   def value
-    return self.gsub('"', '')
+    self.gsub('"', '')
   end
 
-  # Returns the element values of a line from the RTPConnect ascii string.
-  # The line consists of values (surrounded by double quotes), separated by comma.
-  # This method performs a split based on comma and removes the quotes from each value,
-  # and the resulting quote-less value strings are returned in an array.
+  # Splits the elements of a CSV string (comma separated values),
+  # and removes double-quotes from the resulting string elements.
+  #
+  # @return [Array<String>] an array of the comma separated values
   #
   def values
     original = CSV.parse(self).first
@@ -45,21 +48,25 @@ class String
 
   # Wraps double quotes around the string.
   #
+  # @return [String] the string padded with double-quotes
+  #
   def wrap
-    return '"' + self + '"'
+    '"' + self + '"'
   end
 
 end
 
 
-# Extension to the Array class. These extensions are focused on creating RTPConnect
-# strings from an array of values.
+# Extension to the Array class. These facilitate the creation
+# of RTPConnect strings from an array of values.
 #
 class Array
 
   # Encodes an RTPConnect string from an array of values.
   # Each value in the array is wrapped with double quotes,
   # before the values are joined with a comma separator.
+  #
+  # @return [String] a proper RTPConnect type CSV string
   #
   def encode
     wrapped = self.collect{|value| value.wrap}
@@ -73,10 +80,12 @@ end
 #
 class NilClass
 
-  # Returns a double quoted, but otherwise empty string.
+  # Gives a double quoted, but otherwise empty string.
+  #
+  # @return [String] a string containing two double-quotes
   #
   def wrap
-    return '""'
+    '""'
   end
 
 end

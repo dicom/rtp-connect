@@ -18,10 +18,11 @@ Gemfile.lock
 # Temporary spec generated files:
 tmp
 
-# RDoc html folder:
-html
-
 # Vim swap:
 *.swp
 *.swo
 tags
+
+# YARD (documentation):
+.yardoc
+doc
