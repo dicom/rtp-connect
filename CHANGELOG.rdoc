@@ -1,7 +1,8 @@
 = 1.2
 
-=== NOT RELEASED YET
+=== 13th July, 2012
 
+* Converted documentation format from RDoc to YARD.
 * Added support for the Dose Tracking record.
 * Automatically strip some values which have been observed to have excess whitespace in a Mosaiq RTP export.
 * Added the to_dcm conversion method for converting from RTP to DICOM.
