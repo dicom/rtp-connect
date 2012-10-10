@@ -26,13 +26,21 @@ module RTP
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
-        str = '"EXTENDED_FIELD_DEF","BAKFR","8","BAKFRA","63164"'
+        str = '"EXTENDED_FIELD_DEF","BAKFR","26947"'
         expect {ExtendedField.load(str, @f)}.to raise_error(ArgumentError, /'string'/)
       end
 
+      it "should give a warning when a string with too many values is passed as the 'string' argument" do
+        RTP.logger.expects(:warn).once
+        str = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","1","2","35677"'
+        ef = ExtendedField.load(str, @f)
+      end
+
       it "should create a ExtendedField object when given a valid string" do
-        str = '"EXTENDED_FIELD_DEF","BAKFR","1.3.6.1.4","8","BAKFRA","10442"'
-        ExtendedField.load(str, @f).class.should eql ExtendedField
+        short_version = '"EXTENDED_FIELD_DEF","2","1.3.6.1","58898"'
+        long_version = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","0","9083"'
+        ExtendedField.load(short_version, @f).class.should eql ExtendedField
+        ExtendedField.load(long_version, @f).class.should eql ExtendedField
       end
 
       it "should set attributes from the given string" do
@@ -123,7 +131,7 @@ module RTP
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
-        arr = ["EXTENDED_FIELD_DEF", [nil]*4].flatten
+        arr = ["EXTENDED_FIELD_DEF", [nil]*8].flatten
         @ef.values.should eql arr
       end
 
@@ -142,13 +150,13 @@ module RTP
     describe "to_s" do
 
       it "should return a string which matches the original string" do
-        str = '"EXTENDED_FIELD_DEF","BAKFR","1.3.6.1.4","8","BAKFRA","10442"' + "\r\n"
+        str = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","0","9083"' + "\r\n"
         ef = ExtendedField.load(str, @f)
         ef.to_s.should eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
-        values = '"EXTENDED_FIELD_DEF",' + Array.new(4){|i| i.to_s}.encode + ','
+        values = '"EXTENDED_FIELD_DEF",' + Array.new(8){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ef = ExtendedField.load(str, @f)
@@ -208,6 +216,50 @@ module RTP
         value = 'Posterior'
         @ef.original_beam_name = value
         @ef.original_beam_name.should eql value
+      end
+
+    end
+
+
+    describe "#is_fff=()" do
+
+      it "should pass the argument to the corresponding attribute" do
+        value = '1'
+        @ef.is_fff = value
+        @ef.is_fff.should eql value
+      end
+
+    end
+
+
+    describe "#accessory_code=()" do
+
+      it "should pass the argument to the corresponding attribute" do
+        value = 'SQUARE'
+        @ef.accessory_code = value
+        @ef.accessory_code.should eql value
+      end
+
+    end
+
+
+    describe "#accessory_type=()" do
+
+      it "should pass the argument to the corresponding attribute" do
+        value = 'Accessory'
+        @ef.accessory_type = value
+        @ef.accessory_type.should eql value
+      end
+
+    end
+
+
+    describe "#high_dose_authorization=()" do
+
+      it "should pass the argument to the corresponding attribute" do
+        value = '1'
+        @ef.high_dose_authorization = value
+        @ef.high_dose_authorization.should eql value
       end
 
     end

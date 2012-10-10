@@ -25,6 +25,8 @@ suppress_warnings do
   RTP::RTP_TANGMAM = 'samples/oncentra_tangmam_nodose.rtp'
   # File exported from Mosaiq 2.2:
   RTP::RTP_ELECTRON = 'samples/mosaiq_electron_dt.rtp'
+  # File created with Mosaiq 2.4:
+  RTP::RTP_MOSAIQ_24 = 'samples/mosaiq_2.4.rtp'
   # Other:
   RTP::RTP_COMMA = 'samples/values_with_comma.rtp'
   # Directory for writing temporary files:

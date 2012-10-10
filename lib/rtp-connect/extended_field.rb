@@ -14,6 +14,10 @@ module RTP
     attr_reader :original_plan_uid
     attr_reader :original_beam_number
     attr_reader :original_beam_name
+    attr_reader :is_fff
+    attr_reader :accessory_code
+    attr_reader :accessory_type
+    attr_reader :high_dose_authorization
 
     # Creates a new (treatment) ExtendedField by parsing a RTPConnect string line.
     #
@@ -25,15 +29,23 @@ module RTP
     def self.load(string, parent)
       # Get the quote-less values:
       values = string.to_s.values
-      raise ArgumentError, "Invalid argument 'string': Expected exactly 6 elements, got #{values.length}." unless values.length == 6
+      low_limit = 4
+      high_limit = 10
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
+      RTP.logger.warn "The number of elements (#{values.length}) for this ExtendedField record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       ef = self.new(parent)
-      # Assign the values to attributes:
+      # Mandatory attributes:
       ef.keyword = values[0]
       ef.field_id = values[1]
       ef.original_plan_uid = values[2]
+      # Optional attributes:
       ef.original_beam_number = values[3]
       ef.original_beam_name = values[4]
-      ef.crc = values[5]
+      ef.is_fff = values[5] if values[5]
+      ef.accessory_code = values[6]
+      ef.accessory_type = values[7]
+      ef.high_dose_authorization = values[8]
+      ef.crc = values[-1]
       return ef
     end
 
@@ -93,7 +105,11 @@ module RTP
         @field_id,
         @original_plan_uid,
         @original_beam_number,
-        @original_beam_name
+        @original_beam_name,
+        @is_fff,
+        @accessory_code,
+        @accessory_type,
+        @high_dose_authorization
       ]
     end
 
@@ -164,6 +180,38 @@ module RTP
     #
     def original_beam_name=(value)
       @original_beam_name = value && value.to_s
+    end
+
+    # Sets the is_fff attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def is_fff=(value)
+      @is_fff = value && value.to_s
+    end
+
+    # Sets the accessory_code attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def accessory_code=(value)
+      @accessory_code = value && value.to_s
+    end
+
+    # Sets the accessory_type attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def accessory_type=(value)
+      @accessory_type = value && value.to_s
+    end
+
+    # Sets the high_dose_authorization attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def high_dose_authorization=(value)
+      @high_dose_authorization = value && value.to_s
     end
 
 

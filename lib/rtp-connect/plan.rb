@@ -151,6 +151,7 @@ module RTP
               logger.error("This file is too small to contain valid RTP information: #{file}.")
             else
               str = File.open(file, "rb") { |f| f.read }
+              #str = File.open(file, "r:UTF-8") { |f| f.read }
             end
           end
         end

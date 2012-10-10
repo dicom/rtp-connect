@@ -34,6 +34,16 @@ module RTP
       end
 
       it "should parse this RTPConnect file and build a valid record object hierarchy" do
+        rtp = Plan.read(RTP_ELECTRON)
+        rtp.class.should eql Plan
+      end
+
+      it "should parse this RTPConnect file and build a valid record object hierarchy" do
+        rtp = Plan.read(RTP_MOSAIQ_24)
+        rtp.class.should eql Plan
+      end
+
+      it "should parse this RTPConnect file and build a valid record object hierarchy" do
         rtp = Plan.read(RTP_COMMA)
         rtp.class.should eql Plan
       end
