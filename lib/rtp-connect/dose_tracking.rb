@@ -31,7 +31,10 @@ module RTP
     def self.load(string, parent)
       # Get the quote-less values:
       values = string.to_s.values
-      raise ArgumentError, "Invalid argument 'string': Expected exactly 26 elements, got #{values.length}." unless values.length == 26
+      low_limit = 24
+      high_limit = 26
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
+      RTP.logger.warn "The number of elements (#{values.length}) for this DoseTracking record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       d = self.new(parent)
       # Assign the values to attributes:
       d.keyword = values[0]
@@ -41,7 +44,7 @@ module RTP
       d.region_coeffs = values.values_at(4, 6, 8, 10, 12, 14, 16, 18, 20, 22)
       d.actual_dose = values[23]
       d.actual_fractions = values[24]
-      d.crc = values[25]
+      d.crc = values[-1]
       return d
     end
 

@@ -36,7 +36,10 @@ module RTP
     def self.load(string, parent)
       # Get the quote-less values:
       values = string.to_s.values
-      raise ArgumentError, "Invalid argument 'string': Expected exactly 13 elements, got #{values.length}." unless values.length == 13
+      low_limit = 4
+      high_limit = 13
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
+      RTP.logger.warn "The number of elements (#{values.length}) for this Prescription record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       p = self.new(parent)
       # Assign the values to attributes:
       p.keyword = values[0]
@@ -51,7 +54,7 @@ module RTP
       p.pattern = values[9]
       p.rx_note = values[10]
       p.number_of_fields = values[11]
-      p.crc = values[12]
+      p.crc = values[-1]
       return p
     end
 

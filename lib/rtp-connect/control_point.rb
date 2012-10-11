@@ -58,7 +58,10 @@ module RTP
     def self.load(string, parent)
       # Get the quote-less values:
       values = string.to_s.values
-      raise ArgumentError, "Invalid argument 'string': Expected exactly 233 elements, got #{values.length}." unless values.length == 233
+      low_limit = 233
+      high_limit = 233
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
+      RTP.logger.warn "The number of elements (#{values.length}) for this ControlPoint record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       cp = self.new(parent)
       # Assign the values to attributes:
       cp.keyword = values[0]
@@ -95,7 +98,7 @@ module RTP
       cp.couch_ped_dir = values[31]
       cp.mlc_lp_a = [*values[32..131]]
       cp.mlc_lp_b = [*values[132..231]]
-      cp.crc = values[232]
+      cp.crc = values[-1]
       return cp
     end
 

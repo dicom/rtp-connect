@@ -37,10 +37,10 @@ module RTP
       end
 
       it "should create a ExtendedField object when given a valid string" do
-        short_version = '"EXTENDED_FIELD_DEF","2","1.3.6.1","58898"'
-        long_version = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","0","9083"'
-        ExtendedField.load(short_version, @f).class.should eql ExtendedField
-        ExtendedField.load(long_version, @f).class.should eql ExtendedField
+        short = '"EXTENDED_FIELD_DEF","2","1.3.6.1","58898"'
+        complete = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","0","9083"'
+        ExtendedField.load(short, @f).class.should eql ExtendedField
+        ExtendedField.load(complete, @f).class.should eql ExtendedField
       end
 
       it "should set attributes from the given string" do

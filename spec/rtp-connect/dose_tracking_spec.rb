@@ -24,13 +24,21 @@ module RTP
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
-        str = '"DOSE_DEF","V.Orbita 0-30","","6","1.00000","","","29762"'
+        str = '"DOSE_DEF","V.Orbita 0-30","","6","1.00000","","","","","","","","","","","","","","","","","","29778"'
         expect {DoseTracking.load(str, @rtp)}.to raise_error(ArgumentError, /'string'/)
       end
 
+      it "should give a warning when a string with too many values is passed as the 'string' argument" do
+        RTP.logger.expects(:warn).once
+        str = '"DOSE_DEF","V.Orbita 0-30","","6","1.00000","","","","","","","","","","","","","","","","","","","","","extra","33262"'
+        dt = DoseTracking.load(str, @rtp)
+      end
+
       it "should create a DoseTracking object when given a valid string" do
-        str = '"DOSE_DEF","V.Orbita 0-30","","6","1.00000","","","","","","","","","","","","","","","","","","","","","29762"'
-        DoseTracking.load(str, @rtp).class.should eql DoseTracking
+        short = '"DOSE_DEF","V.Orbita 0-30","","6","1.00000","","","","","","","","","","","","","","","","","","","42559"'
+        complete = '"DOSE_DEF","V.Orbita 0-30","","6","1.00000","","","","","","","","","","","","","","","","","","","","","29762"'
+        DoseTracking.load(short, @rtp).class.should eql DoseTracking
+        DoseTracking.load(complete, @rtp).class.should eql DoseTracking
       end
 
       it "should set attributes from the given string" do

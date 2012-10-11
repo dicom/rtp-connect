@@ -35,7 +35,10 @@ module RTP
     def self.load(string, parent)
       # Get the quote-less values:
       values = string.to_s.values
-      raise ArgumentError, "Invalid argument 'string': Expected exactly 16 elements, got #{values.length}." unless values.length == 16
+      low_limit = 5
+      high_limit = 16
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
+      RTP.logger.warn "The number of elements (#{values.length}) for this SiteSetup record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       s = self.new(parent)
       # Assign the values to attributes:
       s.keyword = values[0]
@@ -53,7 +56,7 @@ module RTP
       s.couch_longitudinal = values[12]
       s.couch_angle = values[13]
       s.couch_pedestal = values[14]
-      s.crc = values[15]
+      s.crc = values[-1]
       return s
     end
 

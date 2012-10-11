@@ -24,13 +24,21 @@ module RTP
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
-        str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","24065"'
+        str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","6830"'
         expect {Field.load(str, @p)}.to raise_error(ArgumentError, /'string'/)
       end
 
+      it "should give a warning when a string with too many values is passed as the 'string' argument" do
+        RTP.logger.expects(:warn).once
+        str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","extra","8612"'
+        f = Field.load(str, @p)
+      end
+
       it "should create a Field object when given a valid string" do
-        str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"'
-        Field.load(str, @p).class.should eql Field
+        short = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","21083"'
+        complete = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"'
+        Field.load(short, @p).class.should eql Field
+        Field.load(complete, @p).class.should eql Field
       end
 
       it "should set attributes from the given string" do

@@ -24,13 +24,21 @@ module RTP
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
-        str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","24183"'
+        str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","30017"'
         expect {SiteSetup.load(str, @p)}.to raise_error(ArgumentError, /'string'/)
       end
 
+      it "should give a warning when a string with too many values is passed as the 'string' argument" do
+        RTP.logger.expects(:warn).once
+        str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","extra","26790"'
+        ss = SiteSetup.load(str, @p)
+      end
+
       it "should create a SiteSetup object when given a valid string" do
-        str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"'
-        SiteSetup.load(str, @p).class.should eql SiteSetup
+        short = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","26934"'
+        complete = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"'
+        SiteSetup.load(short, @p).class.should eql SiteSetup
+        SiteSetup.load(complete, @p).class.should eql SiteSetup
       end
 
       it "should set attributes from the given string" do

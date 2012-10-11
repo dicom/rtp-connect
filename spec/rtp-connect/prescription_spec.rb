@@ -23,13 +23,21 @@ module RTP
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
-        str = '"RX_DEF","20","STE:0-20:4","","Xrays","17677"'
+        str = '"RX_DEF","2","40685"'
         expect {Prescription.load(str, @rtp)}.to raise_error(ArgumentError, /'string'/)
       end
 
+      it "should give a warning when a string with too many values is passed as the 'string' argument" do
+        RTP.logger.expects(:warn).once
+        str = '"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","extra","51819"'
+        p = Prescription.load(str, @rtp)
+      end
+
       it "should create a Prescription object when given a valid string" do
-        str = '"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","17677"'
-        Prescription.load(str, @rtp).class.should eql Prescription
+        short = '"RX_DEF","20","STE:0-20:4","44651"'
+        complete = '"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","17677"'
+        Prescription.load(short, @rtp).class.should eql Prescription
+        Prescription.load(complete, @rtp).class.should eql Prescription
       end
 
       it "should set attributes from the given string" do

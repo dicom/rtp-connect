@@ -69,7 +69,10 @@ module RTP
     def self.load(string)
       # Get the quote-less values:
       values = string.to_s.values
-      raise ArgumentError, "Invalid argument 'string': Expected exactly 28 elements, got #{values.length}." unless values.length == 28
+      low_limit = 10
+      high_limit = 28
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
+      RTP.logger.warn "The number of elements (#{values.length}) for this Plan record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       rtp = self.new
       # Assign the values to attributes:
       rtp.keyword = values[0]
@@ -99,7 +102,7 @@ module RTP
       rtp.rtp_version = values[24]
       rtp.rtp_if_protocol = values[25]
       rtp.rtp_if_version = values[26]
-      rtp.crc = values[27]
+      rtp.crc = values[-1]
       return rtp
     end
 

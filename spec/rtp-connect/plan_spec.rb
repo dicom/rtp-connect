@@ -18,13 +18,21 @@ module RTP
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
-        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","6993"'
+        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","29106"'
         expect {Plan.load(str)}.to raise_error(ArgumentError, /'string'/)
       end
 
+      it "should give a warning when a string with too many values is passed as the 'string' argument" do
+        RTP.logger.expects(:warn).once
+        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","extra","19010"'
+        p = Plan.load(str)
+      end
+
       it "should create a Plan object when given a valid string" do
-        str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"'
-        Plan.load(str).class.should eql Plan
+        short = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","60364"'
+        complete = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"'
+        Plan.load(short).class.should eql Plan
+        Plan.load(complete).class.should eql Plan
       end
 
       it "should set attributes from the given string" do

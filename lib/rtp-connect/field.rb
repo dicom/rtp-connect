@@ -72,7 +72,10 @@ module RTP
     def self.load(string, parent)
       # Get the quote-less values:
       values = string.to_s.values
-      raise ArgumentError, "Invalid argument 'string': Expected exactly 49 elements, got #{values.length}." unless values.length == 49
+      low_limit = 27
+      high_limit = 49
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
+      RTP.logger.warn "The number of elements (#{values.length}) for this Field record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       f = self.new(parent)
       # Assign the values to attributes:
       f.keyword = values[0]
@@ -123,7 +126,7 @@ module RTP
       f.portfilm_delta_open = values[45]
       f.portfilm_mu_treat = values[46]
       f.portfilm_coeff_treat = values[47]
-      f.crc = values[48]
+      f.crc = values[-1]
       return f
     end
 
