@@ -29,7 +29,7 @@ module RTP
       content = values.encode + ","
       checksum = content.checksum
       # Complete string is content + checksum (in double quotes) + carriage return + line feed
-      return content + checksum.to_s.wrap + "\r\n"
+      return (content + checksum.to_s.wrap + "\r\n").encode('ISO8859-1')
     end
 
     # Follows the tree of parents until the appropriate parent of the requesting record is found.

@@ -1,4 +1,4 @@
-#    Copyright 2011-2012 Christoffer Lervag
+#    Copyright 2011-2013 Christoffer Lervag
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -153,8 +153,7 @@ module RTP
             if File.size(file) < 10
               logger.error("This file is too small to contain valid RTP information: #{file}.")
             else
-              str = File.open(file, "rb") { |f| f.read }
-              #str = File.open(file, "r:UTF-8") { |f| f.read }
+              str = File.open(file, 'rb:ISO8859-1') { |f| f.read }
             end
           end
         end
@@ -568,7 +567,6 @@ module RTP
       if File.exist?(file)
         # Is (the existing file) writable?
         unless File.writable?(file)
-          #logger.error("The program does not have permission or resources to create this file: #{file}")
           raise "The program does not have permission or resources to create this file: #{file}"
         end
       else
@@ -588,7 +586,7 @@ module RTP
         end
       end
       # It has been verified that the file can be created:
-      return File.new(file, "wb")
+      return File.new(file, 'wb:ISO8859-1')
     end
 
     # Creates a prescription site record from the given string.
