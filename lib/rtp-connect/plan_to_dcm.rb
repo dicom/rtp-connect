@@ -17,6 +17,7 @@ module RTP
       # Refactoring and simplifying it at some stage might be a good idea.
       #
       require 'dicom'
+      original_level = DICOM.logger.level
       DICOM.logger.level = Logger::FATAL
       p = @prescriptions.first
       # If no prescription is present, we are not going to be able to make a valid DICOM object:
@@ -249,18 +250,15 @@ module RTP
           DICOM::Element.new('300A,00BC', "1", :parent => bl_item_x)
           DICOM::Element.new('300A,00BC', "1", :parent => bl_item_y)
           # MLCX item is only created if leaves are defined:
-          # (NB: The RTP file doesn't specify leaf position boundaries, so for now we estimate these positions
-          # based on the (even) number of leaves and the assumptions of a 200 mm position of the outer leaf)
-          # FIXME: In the future, the MLCX leaf position boundary should be configurable - i.e. an option argument of to_dcm().
+          # (NB: The RTP file doesn't specify leaf position boundaries, so we
+          # have to set these based on a set of known MLC types, their number
+          # of leaves, and their leaf boundary positions.)
           if field.control_points.length > 0
             bl_item_mlcx = DICOM::Item.new(:parent => bl_seq)
             DICOM::Element.new('300A,00B8', "MLCX", :parent => bl_item_mlcx)
             num_leaves = field.control_points.first.mlc_leaves.to_i
-            logger.warn("Support for odd number of leaves (#{num_leaves}) is not implemented yet. Leaf Position Boundaries tag will be incorrect.") if num_leaves.odd?
-            logger.warn("Untested number of leaves encountered: #{num_leaves} Leaf Position Boundaries tag may be incorrect.") if num_leaves.even? && ![40, 80].include?(num_leaves)
             DICOM::Element.new('300A,00BC', num_leaves.to_s, :parent => bl_item_mlcx)
-            pos_boundaries = Array.new(num_leaves) {|i| i * 400 / num_leaves.to_f - 200}
-            DICOM::Element.new('300A,00BE', "#{pos_boundaries.join("\\")}", :parent => bl_item_mlcx)
+            DICOM::Element.new('300A,00BE', "#{RTP.leaf_boundaries(num_leaves).join("\\")}", :parent => bl_item_mlcx)
           end
           #
           # Block Sequence (if any):
@@ -324,7 +322,12 @@ module RTP
             couch_lat = field.couch_lateral.empty? ? '' : (field.couch_lateral.to_f * 10).to_s
             DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item)
             # Isocenter Position (x\y\z):
-            DICOM::Element.new('300A,012C', "#{(p.site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item)
+            if p.site_setup
+              DICOM::Element.new('300A,012C', "#{(p.site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item)
+            else
+              logger.warn("No Site Setup record exists for this plan. Unable to provide an isosenter position.")
+              DICOM::Element.new('300A,012C', '', :parent => cp_item)
+            end
             # Source to Surface Distance:
             DICOM::Element.new('300A,0130', "#{field.ssd.to_f * 10}", :parent => cp_item)
             # Cumulative Meterset Weight:
@@ -402,7 +405,12 @@ module RTP
               couch_lat = cp1.couch_lateral.empty? ? '' : (cp1.couch_lateral.to_f * 10).to_s
               DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item1)
               # Isocenter Position (x\y\z):
-              DICOM::Element.new('300A,012C', "#{(p.site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item1)
+              if p.site_setup
+                DICOM::Element.new('300A,012C', "#{(p.site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item1)
+              else
+                logger.warn("No Site Setup record exists for this plan. Unable to provide an isosenter position.")
+                DICOM::Element.new('300A,012C', '', :parent => cp_item1)
+              end
               # Source to Surface Distance:
               DICOM::Element.new('300A,0130', "#{cp1.ssd.to_f * 10}", :parent => cp_item1)
               # Cumulative Meterset Weight:
@@ -501,6 +509,8 @@ module RTP
           end
         end
       end
+      # Restore the DICOM logger:
+      DICOM.logger.level = original_level
       return dcm
     end
 

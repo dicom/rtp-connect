@@ -6,6 +6,33 @@ module RTP
     # Module methods:
     #++
 
+    # Gives an array of MLC leaf position boundaries for a given type of MLC,
+    # specified by its number of leaves at one side.
+    #
+    # @param [Fixnum] nr_leaves the number of leaves (in one leaf bank)
+    # @return [Array<Fixnum>] the leaf boundary positions
+    # @raise [ArgumentError] if an unsupported MLC (nr of leaves) is given
+    #
+    def leaf_boundaries(nr_leaves)
+      case nr_leaves
+      when 29
+        [-200, -135, -125, -115, -105, -95, -85, -75, -65, -55, -45, -35, -25,
+          -15, -5, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 200
+        ]
+      when 40
+        Array.new(nr_leaves) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
+      when 41
+        [-200, -195, -185, -175, -165, -155, -145, -135, -125, -115,
+          -105, -95, -85, -75, -65, -55, -45, -35, -25, -15, -5, 5, 15, 25, 35, 45,
+          55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 200
+        ]
+      when 80
+        Array.new(nr_leaves) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
+      else
+        raise ArgumentError, "Unsupported number of leaves: #{nr_leaves}"
+      end
+    end
+
     # Computes the CRC checksum of the given line and verifies that
     # this value corresponds with the checksum given at the end of the line.
     #

@@ -7,6 +7,11 @@ module RTP
 
   describe Plan do
 
+    before :all do
+      require 'dicom'
+      DICOM.logger.level = Logger::ERROR
+    end
+
     before :each do
       @rtp = Plan.new
     end
@@ -218,11 +223,28 @@ module RTP
         dcm.read?.should be_true
       end
 
+      it "should give a warning (but still create a DICOM object) if the site setup record is missing" do
+        p = Plan.read(RTP_COLUMNA)
+        p.prescriptions.first.stubs(:site_setup)
+        RTP.logger.expects(:warn)
+        dcm = p.to_dcm
+        dcm.class.should eql DICOM::DObject
+      end
+
       it "should return an (incomplete) RTPLAN DObject when given a Plan object with no child records" do
         str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"'
         p = Plan.load(str)
         dcm = p.to_dcm
         dcm.class.should eql DICOM::DObject
+      end
+
+      it "should reset the DICOM logger to its original logging level" do
+        require 'dicom'
+        original_level = Logger::DEBUG
+        DICOM.logger.level = original_level
+        p = Plan.read(RTP_COLUMNA)
+        p.to_dcm
+        DICOM.logger.level.should eql original_level
       end
 
     end
