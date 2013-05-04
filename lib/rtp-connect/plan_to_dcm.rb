@@ -9,9 +9,13 @@ module RTP
     #   Electron beams or dynamic photon beams may give an invalid DICOM file.
     #   Also note that, due to limitations in the RTP file format, some original
     #   values can not be recreated, like e.g. Study UID or Series UID.
+    # @param [Hash] options the options to use for creating the DICOM object
+    # @option options [String] :manufacturer the value used for the manufacturer tag (0008,0070) in the beam sequence
+    # @option options [String] :model the value used for the manufacturer's model name tag (0008,1090) in the beam sequence
+    # @option options [String] :serial_number the value used for the device serial number tag (0018,1000) in the beam sequence
     # @return [DICOM::DObject] the converted DICOM object
     #
-    def to_dcm
+    def to_dcm(options={})
       #
       # FIXME: This method is rather big, with a few sections of somewhat similar, repeating code.
       # Refactoring and simplifying it at some stage might be a good idea.
@@ -194,6 +198,13 @@ module RTP
           DICOM::Element.new('300C,0006', beam_number, :parent => rb_item)
           # Beam Item:
           b_item = DICOM::Item.new(:parent => b_seq)
+          # Optional method values:
+          # Manufacturer:
+          DICOM::Element.new('0008,0070', options[:manufacturer], :parent => b_item) if options[:manufacturer]
+          # Manufacturer's Model Name:
+          DICOM::Element.new('0008,1090', options[:model], :parent => b_item) if options[:model]
+          # Device Serial Number:
+          DICOM::Element.new('0018,1000', options[:serial_number], :parent => b_item) if options[:serial_number]
           # Treatment Machine Name (max 16 characters):
           DICOM::Element.new('300A,00B2', field.treatment_machine[0..15], :parent => b_item)
           # Primary Dosimeter Unit:
@@ -240,15 +251,18 @@ module RTP
           # Beam Limiting Device Sequence:
           #
           bl_seq = DICOM::Sequence.new('300A,00B6', :parent => b_item)
-          # Always create one ASYMX and one ASYMY item:
-          bl_item_x = DICOM::Item.new(:parent => bl_seq)
+          # Always create one ASYMY item:
           bl_item_y = DICOM::Item.new(:parent => bl_seq)
           # RT Beam Limiting Device Type:
-          DICOM::Element.new('300A,00B8', "ASYMX", :parent => bl_item_x)
           DICOM::Element.new('300A,00B8', "ASYMY", :parent => bl_item_y)
           # Number of Leaf/Jaw Pairs:
-          DICOM::Element.new('300A,00BC', "1", :parent => bl_item_x)
           DICOM::Element.new('300A,00BC', "1", :parent => bl_item_y)
+          # The ASYMX item ('backup jaws') only exsists on some models:
+          if ['SYM', 'ASY'].include?(field.field_x_mode)
+            bl_item_x = DICOM::Item.new(:parent => bl_seq)
+            DICOM::Element.new('300A,00B8', "ASYMX", :parent => bl_item_x)
+            DICOM::Element.new('300A,00BC', "1", :parent => bl_item_x)
+          end
           # MLCX item is only created if leaves are defined:
           # (NB: The RTP file doesn't specify leaf position boundaries, so we
           # have to set these based on a set of known MLC types, their number
@@ -334,15 +348,18 @@ module RTP
             DICOM::Element.new('300A,0134', "0.0", :parent => cp_item)
             # Beam Limiting Device Position Sequence:
             dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item)
-            # Always create one ASYMX and one ASYMY item:
-            dp_item_x = DICOM::Item.new(:parent => dp_seq)
+            # Always create one ASYMY item:
             dp_item_y = DICOM::Item.new(:parent => dp_seq)
             # RT Beam Limiting Device Type:
-            DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
             DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
             # Leaf/Jaw Positions:
-            DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
             DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
+            # The ASYMX item ('backup jaws') only exsists on some models:
+            if ['SYM', 'ASY'].include?(field.field_x_mode)
+              dp_item_x = DICOM::Item.new(:parent => dp_seq)
+              DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
+              DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
+            end
             # MLCX:
             if field.control_points.length > 0
               dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
@@ -418,15 +435,18 @@ module RTP
               DICOM::Element.new('300A,0134', "#{mu_weight}", :parent => cp_item1)
               # Beam Limiting Device Position Sequence:
               dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item1)
-              # Always create one ASYMX and one ASYMY item:
-              dp_item_x = DICOM::Item.new(:parent => dp_seq)
+              # Always create one ASYMY item:
               dp_item_y = DICOM::Item.new(:parent => dp_seq)
               # RT Beam Limiting Device Type:
-              DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
               DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
               # Leaf/Jaw Positions:
-              DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
               DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
+              # The ASYMX item ('backup jaws') only exsists on some models:
+              if ['SYM', 'ASY'].include?(field.field_x_mode)
+                dp_item_x = DICOM::Item.new(:parent => dp_seq)
+                DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
+                DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
+              end
               # MLCX:
               dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
               # RT Beam Limiting Device Type:

@@ -222,6 +222,66 @@ module RTP
         dcm.class.should eql DICOM::DObject
         dcm.read?.should be_true
       end
+      
+      it "should leave these undeterminable tags out of the Beam Sequence when no tag options are specified" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm
+        beam_item = dcm['300A,00B0'][0]
+        beam_item.exists?('0008,0070').should be_false
+        beam_item.exists?('0008,1090').should be_false
+        beam_item.exists?('0018,1000').should be_false
+      end
+      
+      it "should fill in the Manufacturer tag in the Beam Sequence when specified by the :manufacturer option" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm(:manufacturer => 'ACME')
+        beam_item = dcm['300A,00B0'][0]
+        beam_item.value('0008,0070').should eql 'ACME'
+      end
+      
+      it "should fill in the Manufacturer's Model Name tag in the Beam Sequence when specified by the :model option" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm(:model => 'ACME BEAM ON')
+        beam_item = dcm['300A,00B0'][0]
+        beam_item.value('0008,1090').should eql 'ACME BEAM ON'
+      end
+      
+      it "should fill in the Device Serial Number tag in the Beam Sequence when specified by the :serial_number option" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm(:serial_number => '1234')
+        beam_item = dcm['300A,00B0'][0]
+        beam_item.value('0018,1000').should eql '1234'
+      end
+      
+      it "should not create any ASYMX items for a plan using a model which is known not to have an X jaw" do
+        p = Plan.read(RTP_SIEMENS_58)
+        dcm = p.to_dcm
+        beam_item = dcm['300A,00B0'][0]
+        # Beam Limiting Device Sequence:
+        beam_item['300A,00B6'].items.length.should eql 2
+        types = beam_item['300A,00B6'].items.collect {|item| item.value('300A,00B8')}
+        types.include?('ASYMX').should be_false
+        # Beam Limiting Device Position Sequence (First control point item):
+        seq = beam_item['300A,0111'][0]['300A,011A']
+        seq.items.length.should eql 2
+        types = seq.items.collect {|item| item.value('300A,00B8')}
+        types.include?('ASYMX').should be_false
+      end
+      
+      it "should create the ASYMX items for a plan using a model which is known to have an X jaw" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm
+        beam_item = dcm['300A,00B0'][0]
+        # Beam Limiting Device Sequence:
+        beam_item['300A,00B6'].items.length.should eql 3
+        types = beam_item['300A,00B6'].items.collect {|item| item.value('300A,00B8')}
+        types.include?('ASYMX').should be_true
+        # Beam Limiting Device Position Sequence (First control point item):
+        seq = beam_item['300A,0111'][0]['300A,011A']
+        seq.items.length.should eql 3
+        types = seq.items.collect {|item| item.value('300A,00B8')}
+        types.include?('ASYMX').should be_true
+      end
 
       it "should give a warning (but still create a DICOM object) if the site setup record is missing" do
         p = Plan.read(RTP_COLUMNA)
