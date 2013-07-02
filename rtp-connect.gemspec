@@ -17,12 +17,12 @@ Gem::Specification.new do |s|
   s.files = Dir["{lib}/**/*", "[A-Z]*"]
   s.rubyforge_project = 'rtp-connect'
 
-  s.required_ruby_version = '>= 1.9.2'
+  s.required_ruby_version = '>= 1.9.3'
 
-  s.add_development_dependency('bundler', '~> 1.2')
+  s.add_development_dependency('bundler', '~> 1.3')
   s.add_development_dependency('dicom', '~> 0.9.5')
-  s.add_development_dependency('mocha', '~> 0.12')
-  s.add_development_dependency('rake', '~> 0.9.2')
-  s.add_development_dependency('rspec', '~> 2.11')
-  s.add_development_dependency('yard', '~> 0.8.2')
+  s.add_development_dependency('mocha', '~> 0.13')
+  s.add_development_dependency('rake', '~> 0.9.6')
+  s.add_development_dependency('rspec', '~> 2.13')
+  s.add_development_dependency('yard', '~> 0.8.5')
 end
