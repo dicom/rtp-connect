@@ -623,6 +623,15 @@ module RTP
       @current_parent = f
     end
 
+    # Creates a simulation field record from the given string.
+    #
+    # @param [String] string a string line containing a simulation field definition
+    #
+    def simulation_field(string)
+      sf = SimulationField.load(string, @current_parent)
+      @current_parent = sf
+    end
+
   end
 
 end

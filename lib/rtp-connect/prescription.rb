@@ -4,7 +4,7 @@ module RTP
   #
   # @note Relations:
   #   * Parent: Plan
-  #   * Children: SiteSetup, Field
+  #   * Children: SiteSetup, SimulationField, Field
   #
   class Prescription < Record
 
@@ -12,6 +12,8 @@ module RTP
     attr_reader :parent
     # The SiteSetup record (if any) that belongs to this Prescription.
     attr_reader :site_setup
+    # An array of SimulationField records (if any) that belongs to this Prescription.
+    attr_reader :simulation_fields
     # An array of Field records (if any) that belongs to this Prescription.
     attr_reader :fields
     attr_reader :course_id
@@ -66,6 +68,7 @@ module RTP
       # Child objects:
       @site_setup = nil
       @fields = Array.new
+      @simulation_fields = Array.new
       # Parent relation (may get more than one type of record here):
       @parent = get_parent(parent.to_record, Plan)
       @parent.add_prescription(self)
@@ -96,6 +99,14 @@ module RTP
       @fields << child.to_field
     end
 
+    # Adds a simulation field record to this instance.
+    #
+    # @param [Field] child a SimulationField instance which is to be associated with self
+    #
+    def add_simulation_field(child)
+      @simulation_fields << child.to_simulation_field
+    end
+
     # Adds a site setup record to this instance.
     #
     # @param [SiteSetup] child a SiteSetup instance which is to be associated with self
@@ -106,10 +117,10 @@ module RTP
 
     # Collects the child records of this instance in a properly sorted array.
     #
-    # @return [Array<SiteSetup, Field>] a sorted array of self's child records
+    # @return [Array<SiteSetup, SimulationField, Field>] a sorted array of self's child records
     #
     def children
-      return [@site_setup, @fields].flatten.compact
+      return [@site_setup, @simulation_fields, @fields].flatten.compact
     end
 
     # Computes a hash code for this object.

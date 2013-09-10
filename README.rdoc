@@ -92,6 +92,7 @@ Example:
 * Plan definition [PLAN_DEF]
 * Prescription site [RX_DEF]
 * Site setup [SITE_SETUP_DEF]
+* Simulation field [SIM_DEF]
 * Treatment field [FIELD_DEF]
 * Extended treatment field [EXTENDED_FIELD_DEF]
 * Control point record [CONTROL_PT_DEF]
@@ -99,7 +100,6 @@ Example:
 
 === Unsupported records
 
-* Simulation field [SIM_DEF]
 * Extended plan definition [EXTENDED_PLAN_DEF]
 * Document based treatment field [PDF_FIELD_DEF]
 * Multileaf collimator [MLC_DEF]

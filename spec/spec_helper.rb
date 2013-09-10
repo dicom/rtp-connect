@@ -30,6 +30,7 @@ suppress_warnings do
   RTP::RTP_MOSAIQ_24 = 'samples/mosaiq_2.4.rtp'
   # Other:
   RTP::RTP_COMMA = 'samples/values_with_comma.rtp'
+  RTP::RTP_SIM = 'samples/simulation_field.rtp'
   # Directory for writing temporary files:
   RTP::TMPDIR = "tmp/"
   RTP::LOGDIR = RTP::TMPDIR + "logs/"

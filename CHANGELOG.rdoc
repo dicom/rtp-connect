@@ -1,3 +1,10 @@
+= 1.5
+
+=== (Unreleased)
+
+* Added support for the Simulation Field record.
+* Plan#to_dcm improvements
+
 = 1.4
 
 === 10th April, 2013
