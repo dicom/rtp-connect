@@ -130,6 +130,11 @@ module RTP
         str.value.should eql ''
       end
 
+      it "should not remove the double quote characters inside the string" do
+        str = '"Jack "KO" Doe"'
+        str.value.should eql 'Jack "KO" Doe'
+      end
+
     end
 
 

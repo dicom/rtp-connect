@@ -26,12 +26,12 @@ class String
     self.split(',')
   end
 
-  # Removes double quotes from a string.
+  # Removes leading & trailing double quotes from a string.
   #
-  # @return [String] the string stripped of double-quotes
+  # @return [String] the processed string
   #
   def value
-    self.gsub('"', '')
+    self.gsub(/\A"|"\Z/, '')
   end
 
   # Splits the elements of a CSV string (comma separated values) and removes
