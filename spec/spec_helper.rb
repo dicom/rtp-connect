@@ -28,9 +28,12 @@ suppress_warnings do
   RTP::RTP_ELECTRON = 'samples/mosaiq_electron_dt.rtp'
   # File created with Mosaiq 2.4:
   RTP::RTP_MOSAIQ_24 = 'samples/mosaiq_2.4.rtp'
-  # Other:
-  RTP::RTP_COMMA = 'samples/values_with_comma.rtp'
+  # Other Mosaiq:
   RTP::RTP_SIM = 'samples/simulation_field.rtp'
+  # Other:
+  RTP::RTP_ATTRIBUTE_COMMA = 'samples/attribute_with_comma.rtp'
+  RTP::RTP_ATTRIBUTE_PAIRS_QUOTES = 'samples/attribute_with_pairs_of_quotes.rtp'
+  RTP::RTP_ATTRIBUTE_QUOTED_COMMA = 'samples/attribute_with_quoted_comma.rtp'
   # Directory for writing temporary files:
   RTP::TMPDIR = "tmp/"
   RTP::LOGDIR = RTP::TMPDIR + "logs/"

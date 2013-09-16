@@ -34,16 +34,14 @@ class String
     self.gsub('"', '')
   end
 
-  # Splits the elements of a CSV string (comma separated values),
-  # and removes double-quotes from the resulting string elements.
+  # Splits the elements of a CSV string (comma separated values) and removes
+  # quotation (leading and trailing double-quote characters) from the extracted
+  # string elements.
   #
   # @return [Array<String>] an array of the comma separated values
   #
   def values
-    original = CSV.parse(self).first
-    processed = Array.new
-    original.collect {|element| processed << element.gsub('"', '')}
-    return processed
+    CSV.parse(self).first
   end
 
   # Wraps double quotes around the string.

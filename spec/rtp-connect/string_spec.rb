@@ -141,9 +141,21 @@ module RTP
         str.values.should eql arr
       end
 
-      it "should return the double-quote-less elements of a RTP string line (an array of string elements)" do
+      it "should successfully parse a record containing an attribute with a comma character" do
         str = '"EXTENDED_FIELD_DEF","","","","Anterior, Left","35786"'
         arr = ['EXTENDED_FIELD_DEF', '', '', '', 'Anterior, Left', '35786']
+        str.values.should eql arr
+      end
+
+      it "should successfully parse a record containing an attribute with pairs of double-quote characters (yielding values with single double-quote characters)" do
+        str = '"EXTENDED_FIELD_DEF","","","","Anterior ""Left"" Field","59395"'
+        arr = ['EXTENDED_FIELD_DEF', '', '', '', 'Anterior "Left" Field', '59395']
+        str.values.should eql arr
+      end
+
+      it "should successfully parse a record containing an attribute with a comma enclosed by pairs of double-quote characters" do
+        str = '"EXTENDED_FIELD_DEF","","","","Anterior "","" Field","20339"'
+        arr = ['EXTENDED_FIELD_DEF', '', '', '', 'Anterior "," Field', '20339']
         str.values.should eql arr
       end
 
