@@ -13,6 +13,10 @@ module RTP
 
     describe "::read" do
 
+      it "should raise an exception when given a file with invalid CSV format" do
+        expect {Plan.read(RTP_INVALID_QUOTE)}.to raise_error
+      end
+
       it "should parse this RTPConnect Plan record" do
         rtp = Plan.read(RTP_ATTRIBUTE_COMMA)
         rtp.class.should eql Plan

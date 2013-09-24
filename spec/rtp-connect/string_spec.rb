@@ -164,6 +164,12 @@ module RTP
         str.values.should eql arr
       end
 
+      it "should fail when given an invalid csv string (containing one double quote character), and give an error message containing the invalid string record" do
+        str = '"PLAN_DEF","123","Doe","John"Joe","","","",""," 3","","","","","","","","","","","","","","","","","RTP","1.0","31446"'
+        RTP.logger.expects(:error).once
+        expect {str.values}.to raise_error
+      end
+
     end
 
 

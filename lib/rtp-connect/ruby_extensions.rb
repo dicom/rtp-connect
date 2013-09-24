@@ -41,7 +41,12 @@ class String
   # @return [Array<String>] an array of the comma separated values
   #
   def values
-    CSV.parse(self).first
+    begin
+      CSV.parse(self).first
+    rescue StandardError => e
+      RTP.logger.error("Unable to parse the given string record. Probably invalid CSV format: #{self}")
+      raise e
+    end
   end
 
   # Wraps double quotes around the string.
