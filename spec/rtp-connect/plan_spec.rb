@@ -222,7 +222,7 @@ module RTP
         dcm.class.should eql DICOM::DObject
         dcm.read?.should be_true
       end
-      
+
       it "should leave these undeterminable tags out of the Beam Sequence when no tag options are specified" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm
@@ -231,28 +231,28 @@ module RTP
         beam_item.exists?('0008,1090').should be_false
         beam_item.exists?('0018,1000').should be_false
       end
-      
+
       it "should fill in the Manufacturer tag in the Beam Sequence when specified by the :manufacturer option" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm(:manufacturer => 'ACME')
         beam_item = dcm['300A,00B0'][0]
         beam_item.value('0008,0070').should eql 'ACME'
       end
-      
+
       it "should fill in the Manufacturer's Model Name tag in the Beam Sequence when specified by the :model option" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm(:model => 'ACME BEAM ON')
         beam_item = dcm['300A,00B0'][0]
         beam_item.value('0008,1090').should eql 'ACME BEAM ON'
       end
-      
+
       it "should fill in the Device Serial Number tag in the Beam Sequence when specified by the :serial_number option" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm(:serial_number => '1234')
         beam_item = dcm['300A,00B0'][0]
         beam_item.value('0018,1000').should eql '1234'
       end
-      
+
       it "should not create any ASYMX items for a plan using a model which is known not to have an X jaw" do
         p = Plan.read(RTP_SIEMENS_58)
         dcm = p.to_dcm
@@ -267,7 +267,7 @@ module RTP
         types = seq.items.collect {|item| item.value('300A,00B8')}
         types.include?('ASYMX').should be_false
       end
-      
+
       it "should create the ASYMX items for a plan using a model which is known to have an X jaw" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm
@@ -352,6 +352,14 @@ module RTP
         str = values + crc + "\r\n"
         p = Plan.load(str)
         p.to_s.should eql str
+      end
+
+      it "should properly handle attributes with double quote-characters to ensure that it doesn't output an invalid CSV string" do
+        str = 'John "RTP" Oscar'
+        p = Plan.new
+        p.patient_first_name = str
+        reloaded = Plan.parse(p.to_s)
+        p.patient_first_name.should eql str
       end
 
     end
