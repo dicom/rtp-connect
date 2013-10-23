@@ -167,11 +167,8 @@ module RTP
         num_frac = '0'
       end
       DICOM::Element.new('300A,0078', num_frac, :parent => fg_item)
-      # Number of Beams:
-      num_beams = p ? p.fields.length : 0
-      DICOM::Element.new('300A,0080', "#{num_beams}", :parent => fg_item)
       # Number of Brachy Application Setups:
-      DICOM::Element.new('300A,00A0', "0", :parent => fg_item)
+      DICOM::Element.new('300A,00A0', '0', :parent => fg_item)
       # Referenced Beam Sequence (items created for each beam below):
       rb_seq = DICOM::Sequence.new('300C,0004', :parent => fg_item)
       #
@@ -531,6 +528,8 @@ module RTP
             end
           end
         end
+        # Number of Beams:
+        DICOM::Element.new('300A,0080', fg_item['300C,0004'].items.length, :parent => fg_item)
       end
       # Restore the DICOM logger:
       DICOM.logger.level = original_level
