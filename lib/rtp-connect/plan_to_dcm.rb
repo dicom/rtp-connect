@@ -242,8 +242,6 @@ module RTP
             DICOM::Element.new('300A,00F0', (field.block.empty? ? '0' : '1'), :parent => b_item)
             # Final Cumulative Meterset Weight:
             DICOM::Element.new('300A,010E', field.field_monitor_units, :parent => b_item)
-            # Number of Control Points:
-            DICOM::Element.new('300A,0110', "#{field.control_points.length}", :parent => b_item)
             # Referenced Patient Setup Number:
             DICOM::Element.new('300C,006A', '1', :parent => b_item)
             #
@@ -526,6 +524,8 @@ module RTP
                 end
               end
             end
+            # Number of Control Points:
+            DICOM::Element.new('300A,0110', b_item['300A,0111'].items.length, :parent => b_item)
           end
         end
         # Number of Beams:
