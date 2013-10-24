@@ -255,7 +255,7 @@ module RTP
             # Number of Leaf/Jaw Pairs:
             DICOM::Element.new('300A,00BC', "1", :parent => bl_item_y)
             # The ASYMX item ('backup jaws') only exsists on some models:
-            if ['SYM', 'ASY'].include?(field.field_x_mode)
+            if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
               bl_item_x = DICOM::Item.new(:parent => bl_seq)
               DICOM::Element.new('300A,00B8', "ASYMX", :parent => bl_item_x)
               DICOM::Element.new('300A,00BC', "1", :parent => bl_item_x)
@@ -352,7 +352,7 @@ module RTP
               # Leaf/Jaw Positions:
               DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
               # The ASYMX item ('backup jaws') only exsists on some models:
-              if ['SYM', 'ASY'].include?(field.field_x_mode)
+              if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
                 dp_item_x = DICOM::Item.new(:parent => dp_seq)
                 DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
                 DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
@@ -439,7 +439,7 @@ module RTP
                 # Leaf/Jaw Positions:
                 DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
                 # The ASYMX item ('backup jaws') only exsists on some models:
-                if ['SYM', 'ASY'].include?(field.field_x_mode)
+                if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
                   dp_item_x = DICOM::Item.new(:parent => dp_seq)
                   DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
                   DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
