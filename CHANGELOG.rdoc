@@ -1,15 +1,34 @@
 = 1.5
 
-=== (Unreleased)
+=== 24th October, 2013
 
 * Added support for the Simulation Field record.
-* Plan#to_dcm improvements
+* Bumped required Ruby version to 1.9.3.
+* More robust CSV implementation:
+  * Properly handle attributes containing a double-quote character.
+  * Improved handling of invalid CSV RTP files.
+  * Ensure that we don't produce invalid CSV with records containing attributes with the double-quote character.
+* Plan#to_dcm improvements:
+  * Exclude CT & 2DkV fields on export.
+  * Properly handle the case of a missing Site Setup in the RTP file.
+  * Improve handling of logging in the DICOM module.
+  * Added logic for deciding whether the plan's machine actually has an X jaw.
+  * Ensure that a correct number of fields and control points are specified.
+  * Added support for more MLC types:
+    * Siemens 58 & 82 leaf
+    * Varian 120 leaf
+  * Added options for specifying undeterminable machine information such as:
+    * Manufacturer
+    * Manufacturer's Model Name
+    * Device Serial Number
+
 
 = 1.4
 
 === 10th April, 2013
 
 * Support an extended ascii character set (ISO8859-1 encoding) for record values and file read/write.
+
 
 = 1.3
 
