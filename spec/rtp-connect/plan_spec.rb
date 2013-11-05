@@ -210,6 +210,16 @@ module RTP
 
     describe "#to_dcm" do
 
+      it "should reset the DICOM logger to its original logging level" do
+        original_level = DICOM.logger.level
+        set_level = Logger::DEBUG
+        DICOM.logger.level = set_level
+        p = Plan.read(RTP_COLUMNA)
+        p.to_dcm
+        DICOM.logger.level.should eql set_level
+        DICOM.logger.level = original_level
+      end
+
       it "should return a DICOM::DObject" do
         p = Plan.read(RTP_COLUMNA)
         p.to_dcm.class.should eql DICOM::DObject
@@ -298,13 +308,30 @@ module RTP
         dcm.class.should eql DICOM::DObject
       end
 
-      it "should reset the DICOM logger to its original logging level" do
-        require 'dicom'
-        original_level = Logger::DEBUG
-        DICOM.logger.level = original_level
+      it "should by default not include Dose Reference & Referenced Dose Reference sequences" do
         p = Plan.read(RTP_COLUMNA)
-        p.to_dcm
-        DICOM.logger.level.should eql original_level
+        dcm = p.to_dcm
+        dcm.exists?('300A,0010').should be_false
+        dcm['300A,00B0'].items.each do |beam_item|
+          ref_dose_in_beam_cpts = false
+          beam_item['300A,0111'].items.each do |cp_item|
+            ref_dose_in_beam_cpts = true if cp_item.exists?('300C,0050')
+          end
+          ref_dose_in_beam_cpts.should be_false
+        end
+      end
+
+      it "should include Dose Reference & Referenced Dose Reference sequences when the :dose_ref option is set as true" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm(dose_ref: true)
+        dcm.exists?('300A,0010').should be_true
+        dcm['300A,00B0'].items.each do |beam_item|
+          ref_dose_in_beam_cpts = false
+          beam_item['300A,0111'].items.each do |cp_item|
+            ref_dose_in_beam_cpts = true if cp_item.exists?('300C,0050')
+          end
+          ref_dose_in_beam_cpts.should be_true
+        end
       end
 
     end

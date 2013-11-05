@@ -10,6 +10,7 @@ module RTP
     #   Also note that, due to limitations in the RTP file format, some original
     #   values can not be recreated, like e.g. Study UID or Series UID.
     # @param [Hash] options the options to use for creating the DICOM object
+    # @option options [Boolean] :dose_ref if set, Dose Reference & Referenced Dose Reference sequences will be included in the generated DICOM file
     # @option options [String] :manufacturer the value used for the manufacturer tag (0008,0070) in the beam sequence
     # @option options [String] :model the value used for the manufacturer's model name tag (0008,1090) in the beam sequence
     # @option options [String] :serial_number the value used for the device serial number tag (0018,1000) in the beam sequence
@@ -143,16 +144,7 @@ module RTP
       #
       # Dose Reference Sequence:
       #
-      dr_seq = DICOM::Sequence.new('300A,0010', :parent => dcm)
-      dr_item = DICOM::Item.new(:parent => dr_seq)
-      # Dose Reference Number:
-      DICOM::Element.new('300A,0012', '1', :parent => dr_item)
-      # Dose Reference Structure Type:
-      DICOM::Element.new('300A,0014', 'SITE', :parent => dr_item)
-      # Dose Reference Description:
-      DICOM::Element.new('300A,0016', plan_name, :parent => dr_item)
-      # Dose Reference Type:
-      DICOM::Element.new('300A,0020', 'TARGET', :parent => dr_item)
+      create_dose_reference(dcm, plan_name) if options[:dose_ref]
       #
       # Fraction Group Sequence:
       #
@@ -370,12 +362,7 @@ module RTP
                 DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
               end
               # Referenced Dose Reference Sequence:
-              rd_seq = DICOM::Sequence.new('300C,0050', :parent => cp_item)
-              rd_item = DICOM::Item.new(:parent => rd_seq)
-              # Cumulative Dose Reference Coeffecient:
-              DICOM::Element.new('300A,010C', '', :parent => rd_item)
-              # Referenced Dose Reference Number:
-              DICOM::Element.new('300C,0051', '1', :parent => rd_item)
+              create_referenced_dose_reference(cp_item) if options[:dose_ref]
               # Second CP:
               cp_item = DICOM::Item.new(:parent => cp_seq)
               # Control Point Index:
@@ -384,7 +371,7 @@ module RTP
               DICOM::Element.new('300A,0134', field.field_monitor_units, :parent => cp_item)
             else
               # When we have multiple (2 or more) control points, iterate each control point:
-              field.control_points.each { |cp| create_control_point(cp, cp_seq) }
+              field.control_points.each { |cp| create_control_point(cp, cp_seq, options) }
             end
             # Number of Control Points:
             DICOM::Element.new('300A,0110', b_item['300A,0111'].items.length, :parent => b_item)
@@ -407,9 +394,11 @@ module RTP
     #
     # @param [ControlPoint] cp the RTP ControlPoint record to convert
     # @param [DICOM::Sequence] sequence the DICOM parent sequence of the item to be created
+    # @param [Hash] options the options to use for creating the control point
+    # @option options [Boolean] :dose_ref if set, a Referenced Dose Reference sequence will be included in the generated control point item
     # @return [DICOM::Item] the constructed control point DICOM item
     #
-    def create_control_point(cp, sequence)
+    def create_control_point(cp, sequence, options={})
       cp_item = DICOM::Item.new(:parent => sequence)
       # Control Point Index:
       DICOM::Element.new('300A,0112', "#{cp.index}", :parent => cp_item)
@@ -480,13 +469,44 @@ module RTP
       leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
       DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
       # Referenced Dose Reference Sequence:
+      create_referenced_dose_reference(cp_item) if options[:dose_ref]
+      cp_item
+    end
+
+    # Creates a dose reference sequence in the given DICOM object.
+    #
+    # @param [DICOM::DObject] dcm the DICOM object in which to insert the sequence
+    # @param [String] description the value to use for Dose Reference Description
+    # @return [DICOM::Sequence] the constructed dose reference sequence
+    #
+    def create_dose_reference(dcm, description)
+      dr_seq = DICOM::Sequence.new('300A,0010', :parent => dcm)
+      dr_item = DICOM::Item.new(:parent => dr_seq)
+      # Dose Reference Number:
+      DICOM::Element.new('300A,0012', '1', :parent => dr_item)
+      # Dose Reference Structure Type:
+      DICOM::Element.new('300A,0014', 'SITE', :parent => dr_item)
+      # Dose Reference Description:
+      DICOM::Element.new('300A,0016', description, :parent => dr_item)
+      # Dose Reference Type:
+      DICOM::Element.new('300A,0020', 'TARGET', :parent => dr_item)
+      dr_seq
+    end
+
+    # Creates a referenced dose reference sequence in the given DICOM object.
+    #
+    # @param [DICOM::Item] cp_item the DICOM item in which to insert the sequence
+    # @return [DICOM::Sequence] the constructed referenced dose reference sequence
+    #
+    def create_referenced_dose_reference(cp_item)
+      # Referenced Dose Reference Sequence:
       rd_seq = DICOM::Sequence.new('300C,0050', :parent => cp_item)
       rd_item = DICOM::Item.new(:parent => rd_seq)
       # Cumulative Dose Reference Coeffecient:
       DICOM::Element.new('300A,010C', '', :parent => rd_item)
       # Referenced Dose Reference Number:
       DICOM::Element.new('300C,0051', '1', :parent => rd_item)
-      cp_item
+      rd_seq
     end
 
   end
