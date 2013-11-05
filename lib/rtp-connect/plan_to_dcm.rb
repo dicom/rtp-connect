@@ -5,8 +5,8 @@ module RTP
     # Converts the Plan (and child) records to a
     # DICOM::DObject of modality RTPLAN.
     #
-    # @note Only static photon plans have been tested.
-    #   Electron beams or dynamic photon beams may give an invalid DICOM file.
+    # @note Only photon plans have been tested.
+    #   Electron beams beams may give an invalid DICOM file.
     #   Also note that, due to limitations in the RTP file format, some original
     #   values can not be recreated, like e.g. Study UID or Series UID.
     # @param [Hash] options the options to use for creating the DICOM object
@@ -220,6 +220,7 @@ module RTP
             beam_type = case field.treatment_type
               when 'Static' then 'STATIC'
               when 'StepNShoot' then 'STATIC'
+              when 'VMAT' then 'DYNAMIC'
               else logger.error("The beam type (treatment type) #{field.treatment_type} is not yet supported.")
             end
             DICOM::Element.new('300A,00C4', beam_type, :parent => b_item)
@@ -382,147 +383,8 @@ module RTP
               # Cumulative Meterset Weight:
               DICOM::Element.new('300A,0134', field.field_monitor_units, :parent => cp_item)
             else
-              # When we have multiple (2n) control points, iterate and pick settings from the CPs:
-              field.control_points.each_slice(2) do |cp1, cp2|
-                cp_item1 = DICOM::Item.new(:parent => cp_seq)
-                cp_item2 = DICOM::Item.new(:parent => cp_seq)
-                # First control point:
-                # Control Point Index:
-                DICOM::Element.new('300A,0112', "#{cp1.index}", :parent => cp_item1)
-                # Nominal Beam Energy:
-                DICOM::Element.new('300A,0114', "#{cp1.energy.to_f}", :parent => cp_item1)
-                # Dose Rate Set:
-                DICOM::Element.new('300A,0115', cp1.doserate, :parent => cp_item1)
-                # Gantry Angle:
-                DICOM::Element.new('300A,011E', cp1.gantry_angle, :parent => cp_item1)
-                # Gantry Rotation Direction:
-                DICOM::Element.new('300A,011F', (cp1.gantry_dir.empty? ? 'NONE' : cp1.gantry_dir), :parent => cp_item1)
-                # Beam Limiting Device Angle:
-                DICOM::Element.new('300A,0120', cp1.collimator_angle, :parent => cp_item1)
-                # Beam Limiting Device Rotation Direction:
-                DICOM::Element.new('300A,0121', (cp1.collimator_dir.empty? ? 'NONE' : cp1.collimator_dir), :parent => cp_item1)
-                # Patient Support Angle:
-                DICOM::Element.new('300A,0122', cp1.couch_pedestal, :parent => cp_item1)
-                # Patient Support Rotation Direction:
-                DICOM::Element.new('300A,0123', (cp1.couch_ped_dir.empty? ? 'NONE' : cp1.couch_ped_dir), :parent => cp_item1)
-                # Table Top Eccentric Angle:
-                DICOM::Element.new('300A,0125', cp1.couch_angle, :parent => cp_item1)
-                # Table Top Eccentric Rotation Direction:
-                DICOM::Element.new('300A,0126', (cp1.couch_dir.empty? ? 'NONE' : cp1.couch_dir), :parent => cp_item1)
-                # Table Top Vertical Position:
-                couch_vert = cp1.couch_vertical.empty? ? '' : (cp1.couch_vertical.to_f * 10).to_s
-                DICOM::Element.new('300A,0128', couch_vert, :parent => cp_item1)
-                # Table Top Longitudinal Position:
-                couch_long = cp1.couch_longitudinal.empty? ? '' : (cp1.couch_longitudinal.to_f * 10).to_s
-                DICOM::Element.new('300A,0129', couch_long, :parent => cp_item1)
-                # Table Top Lateral Position:
-                couch_lat = cp1.couch_lateral.empty? ? '' : (cp1.couch_lateral.to_f * 10).to_s
-                DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item1)
-                # Isocenter Position (x\y\z):
-                if p.site_setup
-                  DICOM::Element.new('300A,012C', "#{(p.site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(p.site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item1)
-                else
-                  logger.warn("No Site Setup record exists for this plan. Unable to provide an isosenter position.")
-                  DICOM::Element.new('300A,012C', '', :parent => cp_item1)
-                end
-                # Source to Surface Distance:
-                DICOM::Element.new('300A,0130', "#{cp1.ssd.to_f * 10}", :parent => cp_item1)
-                # Cumulative Meterset Weight:
-                mu_weight = (cp1.monitor_units.to_f * field.field_monitor_units.to_f).round(4)
-                DICOM::Element.new('300A,0134', "#{mu_weight}", :parent => cp_item1)
-                # Beam Limiting Device Position Sequence:
-                dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item1)
-                # Always create one ASYMY item:
-                dp_item_y = DICOM::Item.new(:parent => dp_seq)
-                # RT Beam Limiting Device Type:
-                DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
-                # Leaf/Jaw Positions:
-                DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
-                # The ASYMX item ('backup jaws') only exsists on some models:
-                if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
-                  dp_item_x = DICOM::Item.new(:parent => dp_seq)
-                  DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
-                  DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
-                end
-                # MLCX:
-                dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
-                # RT Beam Limiting Device Type:
-                DICOM::Element.new('300A,00B8', "MLCX", :parent => dp_item_mlcx)
-                # Leaf/Jaw Positions:
-                pos_a = cp1.mlc_lp_a.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
-                pos_b = cp1.mlc_lp_b.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
-                leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
-                DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
-                # Referenced Dose Reference Sequence:
-                rd_seq = DICOM::Sequence.new('300C,0050', :parent => cp_item1)
-                rd_item = DICOM::Item.new(:parent => rd_seq)
-                # Cumulative Dose Reference Coeffecient:
-                DICOM::Element.new('300A,010C', '', :parent => rd_item)
-                # Referenced Dose Reference Number:
-                DICOM::Element.new('300C,0051', '1', :parent => rd_item)
-                # Second control point:
-                # Always include index and cumulative weight:
-                DICOM::Element.new('300A,0112', "#{cp2.index}", :parent => cp_item2)
-                mu_weight = (cp2.monitor_units.to_f * field.field_monitor_units.to_f).round(4)
-                DICOM::Element.new('300A,0134', "#{mu_weight}", :parent => cp_item2)
-                # The other parameters are only included if they have changed from the previous control point:
-                # Nominal Beam Energy:
-                DICOM::Element.new('300A,0114', "#{cp2.energy.to_f}", :parent => cp_item2) if cp2.energy != cp1.energy
-                # Dose Rate Set:
-                DICOM::Element.new('300A,0115', cp1.doserate, :parent => cp_item2) if cp2.doserate != cp1.doserate
-                # Gantry Angle:
-                DICOM::Element.new('300A,011E', cp2.gantry_angle, :parent => cp_item2) if cp2.gantry_angle != cp1.gantry_angle
-                # Gantry Rotation Direction:
-                DICOM::Element.new('300A,011F', (cp2.gantry_dir.empty? ? 'NONE' : cp2.gantry_dir), :parent => cp_item2) if cp2.gantry_dir != cp1.gantry_dir
-                # Beam Limiting Device Angle:
-                DICOM::Element.new('300A,0120', cp2.collimator_angle, :parent => cp_item2) if cp2.collimator_angle != cp1.collimator_angle
-                # Beam Limiting Device Rotation Direction:
-                DICOM::Element.new('300A,0121', (cp2.collimator_dir.empty? ? 'NONE' : cp2.collimator_dir), :parent => cp_item2) if cp2.collimator_dir != cp1.collimator_dir
-                # Patient Support Angle:
-                DICOM::Element.new('300A,0122', cp2.couch_pedestal, :parent => cp_item2) if cp2.couch_pedestal != cp1.couch_pedestal
-                # Patient Support Rotation Direction:
-                DICOM::Element.new('300A,0123', (cp2.couch_ped_dir.empty? ? 'NONE' : cp2.couch_ped_dir), :parent => cp_item2) if cp2.couch_ped_dir != cp1.couch_ped_dir
-                # Table Top Eccentric Angle:
-                DICOM::Element.new('300A,0125', cp2.couch_angle, :parent => cp_item2) if cp2.couch_angle != cp1.couch_angle
-                # Table Top Eccentric Rotation Direction:
-                DICOM::Element.new('300A,0126', (cp2.couch_dir.empty? ? 'NONE' : cp2.couch_dir), :parent => cp_item2) if cp2.couch_dir != cp1.couch_dir
-                # Table Top Vertical Position:
-                couch_vert = cp2.couch_vertical.empty? ? '' : (cp2.couch_vertical.to_f * 10).to_s
-                DICOM::Element.new('300A,0128', couch_vert, :parent => cp_item2) if cp2.couch_vertical != cp1.couch_vertical
-                # Table Top Longitudinal Position:
-                couch_long = cp2.couch_longitudinal.empty? ? '' : (cp2.couch_longitudinal.to_f * 10).to_s
-                DICOM::Element.new('300A,0129', couch_long, :parent => cp_item2) if cp2.couch_longitudinal != cp1.couch_longitudinal
-                # Table Top Lateral Position:
-                couch_lat = cp2.couch_lateral.empty? ? '' : (cp2.couch_lateral.to_f * 10).to_s
-                DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item2) if cp2.couch_lateral != cp1.couch_lateral
-                # Source to Surface Distance:
-                DICOM::Element.new('300A,0130', "#{cp2.ssd.to_f * 10}", :parent => cp_item2) if cp2.ssd != cp1.ssd
-                # Beam Limiting Device Position Sequence:
-                dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item2)
-                # ASYMX:
-                if cp2.collimator_x1 != cp1.collimator_x1
-                  dp_item_x = DICOM::Item.new(:parent => dp_seq)
-                  DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
-                  DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
-                end
-                # ASYMY:
-                if cp2.collimator_y1 != cp1.collimator_y1
-                  dp_item_y = DICOM::Item.new(:parent => dp_seq)
-                  DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
-                  DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
-                end
-                # MLCX:
-                if cp2.mlc_lp_a != cp1.mlc_lp_a or cp2.mlc_lp_b != cp1.mlc_lp_b
-                  dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
-                  # RT Beam Limiting Device Type:
-                  DICOM::Element.new('300A,00B8', "MLCX", :parent => dp_item_mlcx)
-                  # Leaf/Jaw Positions:
-                  pos_a = cp2.mlc_lp_a.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
-                  pos_b = cp2.mlc_lp_b.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
-                  leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
-                  DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
-                end
-              end
+              # When we have multiple (2 or more) control points, iterate each control point:
+              field.control_points.each { |cp| create_control_point(cp, cp_seq) }
             end
             # Number of Control Points:
             DICOM::Element.new('300A,0110', b_item['300A,0111'].items.length, :parent => b_item)
@@ -534,6 +396,97 @@ module RTP
       # Restore the DICOM logger:
       DICOM.logger.level = original_level
       return dcm
+    end
+
+
+    private
+
+
+    # Creates a control point item in the given control point sequence, based
+    # on an RTP control point record.
+    #
+    # @param [ControlPoint] cp the RTP ControlPoint record to convert
+    # @param [DICOM::Sequence] sequence the DICOM parent sequence of the item to be created
+    # @return [DICOM::Item] the constructed control point DICOM item
+    #
+    def create_control_point(cp, sequence)
+      cp_item = DICOM::Item.new(:parent => sequence)
+      # Control Point Index:
+      DICOM::Element.new('300A,0112', "#{cp.index}", :parent => cp_item)
+      # Nominal Beam Energy:
+      DICOM::Element.new('300A,0114', "#{cp.energy.to_f}", :parent => cp_item)
+      # Dose Rate Set:
+      DICOM::Element.new('300A,0115', cp.doserate, :parent => cp_item)
+      # Gantry Angle:
+      DICOM::Element.new('300A,011E', cp.gantry_angle, :parent => cp_item)
+      # Gantry Rotation Direction:
+      DICOM::Element.new('300A,011F', (cp.gantry_dir.empty? ? 'NONE' : cp.gantry_dir), :parent => cp_item)
+      # Beam Limiting Device Angle:
+      DICOM::Element.new('300A,0120', cp.collimator_angle, :parent => cp_item)
+      # Beam Limiting Device Rotation Direction:
+      DICOM::Element.new('300A,0121', (cp.collimator_dir.empty? ? 'NONE' : cp.collimator_dir), :parent => cp_item)
+      # Patient Support Angle:
+      DICOM::Element.new('300A,0122', cp.couch_pedestal, :parent => cp_item)
+      # Patient Support Rotation Direction:
+      DICOM::Element.new('300A,0123', (cp.couch_ped_dir.empty? ? 'NONE' : cp.couch_ped_dir), :parent => cp_item)
+      # Table Top Eccentric Angle:
+      DICOM::Element.new('300A,0125', cp.couch_angle, :parent => cp_item)
+      # Table Top Eccentric Rotation Direction:
+      DICOM::Element.new('300A,0126', (cp.couch_dir.empty? ? 'NONE' : cp.couch_dir), :parent => cp_item)
+      # Table Top Vertical Position:
+      couch_vert = cp.couch_vertical.empty? ? '' : (cp.couch_vertical.to_f * 10).to_s
+      DICOM::Element.new('300A,0128', couch_vert, :parent => cp_item)
+      # Table Top Longitudinal Position:
+      couch_long = cp.couch_longitudinal.empty? ? '' : (cp.couch_longitudinal.to_f * 10).to_s
+      DICOM::Element.new('300A,0129', couch_long, :parent => cp_item)
+      # Table Top Lateral Position:
+      couch_lat = cp.couch_lateral.empty? ? '' : (cp.couch_lateral.to_f * 10).to_s
+      DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item)
+      # Isocenter Position (x\y\z):
+      site_setup = cp.parent.parent.site_setup
+      if site_setup
+        DICOM::Element.new('300A,012C', "#{(site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item)
+      else
+        logger.warn("No Site Setup record exists for this plan. Unable to provide an isosenter position.")
+        DICOM::Element.new('300A,012C', '', :parent => cp_item)
+      end
+      field = cp.parent
+      # Source to Surface Distance:
+      DICOM::Element.new('300A,0130', "#{cp.ssd.to_f * 10}", :parent => cp_item)
+      # Cumulative Meterset Weight:
+      mu_weight = (cp.monitor_units.to_f * field.field_monitor_units.to_f).round(4)
+      DICOM::Element.new('300A,0134', "#{mu_weight}", :parent => cp_item)
+      # Beam Limiting Device Position Sequence:
+      dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item)
+      # Always create one ASYMY item:
+      dp_item_y = DICOM::Item.new(:parent => dp_seq)
+      # RT Beam Limiting Device Type:
+      DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
+      # Leaf/Jaw Positions:
+      DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
+      # The ASYMX item ('backup jaws') only exsists on some models:
+      if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
+        dp_item_x = DICOM::Item.new(:parent => dp_seq)
+        DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
+        DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
+      end
+      # MLCX:
+      dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
+      # RT Beam Limiting Device Type:
+      DICOM::Element.new('300A,00B8', "MLCX", :parent => dp_item_mlcx)
+      # Leaf/Jaw Positions:
+      pos_a = cp.mlc_lp_a.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
+      pos_b = cp.mlc_lp_b.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
+      leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
+      DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
+      # Referenced Dose Reference Sequence:
+      rd_seq = DICOM::Sequence.new('300C,0050', :parent => cp_item)
+      rd_item = DICOM::Item.new(:parent => rd_seq)
+      # Cumulative Dose Reference Coeffecient:
+      DICOM::Element.new('300A,010C', '', :parent => rd_item)
+      # Referenced Dose Reference Number:
+      DICOM::Element.new('300C,0051', '1', :parent => rd_item)
+      cp_item
     end
 
   end
