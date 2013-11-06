@@ -240,30 +240,7 @@ module RTP
             #
             # Beam Limiting Device Sequence:
             #
-            bl_seq = DICOM::Sequence.new('300A,00B6', :parent => b_item)
-            # Always create one ASYMY item:
-            bl_item_y = DICOM::Item.new(:parent => bl_seq)
-            # RT Beam Limiting Device Type:
-            DICOM::Element.new('300A,00B8', "ASYMY", :parent => bl_item_y)
-            # Number of Leaf/Jaw Pairs:
-            DICOM::Element.new('300A,00BC', "1", :parent => bl_item_y)
-            # The ASYMX item ('backup jaws') only exsists on some models:
-            if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
-              bl_item_x = DICOM::Item.new(:parent => bl_seq)
-              DICOM::Element.new('300A,00B8', "ASYMX", :parent => bl_item_x)
-              DICOM::Element.new('300A,00BC', "1", :parent => bl_item_x)
-            end
-            # MLCX item is only created if leaves are defined:
-            # (NB: The RTP file doesn't specify leaf position boundaries, so we
-            # have to set these based on a set of known MLC types, their number
-            # of leaves, and their leaf boundary positions.)
-            if field.control_points.length > 0
-              bl_item_mlcx = DICOM::Item.new(:parent => bl_seq)
-              DICOM::Element.new('300A,00B8', "MLCX", :parent => bl_item_mlcx)
-              num_leaves = field.control_points.first.mlc_leaves.to_i
-              DICOM::Element.new('300A,00BC', num_leaves.to_s, :parent => bl_item_mlcx)
-              DICOM::Element.new('300A,00BE', "#{RTP.leaf_boundaries(num_leaves).join("\\")}", :parent => bl_item_mlcx)
-            end
+            create_beam_limiting_devices(b_item, field)
             #
             # Block Sequence (if any):
             # FIXME: It seems that the Block Sequence (300A,00F4) may be
@@ -337,30 +314,7 @@ module RTP
               # Cumulative Meterset Weight:
               DICOM::Element.new('300A,0134', "0.0", :parent => cp_item)
               # Beam Limiting Device Position Sequence:
-              dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item)
-              # Always create one ASYMY item:
-              dp_item_y = DICOM::Item.new(:parent => dp_seq)
-              # RT Beam Limiting Device Type:
-              DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
-              # Leaf/Jaw Positions:
-              DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
-              # The ASYMX item ('backup jaws') only exsists on some models:
-              if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
-                dp_item_x = DICOM::Item.new(:parent => dp_seq)
-                DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
-                DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
-              end
-              # MLCX:
-              if field.control_points.length > 0
-                dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
-                # RT Beam Limiting Device Type:
-                DICOM::Element.new('300A,00B8', "MLCX", :parent => dp_item_mlcx)
-                # Leaf/Jaw Positions:
-                pos_a = field.control_points.first.mlc_lp_a.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
-                pos_b = field.control_points.first.mlc_lp_b.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
-                leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
-                DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
-              end
+              create_beam_limiting_device_positions(cp_item, field.control_points.first)
               # Referenced Dose Reference Sequence:
               create_referenced_dose_reference(cp_item) if options[:dose_ref]
               # Second CP:
@@ -446,19 +400,66 @@ module RTP
       mu_weight = (cp.monitor_units.to_f * field.field_monitor_units.to_f).round(4)
       DICOM::Element.new('300A,0134', "#{mu_weight}", :parent => cp_item)
       # Beam Limiting Device Position Sequence:
+      create_beam_limiting_device_positions(cp_item, cp)
+      # Referenced Dose Reference Sequence:
+      create_referenced_dose_reference(cp_item) if options[:dose_ref]
+      cp_item
+    end
+
+    # Creates a beam limiting device sequence in the given DICOM object.
+    #
+    # @param [DICOM::Item] beam_item the DICOM beam item in which to insert the sequence
+    # @param [Field] field the RTP field to fetch device parameters from
+    # @return [DICOM::Sequence] the constructed beam limiting device sequence
+    #
+    def create_beam_limiting_devices(beam_item, field)
+      bl_seq = DICOM::Sequence.new('300A,00B6', :parent => beam_item)
+      # The ASYMX item ('backup jaws') doesn't exist on all models:
+      if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
+        bl_item_x = DICOM::Item.new(:parent => bl_seq)
+        DICOM::Element.new('300A,00B8', "ASYMX", :parent => bl_item_x)
+        DICOM::Element.new('300A,00BC', "1", :parent => bl_item_x)
+      end
+      # The ASYMY item is always created:
+      bl_item_y = DICOM::Item.new(:parent => bl_seq)
+      # RT Beam Limiting Device Type:
+      DICOM::Element.new('300A,00B8', "ASYMY", :parent => bl_item_y)
+      # Number of Leaf/Jaw Pairs:
+      DICOM::Element.new('300A,00BC', "1", :parent => bl_item_y)
+      # MLCX item is only created if leaves are defined:
+      # (NB: The RTP file doesn't specify leaf position boundaries, so we
+      # have to set these based on a set of known MLC types, their number
+      # of leaves, and their leaf boundary positions.)
+      if field.control_points.length > 0
+        bl_item_mlcx = DICOM::Item.new(:parent => bl_seq)
+        DICOM::Element.new('300A,00B8', "MLCX", :parent => bl_item_mlcx)
+        num_leaves = field.control_points.first.mlc_leaves.to_i
+        DICOM::Element.new('300A,00BC', num_leaves.to_s, :parent => bl_item_mlcx)
+        DICOM::Element.new('300A,00BE', "#{RTP.leaf_boundaries(num_leaves).join("\\")}", :parent => bl_item_mlcx)
+      end
+      bl_seq
+    end
+
+    # Creates a beam limiting device positions sequence in the given DICOM object.
+    #
+    # @param [DICOM::Item] cp_item the DICOM control point item in which to insert the sequence
+    # @param [ControlPoint] cp the RTP control point to fetch device parameters from
+    # @return [DICOM::Sequence] the constructed beam limiting device positions sequence
+    #
+    def create_beam_limiting_device_positions(cp_item, cp)
       dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item)
+      # The ASYMX item ('backup jaws') doesn't exist on all models:
+      if ['SYM', 'ASY'].include?(cp.parent.field_x_mode.upcase)
+        dp_item_x = DICOM::Item.new(:parent => dp_seq)
+        DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
+        DICOM::Element.new('300A,011C', "#{cp.collimator_x1.to_f * 10}\\#{cp.collimator_x2.to_f * 10}", :parent => dp_item_x)
+      end
       # Always create one ASYMY item:
       dp_item_y = DICOM::Item.new(:parent => dp_seq)
       # RT Beam Limiting Device Type:
       DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
       # Leaf/Jaw Positions:
-      DICOM::Element.new('300A,011C', "#{field.collimator_y1.to_f * 10}\\#{field.collimator_y2.to_f * 10}", :parent => dp_item_y)
-      # The ASYMX item ('backup jaws') only exsists on some models:
-      if ['SYM', 'ASY'].include?(field.field_x_mode.upcase)
-        dp_item_x = DICOM::Item.new(:parent => dp_seq)
-        DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
-        DICOM::Element.new('300A,011C', "#{field.collimator_x1.to_f * 10}\\#{field.collimator_x2.to_f * 10}", :parent => dp_item_x)
-      end
+      DICOM::Element.new('300A,011C', "#{cp.collimator_y1.to_f * 10}\\#{cp.collimator_y2.to_f * 10}", :parent => dp_item_y)
       # MLCX:
       dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
       # RT Beam Limiting Device Type:
@@ -468,9 +469,7 @@ module RTP
       pos_b = cp.mlc_lp_b.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
       leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
       DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
-      # Referenced Dose Reference Sequence:
-      create_referenced_dose_reference(cp_item) if options[:dose_ref]
-      cp_item
+      dp_seq
     end
 
     # Creates a dose reference sequence in the given DICOM object.

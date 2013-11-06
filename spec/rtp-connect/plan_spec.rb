@@ -334,6 +334,15 @@ module RTP
         end
       end
 
+      it "should encode the beam limiting device items in the following order: ASYMX, ASYMY, MLCX" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm(dose_ref: true)
+        bld_types = dcm['300A,00B0'][0]['300A,00B6'].items.collect {|item| item.value('300A,00B8')}
+        bld_types.should eql ['ASYMX', 'ASYMY', 'MLCX']
+        bldp_types = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'].items.collect {|item| item.value('300A,00B8')}
+        bldp_types.should eql ['ASYMX', 'ASYMY', 'MLCX']
+      end
+
     end
 
 
