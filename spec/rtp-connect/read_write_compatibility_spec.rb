@@ -67,6 +67,11 @@ module RTP
         rtp.class.should eql Plan
       end
 
+      it "should parse this RTPConnect file and build a valid record object hierarchy" do
+        rtp = Plan.read(RTP_VMAT)
+        rtp.class.should eql Plan
+      end
+
     end
 
   end
