@@ -148,7 +148,11 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_x1 attribute
     #
     def dcm_collimator_x1
-      scale_convert(@collimator_x1.to_f * 10)
+      if @field_x_mode && !@field_x_mode.empty?
+        scale_convert(@collimator_x1.to_f * 10)
+      else
+        scale_convert(@parent.collimator_x1.to_f * 10)
+      end
     end
 
     # Converts the collimator_x2 attribute to proper DICOM format.
@@ -156,7 +160,11 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_x2 attribute
     #
     def dcm_collimator_x2
-      @collimator_x2.to_f * 10
+      if @field_x_mode && !@field_x_mode.empty?
+        @collimator_x2.to_f * 10
+      else
+        @parent.collimator_x2.to_f * 10
+      end
     end
 
     # Converts the collimator_y1 attribute to proper DICOM format.
@@ -164,7 +172,11 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_y1 attribute
     #
     def dcm_collimator_y1
-      scale_convert(@collimator_y1.to_f * 10)
+      if @field_y_mode && !@field_y_mode.empty?
+        scale_convert(@collimator_y1.to_f * 10)
+      else
+        scale_convert(@parent.collimator_y1.to_f * 10)
+      end
     end
 
     # Converts the collimator_y2 attribute to proper DICOM format.
@@ -172,7 +184,11 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_y2 attribute
     #
     def dcm_collimator_y2
-      @collimator_y2.to_f * 10
+      if @field_y_mode && !@field_y_mode.empty?
+        @collimator_y2.to_f * 10
+      else
+        @parent.collimator_y2.to_f * 10
+      end
     end
 
     # Computes a hash code for this object.

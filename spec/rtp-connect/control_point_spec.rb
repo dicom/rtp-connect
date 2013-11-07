@@ -107,6 +107,90 @@ module RTP
     end
 
 
+    describe "#dcm_collimator_x1" do
+
+      it "should return the processed collimator_x1 attribute of the control point" do
+        value = -11.5
+        @cp.collimator_x1 = value
+        @cp.field_x_mode = 'SYM'
+        @cp.dcm_collimator_x1.should eql value * 10
+      end
+
+      it "should get the collimator_x1 attribute from the parent field when field parameters for the control point is not defined" do
+        value = -11.5
+        @cp.collimator_x1 = ''
+        @cp.field_x_mode = ''
+        @cp.parent.collimator_x1 = value
+        @cp.parent.field_x_mode = 'SYM'
+        @cp.dcm_collimator_x1.should eql value * 10
+      end
+
+    end
+
+
+    describe "#dcm_collimator_y1" do
+
+      it "should return the processed collimator_y1 attribute of the control point" do
+        value = -11.5
+        @cp.collimator_y1 = value
+        @cp.field_y_mode = 'SYM'
+        @cp.dcm_collimator_y1.should eql value * 10
+      end
+
+      it "should get the collimator_y1 attribute from the parent field when field parameters for the control point is not defined" do
+        value = -11.5
+        @cp.collimator_y1 = ''
+        @cp.field_y_mode = ''
+        @cp.parent.collimator_y1 = value
+        @cp.parent.field_y_mode = 'SYM'
+        @cp.dcm_collimator_y1.should eql value * 10
+      end
+
+    end
+
+
+    describe "#dcm_collimator_x2" do
+
+      it "should return the processed collimator_x2 attribute of the control point" do
+        value = 11.5
+        @cp.collimator_x2 = value
+        @cp.field_x_mode = 'SYM'
+        @cp.dcm_collimator_x2.should eql value * 10
+      end
+
+      it "should get the collimator_x2 attribute from the parent field when field parameters for the control point is not defined" do
+        value = 11.5
+        @cp.collimator_x2 = ''
+        @cp.field_x_mode = ''
+        @cp.parent.collimator_x2 = value
+        @cp.parent.field_x_mode = 'SYM'
+        @cp.dcm_collimator_x2.should eql value * 10
+      end
+
+    end
+
+
+    describe "#dcm_collimator_y2" do
+
+      it "should return the processed collimator_y2 attribute of the control point" do
+        value = 11.5
+        @cp.collimator_y2 = value
+        @cp.field_y_mode = 'SYM'
+        @cp.dcm_collimator_y2.should eql value * 10
+      end
+
+      it "should get the collimator_y2 attribute from the parent field when field parameters for the control point is not defined" do
+        value = 11.5
+        @cp.collimator_y2 = ''
+        @cp.field_y_mode = ''
+        @cp.parent.collimator_y2 = value
+        @cp.parent.field_y_mode = 'SYM'
+        @cp.dcm_collimator_y2.should eql value * 10
+      end
+
+    end
+
+
     describe "#eql?" do
 
       it "should be true when comparing two instances having the same attribute values" do

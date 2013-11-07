@@ -353,6 +353,16 @@ module RTP
         asymy.should eql [-105.0, 105.0]
       end
 
+      it "should encode proper jaw positions for an RTP file where the jaws are not defined in the control point (only the field)" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm
+        asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
+        asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
+        # If picked from the control point, these would be [0, 0] & [0, 0].
+        asymx.should eql [-50.0, 50.0]
+        asymy.should eql [-71.0, 58.0]
+      end
+
     end
 
 
