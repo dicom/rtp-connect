@@ -104,27 +104,27 @@ module RTP
       # RT Plan Time:
       plan_time = @plan_time.empty? ? Time.now.strftime("%H%M%S") : @plan_time
       DICOM::Element.new('300A,0007', plan_time, :parent => dcm)
-      # RT Plan Geometry:
-      DICOM::Element.new('300A,000C', 'PATIENT', :parent => dcm)
       # Approval Status:
       DICOM::Element.new('300E,0002', 'UNAPPROVED', :parent => dcm)
       #
       # SEQUENCES:
       #
-      #
-      # Referenced Structure Set Sequence:
-      #
-      ss_seq = DICOM::Sequence.new('300C,0060', :parent => dcm)
-      ss_item = DICOM::Item.new(:parent => ss_seq)
-      # Referenced SOP Class UID:
-      DICOM::Element.new('0008,1150', '1.2.840.10008.5.1.4.1.1.481.3', :parent => ss_item)
-      # Referenced SOP Instance UID (if an original UID is not present, we make up a UID):
-      begin
-        ref_ss_uid = p.site_setup.structure_set_uid.empty? ? DICOM.generate_uid : p.site_setup.structure_set_uid
-      rescue
-        ref_ss_uid = DICOM.generate_uid
+      # Structure set information:
+      if p && p.site_setup && !p.site_setup.structure_set_uid.empty?
+        #
+        # Referenced Structure Set Sequence:
+        #
+        ss_seq = DICOM::Sequence.new('300C,0060', :parent => dcm)
+        ss_item = DICOM::Item.new(:parent => ss_seq)
+        # Referenced SOP Class UID:
+        DICOM::Element.new('0008,1150', '1.2.840.10008.5.1.4.1.1.481.3', :parent => ss_item)
+        DICOM::Element.new('0008,1155', p.site_setup.structure_set_uid, :parent => ss_item)
+        # RT Plan Geometry:
+        DICOM::Element.new('300A,000C', 'PATIENT', :parent => dcm)
+      else
+        # RT Plan Geometry:
+        DICOM::Element.new('300A,000C', 'TREATMENT_DEVICE', :parent => dcm)
       end
-      DICOM::Element.new('0008,1155', ref_ss_uid, :parent => ss_item)
       #
       # Patient Setup Sequence:
       #

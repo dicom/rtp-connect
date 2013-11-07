@@ -301,6 +301,23 @@ module RTP
         dcm.class.should eql DICOM::DObject
       end
 
+      it "should skip the Referenced Structure Set Sequence and set RT Plan Geometry as 'TREATMENT_DEVICE' when structure set information is missing from the RTP file" do
+        p = Plan.read(RTP_COLUMNA)
+        p.prescriptions.first.stubs(:site_setup)
+        dcm = p.to_dcm
+        dcm.value('300A,000C').should eql 'TREATMENT_DEVICE'
+        dcm.exists?('300C,0060').should be_false
+      end
+
+      it "should include the Referenced Structure Set Sequence and set RT Plan Geometry as 'PATIENT' when structure set information is present in the RTP file" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm
+        dcm.value('300A,000C').should eql 'PATIENT'
+        dcm.exists?('300C,0060').should be_true
+        dcm['300C,0060'][0].value('0008,1150').should eql '1.2.840.10008.5.1.4.1.1.481.3'
+        dcm['300C,0060'][0].value('0008,1155').should eql p.prescriptions.first.site_setup.structure_set_uid
+      end
+
       it "should return an (incomplete) RTPLAN DObject when given a Plan object with no child records" do
         str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"'
         p = Plan.load(str)
