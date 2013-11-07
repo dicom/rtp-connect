@@ -452,14 +452,14 @@ module RTP
       if ['SYM', 'ASY'].include?(cp.parent.field_x_mode.upcase)
         dp_item_x = DICOM::Item.new(:parent => dp_seq)
         DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
-        DICOM::Element.new('300A,011C', "#{cp.collimator_x1.to_f * 10}\\#{cp.collimator_x2.to_f * 10}", :parent => dp_item_x)
+        DICOM::Element.new('300A,011C', "#{cp.dcm_collimator_x1}\\#{cp.dcm_collimator_x2}", :parent => dp_item_x)
       end
       # Always create one ASYMY item:
       dp_item_y = DICOM::Item.new(:parent => dp_seq)
       # RT Beam Limiting Device Type:
       DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
       # Leaf/Jaw Positions:
-      DICOM::Element.new('300A,011C', "#{cp.collimator_y1.to_f * 10}\\#{cp.collimator_y2.to_f * 10}", :parent => dp_item_y)
+      DICOM::Element.new('300A,011C', "#{cp.dcm_collimator_y1}\\#{cp.dcm_collimator_y2}", :parent => dp_item_y)
       # MLCX:
       dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
       # RT Beam Limiting Device Type:

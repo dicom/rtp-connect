@@ -336,11 +336,21 @@ module RTP
 
       it "should encode the beam limiting device items in the following order: ASYMX, ASYMY, MLCX" do
         p = Plan.read(RTP_COLUMNA)
-        dcm = p.to_dcm(dose_ref: true)
+        dcm = p.to_dcm
         bld_types = dcm['300A,00B0'][0]['300A,00B6'].items.collect {|item| item.value('300A,00B8')}
         bld_types.should eql ['ASYMX', 'ASYMY', 'MLCX']
         bldp_types = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'].items.collect {|item| item.value('300A,00B8')}
         bldp_types.should eql ['ASYMX', 'ASYMY', 'MLCX']
+      end
+
+      it "should encode proper (negative) x1 and y1 jaw positions for this RTP file with scale convention 1" do
+        p = Plan.read(RTP_VMAT)
+        dcm = p.to_dcm
+        asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
+        asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
+        # Without scale conversion these results would be [80, 80] & [105, 105].
+        asymx.should eql [-80.0, 80.0]
+        asymy.should eql [-105.0, 105.0]
       end
 
     end

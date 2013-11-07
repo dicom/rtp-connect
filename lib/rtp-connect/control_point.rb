@@ -143,6 +143,38 @@ module RTP
       return Array.new
     end
 
+    # Converts the collimator_x1 attribute to proper DICOM format.
+    #
+    # @return [Float] the DICOM-formatted collimator_x1 attribute
+    #
+    def dcm_collimator_x1
+      scale_convert(@collimator_x1.to_f * 10)
+    end
+
+    # Converts the collimator_x2 attribute to proper DICOM format.
+    #
+    # @return [Float] the DICOM-formatted collimator_x2 attribute
+    #
+    def dcm_collimator_x2
+      @collimator_x2.to_f * 10
+    end
+
+    # Converts the collimator_y1 attribute to proper DICOM format.
+    #
+    # @return [Float] the DICOM-formatted collimator_y1 attribute
+    #
+    def dcm_collimator_y1
+      scale_convert(@collimator_y1.to_f * 10)
+    end
+
+    # Converts the collimator_y2 attribute to proper DICOM format.
+    #
+    # @return [Float] the DICOM-formatted collimator_y2 attribute
+    #
+    def dcm_collimator_y2
+      @collimator_y2.to_f * 10
+    end
+
     # Computes a hash code for this object.
     #
     # @note Two objects with the same attributes will have the same hash code.
@@ -525,6 +557,23 @@ module RTP
     # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
+
+    # Converts a value from IEC1217 format to the target machine's native
+    # readout format. Note that the scope of this scale conversion is not
+    # precisely known. For now, it has been observed that for an RTP file with
+    # scale conversion 1 'SYM' field modes, the x1 and y1 collimator values
+    # had to be inverted.
+    #
+    # @param [Numerical] value the value to process
+    # @return [Numerical] the scale converted value
+    #
+    def scale_convert(value)
+      # A scale convention of 1 means that geometric parameters are represented
+      # in the target machine's native readout format, as opposed to the IEC 1217
+      # convention. The consequences of this is not totally clear, but at least for
+      # an Elekta device, with SYM jaws, the y1 jaw position needs to be inverted.
+      value * (@scale_convention.to_i == 1 ? -1 : 1)
+    end
 
   end
 

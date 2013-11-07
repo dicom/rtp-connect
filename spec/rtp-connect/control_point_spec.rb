@@ -576,6 +576,35 @@ module RTP
 
     end
 
+
+    describe "#scale_convert" do
+
+      it "should invert the value when the scale_convention attribute is '1'" do
+        value = 3
+        @cp.scale_convention = '1'
+        @cp.send(:scale_convert, value).should eql -value
+      end
+
+      it "should return the same value when the scale_convention attribute is '2'" do
+        value = 3
+        @cp.scale_convention = '2'
+        @cp.send(:scale_convert, value).should eql value
+      end
+
+      it "should return the same value when the scale_convention attribute is undefined" do
+        value = 3
+        @cp.scale_convention = nil
+        @cp.send(:scale_convert, value).should eql value
+      end
+
+      it "should return the same value when the scale_convention attribute is invalid" do
+        value = 3
+        @cp.scale_convention = 10
+        @cp.send(:scale_convert, value).should eql value
+      end
+
+    end
+
   end
 
 end
