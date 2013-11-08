@@ -20,7 +20,7 @@ module RTP
           -15, -5, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 200
         ]
       when 40
-        Array.new(nr_leaves) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
+        Array.new(nr_leaves+1) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
       when 41
         [-200, -195, -185, -175, -165, -155, -145, -135, -125, -115,
           -105, -95, -85, -75, -65, -55, -45, -35, -25, -15, -5, 5, 15, 25, 35, 45,
@@ -33,7 +33,7 @@ module RTP
           70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
         ]
       when 80
-        Array.new(nr_leaves) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
+        Array.new(nr_leaves+1) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
       else
         raise ArgumentError, "Unsupported number of leaves: #{nr_leaves}"
       end
