@@ -400,6 +400,24 @@ module RTP
         asymy.should eql [-71.0, 58.0]
       end
 
+      it "should properly encode fractional cumulative meterset weight (in the case of an RTP with only a single control point)" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm
+        dcm['300A,00B0'][0].value('300A,010E').to_f.should eql 1.0
+        dcm['300A,00B0'][0]['300A,0111'][0].value('300A,0134').to_f.should eql 0.0
+        dcm['300A,00B0'][0]['300A,0111'][1].value('300A,0134').to_f.should eql 1.0
+      end
+
+      it "should properly encode fractional cumulative meterset weight (in the case of an RTP with multiple control points)" do
+        p = Plan.read(RTP_VMAT)
+        dcm = p.to_dcm
+        dcm['300A,00B0'][0].value('300A,010E').to_f.should eql 1.0
+        dcm['300A,00B0'][0]['300A,0111'][0].value('300A,0134').to_f.should eql 0.0
+        dcm['300A,00B0'][0]['300A,0111'][1].value('300A,0134').to_f.should eql 0.04762
+        dcm['300A,00B0'][0]['300A,0111'][20].value('300A,0134').to_f.should eql 0.95238
+        dcm['300A,00B0'][0]['300A,0111'][21].value('300A,0134').to_f.should eql 1.0
+      end
+
     end
 
 

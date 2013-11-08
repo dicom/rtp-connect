@@ -241,7 +241,7 @@ module RTP
             # Number of Blocks:
             DICOM::Element.new('300A,00F0', (field.block.empty? ? '0' : '1'), :parent => b_item)
             # Final Cumulative Meterset Weight:
-            DICOM::Element.new('300A,010E', field.field_monitor_units, :parent => b_item)
+            DICOM::Element.new('300A,010E', 1, :parent => b_item)
             # Referenced Patient Setup Number:
             DICOM::Element.new('300C,006A', '1', :parent => b_item)
             #
@@ -319,7 +319,7 @@ module RTP
               # Source to Surface Distance:
               DICOM::Element.new('300A,0130', "#{field.ssd.to_f * 10}", :parent => cp_item)
               # Cumulative Meterset Weight:
-              DICOM::Element.new('300A,0134', "0.0", :parent => cp_item)
+              DICOM::Element.new('300A,0134', '0', :parent => cp_item)
               # Beam Limiting Device Position Sequence:
               create_beam_limiting_device_positions(cp_item, field.control_points.first)
               # Referenced Dose Reference Sequence:
@@ -329,7 +329,7 @@ module RTP
               # Control Point Index:
               DICOM::Element.new('300A,0112', "1", :parent => cp_item)
               # Cumulative Meterset Weight:
-              DICOM::Element.new('300A,0134', field.field_monitor_units, :parent => cp_item)
+              DICOM::Element.new('300A,0134', '1', :parent => cp_item)
             else
               # When we have multiple (2 or more) control points, iterate each control point:
               field.control_points.each { |cp| create_control_point(cp, cp_seq, options) }
@@ -400,12 +400,10 @@ module RTP
         logger.warn("No Site Setup record exists for this plan. Unable to provide an isosenter position.")
         DICOM::Element.new('300A,012C', '', :parent => cp_item)
       end
-      field = cp.parent
       # Source to Surface Distance:
       DICOM::Element.new('300A,0130', "#{cp.ssd.to_f * 10}", :parent => cp_item)
       # Cumulative Meterset Weight:
-      mu_weight = (cp.monitor_units.to_f * field.field_monitor_units.to_f).round(4)
-      DICOM::Element.new('300A,0134', "#{mu_weight}", :parent => cp_item)
+      DICOM::Element.new('300A,0134', cp.monitor_units.to_f, :parent => cp_item)
       # Beam Limiting Device Position Sequence:
       create_beam_limiting_device_positions(cp_item, cp)
       # Referenced Dose Reference Sequence:
