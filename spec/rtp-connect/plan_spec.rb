@@ -373,6 +373,13 @@ module RTP
         bldp_types.should eql ['ASYMX', 'ASYMY', 'MLCX']
       end
 
+      it "should encode the number of leaf/jaw pairs" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm
+        bld_numbers = dcm['300A,00B0'][0]['300A,00B6'].items.collect {|item| item.value('300A,00BC')}
+        bld_numbers.should eql ['1', '1', '40']
+      end
+
       it "should encode proper (negative) x1 and y1 jaw positions for this RTP file with scale convention 1" do
         p = Plan.read(RTP_VMAT)
         dcm = p.to_dcm
