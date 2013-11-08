@@ -109,6 +109,13 @@ module RTP
       #
       # SEQUENCES:
       #
+      # Tolerance Table Sequence:
+      if p && p.fields.first && !p.fields.first.tolerance_table.empty?
+        tt_seq = DICOM::Sequence.new('300A,0040', :parent => dcm)
+        tt_item = DICOM::Item.new(:parent => tt_seq)
+        # Tolerance Table Number:
+        DICOM::Element.new('300A,0042', p.fields.first.tolerance_table, :parent => tt_item)
+      end
       # Structure set information:
       if p && p.site_setup && !p.site_setup.structure_set_uid.empty?
         #

@@ -325,6 +325,19 @@ module RTP
         dcm.class.should eql DICOM::DObject
       end
 
+      it "should include the Tolerance Table Sequence if the RTP contains a field with a tolerance table number" do
+        p = Plan.read(RTP_VMAT)
+        dcm = p.to_dcm
+        dcm.exists?('300A,0040').should be_true
+        dcm['300A,0040'][0].value('300A,0042').should eql p.prescriptions.first.fields.first.tolerance_table
+      end
+
+      it "should not include the Tolerance Table Sequence when the RTP record's (first) field doesn't have a tolerance table number" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm
+        dcm.exists?('300A,0040').should be_false
+      end
+
       it "should by default not include Dose Reference & Referenced Dose Reference sequences" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm
