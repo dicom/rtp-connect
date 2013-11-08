@@ -191,6 +191,18 @@ module RTP
       end
     end
 
+    # Converts the mlc_lp_a & mlc_lp_b attributes to a proper DICOM formatted string.
+    #
+    # @return [String] the DICOM-formatted leaf pair positions
+    #
+    def dcm_mlc_positions
+      scale_factor = scale_convert(1)
+      # As with the collimators, the first side (1/a) may need scale invertion:
+      pos_a = @mlc_lp_a.collect{|p| (p.to_f * 10 * scale_factor).round(1) unless p.empty?}.compact
+      pos_b = @mlc_lp_b.collect{|p| (p.to_f * 10).round(1) unless p.empty?}.compact
+      (pos_a + pos_b).join("\\")
+    end
+
     # Computes a hash code for this object.
     #
     # @note Two objects with the same attributes will have the same hash code.

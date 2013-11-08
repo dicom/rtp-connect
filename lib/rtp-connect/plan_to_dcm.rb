@@ -470,10 +470,7 @@ module RTP
       # RT Beam Limiting Device Type:
       DICOM::Element.new('300A,00B8', "MLCX", :parent => dp_item_mlcx)
       # Leaf/Jaw Positions:
-      pos_a = cp.mlc_lp_a.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
-      pos_b = cp.mlc_lp_b.collect{|p| (p.to_f * 10).round(2) unless p.empty?}.compact
-      leaf_pos = "#{pos_a.join("\\")}\\#{pos_b.join("\\")}"
-      DICOM::Element.new('300A,011C', leaf_pos, :parent => dp_item_mlcx)
+      DICOM::Element.new('300A,011C', cp.dcm_mlc_positions, :parent => dp_item_mlcx)
       dp_seq
     end
 
