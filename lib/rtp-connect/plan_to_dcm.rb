@@ -317,7 +317,7 @@ module RTP
                 DICOM::Element.new('300A,012C', '', :parent => cp_item)
               end
               # Source to Surface Distance:
-              DICOM::Element.new('300A,0130', "#{field.ssd.to_f * 10}", :parent => cp_item)
+              add_ssd(field.ssd, cp_item)
               # Cumulative Meterset Weight:
               DICOM::Element.new('300A,0134', '0', :parent => cp_item)
               # Beam Limiting Device Position Sequence:
@@ -349,6 +349,17 @@ module RTP
 
     private
 
+
+    # Adds a Source to Surface Distance element to a Control Point Item.
+    # Note that the SSD element is only added if the SSD attribute contains
+    # real (non-empty) value.
+    #
+    # @param [String, NilClass] value the SSD value
+    # @param [DICOM::Item] item the DICOM control point item in which to create an SSD element
+    #
+    def add_ssd(value, item)
+      DICOM::Element.new('300A,0130', "#{value.to_f * 10}", :parent => item) if value && !value.empty?
+    end
 
     # Creates a control point item in the given control point sequence, based
     # on an RTP control point record.
@@ -401,7 +412,7 @@ module RTP
         DICOM::Element.new('300A,012C', '', :parent => cp_item)
       end
       # Source to Surface Distance:
-      DICOM::Element.new('300A,0130', "#{cp.ssd.to_f * 10}", :parent => cp_item)
+      add_ssd(cp.ssd, cp_item)
       # Cumulative Meterset Weight:
       DICOM::Element.new('300A,0134', cp.monitor_units.to_f, :parent => cp_item)
       # Beam Limiting Device Position Sequence:

@@ -455,6 +455,28 @@ module RTP
         dcm['300A,00B0'][0]['300A,0111'][21].value('300A,0134').to_f.should eql 1.0
       end
 
+      it "should insert the SSD element when the RTP record contains an ssd value" do
+        p = Plan.read(RTP_COLUMNA)
+        dcm = p.to_dcm
+        dcm['300A,00B0'][0]['300A,0111'][0].value('300A,0130').to_f.should eql 963.0
+      end
+
+      it "should not create the SSD element when the RTP record contains an empty string SSD value" do
+        p = Plan.read(RTP_COLUMNA)
+        p.prescriptions.first.fields.first.ssd = ''
+        p.prescriptions.first.fields.first.control_points.first.ssd = ''
+        dcm = p.to_dcm
+        dcm['300A,00B0'][0]['300A,0111'][0].exists?('300A,0130').should be_false
+      end
+
+      it "should not create the SSD element when the RTP record contains a nil SSD value" do
+        p = Plan.read(RTP_COLUMNA)
+        p.prescriptions.first.fields.first.ssd = nil
+        p.prescriptions.first.fields.first.control_points.first.ssd = nil
+        dcm = p.to_dcm
+        dcm['300A,00B0'][0]['300A,0111'][0].exists?('300A,0130').should be_false
+      end
+
     end
 
 
