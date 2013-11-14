@@ -182,6 +182,8 @@ module RTP
           unless field.modality == 'Unspecified'
             # If this is an electron beam, a warning should be printed, as these are less reliably converted:
             logger.warn("This is not a photon beam (#{field.modality}). Beware that DICOM conversion of Electron beams are experimental, and other modalities are unsupported.") if field.modality != 'Xrays'
+            # Reset control point 'current value' attributes:
+            reset_cp_current_attributes
             # Beam number and name:
             beam_number = field.extended_field ? field.extended_field.original_beam_number : (i + 1).to_s
             beam_name = field.extended_field ? field.extended_field.original_beam_name : field.field_name
@@ -350,12 +352,172 @@ module RTP
     private
 
 
+    # Adds Collimator Angle elements to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value1 the collimator angle attribute
+    # @param [String, NilClass] value2 the collimator rotation direction attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_collimator(value1, value2, item)
+      if !@current_collimator || value1 != @current_collimator
+        @current_collimator = value1
+        DICOM::Element.new('300A,0120', value1, :parent => item)
+        DICOM::Element.new('300A,0121', (value2.empty? ? 'NONE' : value2), :parent => item)
+      end
+    end
+
+    # Adds Table Top Eccentric Angle elements to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value1 the table top eccentric angle attribute
+    # @param [String, NilClass] value2 the table top eccentric rotation direction attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_couch_angle(value1, value2, item)
+      if !@current_couch_angle || value1 != @current_couch_angle
+        @current_couch_angle = value1
+        DICOM::Element.new('300A,0125', value1, :parent => item)
+        DICOM::Element.new('300A,0126', (value2.empty? ? 'NONE' : value2), :parent => item)
+      end
+    end
+
+    # Adds a Table Top Lateral Position element to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value the couch lateral attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_couch_lateral(value, item)
+      if !@current_couch_lateral || value != @current_couch_lateral
+        @current_couch_lateral = value
+        DICOM::Element.new('300A,012A', (value.empty? ? '' : value.to_f * 10), :parent => item)
+      end
+    end
+
+    # Adds a Table Top Longitudinal Position element to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value the couch longitudinal attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_couch_longitudinal(value, item)
+      if !@current_couch_longitudinal || value != @current_couch_longitudinal
+        @current_couch_longitudinal = value
+        DICOM::Element.new('300A,0129', (value.empty? ? '' : value.to_f * 10), :parent => item)
+      end
+    end
+
+    # Adds Patient Support Angle elements to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value1 the patient support angle attribute
+    # @param [String, NilClass] value2 the patient support rotation direction attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_couch_pedestal(value1, value2, item)
+      if !@current_couch_pedestal || value1 != @current_couch_pedestal
+        @current_couch_pedestal = value1
+        DICOM::Element.new('300A,0122', value1, :parent => item)
+        DICOM::Element.new('300A,0123', (value2.empty? ? 'NONE' : value2), :parent => item)
+      end
+    end
+
+    # Adds a Table Top Vertical Position element to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value the couch vertical attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_couch_vertical(value, item)
+      if !@current_couch_vertical || value != @current_couch_vertical
+        @current_couch_vertical = value
+        DICOM::Element.new('300A,0128', (value.empty? ? '' : value.to_f * 10), :parent => item)
+      end
+    end
+
+    # Adds a Dose Rate Set element to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value the doserate attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_doserate(value, item)
+      if !@current_doserate || value != @current_doserate
+        @current_doserate = value
+        DICOM::Element.new('300A,0115', value, :parent => item)
+      end
+    end
+
+    # Adds a Nominal Beam Energy element to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value the energy attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_energy(value, item)
+      if !@current_energy || value != @current_energy
+        @current_energy = value
+        DICOM::Element.new('300A,0114', "#{value.to_f}", :parent => item)
+      end
+    end
+
+    # Adds Gantry Angle elements to a Control Point Item.
+    # Note that the element is only added if there is no 'current' attribute
+    # defined, or the given value is different form the current attribute.
+    #
+    # @param [String, NilClass] value1 the gantry angle attribute
+    # @param [String, NilClass] value2 the gantry rotation direction attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_gantry(value1, value2, item)
+      if !@current_gantry || value1 != @current_gantry
+        @current_gantry = value1
+        DICOM::Element.new('300A,011E', value1, :parent => item)
+        DICOM::Element.new('300A,011F', (value2.empty? ? 'NONE' : value2), :parent => item)
+      end
+    end
+
+    # Adds an Isosenter element to a Control Point Item.
+    # Note that the element is only added if there is a Site Setup record present,
+    # and it contains a real (non-empty) value. Also, the element is only added if there
+    # is no 'current' attribute defined, or the given value is different form the current attribute.
+    #
+    # @param [SiteSetup, NilClass] site_setup the associated site setup record
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    #
+    def add_isosenter(site_setup, item)
+      if site_setup
+        # Create an element if the value is new or unique:
+        if !@current_isosenter
+          iso = "#{(site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(site_setup.iso_pos_z.to_f * 10).round(2)}"
+          if iso != @current_isosenter
+            @current_isosenter = iso
+            DICOM::Element.new('300A,012C', iso, :parent => item)
+          end
+        end
+      else
+        # Log a warning if this is the first control point:
+        unless @current_isosenter
+          logger.warn("No Site Setup record exists for this plan. Unable to provide an isosenter position.")
+        end
+      end
+    end
+
     # Adds a Source to Surface Distance element to a Control Point Item.
-    # Note that the SSD element is only added if the SSD attribute contains
+    # Note that the element is only added if the SSD attribute contains
     # real (non-empty) value.
     #
-    # @param [String, NilClass] value the SSD value
-    # @param [DICOM::Item] item the DICOM control point item in which to create an SSD element
+    # @param [String, NilClass] value the SSD attribute
+    # @param [DICOM::Item] item the DICOM control point item in which to create an element
     #
     def add_ssd(value, item)
       DICOM::Element.new('300A,0130', "#{value.to_f * 10}", :parent => item) if value && !value.empty?
@@ -372,53 +534,39 @@ module RTP
     #
     def create_control_point(cp, sequence, options={})
       cp_item = DICOM::Item.new(:parent => sequence)
+      # Some CP attributes will always be written (CP index, BLD positions & Cumulative meterset weight).
+      # The other attributes are only written if they are different from the previous control point.
       # Control Point Index:
       DICOM::Element.new('300A,0112', "#{cp.index}", :parent => cp_item)
-      # Nominal Beam Energy:
-      DICOM::Element.new('300A,0114', "#{cp.energy.to_f}", :parent => cp_item)
-      # Dose Rate Set:
-      DICOM::Element.new('300A,0115', cp.doserate, :parent => cp_item)
-      # Gantry Angle:
-      DICOM::Element.new('300A,011E', cp.gantry_angle, :parent => cp_item)
-      # Gantry Rotation Direction:
-      DICOM::Element.new('300A,011F', (cp.gantry_dir.empty? ? 'NONE' : cp.gantry_dir), :parent => cp_item)
-      # Beam Limiting Device Angle:
-      DICOM::Element.new('300A,0120', cp.collimator_angle, :parent => cp_item)
-      # Beam Limiting Device Rotation Direction:
-      DICOM::Element.new('300A,0121', (cp.collimator_dir.empty? ? 'NONE' : cp.collimator_dir), :parent => cp_item)
-      # Patient Support Angle:
-      DICOM::Element.new('300A,0122', cp.couch_pedestal, :parent => cp_item)
-      # Patient Support Rotation Direction:
-      DICOM::Element.new('300A,0123', (cp.couch_ped_dir.empty? ? 'NONE' : cp.couch_ped_dir), :parent => cp_item)
-      # Table Top Eccentric Angle:
-      DICOM::Element.new('300A,0125', cp.couch_angle, :parent => cp_item)
-      # Table Top Eccentric Rotation Direction:
-      DICOM::Element.new('300A,0126', (cp.couch_dir.empty? ? 'NONE' : cp.couch_dir), :parent => cp_item)
-      # Table Top Vertical Position:
-      couch_vert = cp.couch_vertical.empty? ? '' : (cp.couch_vertical.to_f * 10).to_s
-      DICOM::Element.new('300A,0128', couch_vert, :parent => cp_item)
-      # Table Top Longitudinal Position:
-      couch_long = cp.couch_longitudinal.empty? ? '' : (cp.couch_longitudinal.to_f * 10).to_s
-      DICOM::Element.new('300A,0129', couch_long, :parent => cp_item)
-      # Table Top Lateral Position:
-      couch_lat = cp.couch_lateral.empty? ? '' : (cp.couch_lateral.to_f * 10).to_s
-      DICOM::Element.new('300A,012A', couch_lat, :parent => cp_item)
-      # Isocenter Position (x\y\z):
-      site_setup = cp.parent.parent.site_setup
-      if site_setup
-        DICOM::Element.new('300A,012C', "#{(site_setup.iso_pos_x.to_f * 10).round(2)}\\#{(site_setup.iso_pos_y.to_f * 10).round(2)}\\#{(site_setup.iso_pos_z.to_f * 10).round(2)}", :parent => cp_item)
-      else
-        logger.warn("No Site Setup record exists for this plan. Unable to provide an isosenter position.")
-        DICOM::Element.new('300A,012C', '', :parent => cp_item)
-      end
+      # Beam Limiting Device Position Sequence:
+      create_beam_limiting_device_positions(cp_item, cp)
       # Source to Surface Distance:
       add_ssd(cp.ssd, cp_item)
       # Cumulative Meterset Weight:
       DICOM::Element.new('300A,0134', cp.monitor_units.to_f, :parent => cp_item)
-      # Beam Limiting Device Position Sequence:
-      create_beam_limiting_device_positions(cp_item, cp)
       # Referenced Dose Reference Sequence:
       create_referenced_dose_reference(cp_item) if options[:dose_ref]
+      # Attributes that are only added if they carry an updated value:
+      # Nominal Beam Energy:
+      add_energy(cp.energy, cp_item)
+      # Dose Rate Set:
+      add_doserate(cp.doserate, cp_item)
+      # Gantry Angle & Rotation Direction:
+      add_gantry(cp.gantry_angle, cp.gantry_dir, cp_item)
+      # Beam Limiting Device Angle & Rotation Direction:
+      add_collimator(cp.collimator_angle, cp.collimator_dir, cp_item)
+      # Patient Support Angle & Rotation Direction:
+      add_couch_pedestal(cp.couch_pedestal, cp.couch_ped_dir, cp_item)
+      # Table Top Eccentric Angle & Rotation Direction:
+      add_couch_angle(cp.couch_angle, cp.couch_dir, cp_item)
+      # Table Top Vertical Position:
+      add_couch_vertical(cp.couch_vertical, cp_item)
+      # Table Top Longitudinal Position:
+      add_couch_longitudinal(cp.couch_vertical, cp_item)
+      # Table Top Lateral Position:
+      add_couch_lateral(cp.couch_vertical, cp_item)
+      # Isocenter Position (x\y\z):
+      add_isosenter(cp.parent.parent.site_setup, cp_item)
       cp_item
     end
 
@@ -519,6 +667,24 @@ module RTP
       # Referenced Dose Reference Number:
       DICOM::Element.new('300C,0051', '1', :parent => rd_item)
       rd_seq
+    end
+
+    # Resets the types of control point attributes that are only written to the
+    # first control point item, and for following control point items only when
+    # they are different from the 'current' value. When a new field is reached,
+    # it is essential to reset these attributes, or else we could risk to start
+    # the field with a control point with missing attributes, if one of its first
+    # attributes is equal to the last attribute of the previous field.
+    #
+    def reset_cp_current_attributes
+      @current_gantry = nil
+      @current_collimator = nil
+      @current_couch_pedestal = nil
+      @current_couch_angle = nil
+      @current_couch_vertical = nil
+      @current_couch_longitudinal = nil
+      @current_couch_lateral = nil
+      @current_isosenter = nil
     end
 
   end
