@@ -335,6 +335,9 @@ module RTP
             else
               # When we have multiple (2 or more) control points, iterate each control point:
               field.control_points.each { |cp| create_control_point(cp, cp_seq, options) }
+              # Make sure that hte cumulative meterset weight of the last control
+              # point is '1' (exactly equal to final cumulative meterset weight):
+              cp_seq.items.last['300A,0134'].value = '1'
             end
             # Number of Control Points:
             DICOM::Element.new('300A,0110', b_item['300A,0111'].items.length, :parent => b_item)

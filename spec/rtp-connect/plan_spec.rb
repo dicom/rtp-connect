@@ -477,6 +477,14 @@ module RTP
         dcm['300A,00B0'][0]['300A,0111'][0].exists?('300A,0130').should be_false
       end
 
+      it "should set exactly the same value of the cumulative meterset weight attribute in the last control point as that of the final cumulative meterset weight in the beam item" do
+        p = Plan.read(RTP_VMAT)
+        dcm = p.to_dcm
+        final_cumulative = dcm['300A,00B0'][0].value('300A,010E')
+        last_cumulative = dcm['300A,00B0'][0]['300A,0111'].items.last.value('300A,0134')
+        last_cumulative.should eql final_cumulative
+      end
+
     end
 
 
