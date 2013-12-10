@@ -385,9 +385,19 @@ module RTP
         dcm = p.to_dcm
         asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
         asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
-        # Without scale conversion these results would be [80, 80] & [105, 105].
-        asymx.should eql [-80.0, 80.0]
-        asymy.should eql [-105.0, 105.0]
+        # Without scale conversion these results would be [80, 80] & [105, 105] (i.e. all positive).
+        asymx[0].should < 0
+        asymy[0].should < 0
+      end
+
+      it "should properly encode (switch) x and y jaw positions for this RTP file with scale convention 1" do
+        p = Plan.read(RTP_VMAT)
+        dcm = p.to_dcm
+        asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
+        asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
+        # Without scale conversion asymx results would be asymy, and vice versa:
+        asymx.should eql [-105.0, 105.0]
+        asymy.should eql [-80.0, 80.0]
       end
 
       it "should encode proper jaw positions for an RTP file where the jaws are not defined in the control point (only the field)" do

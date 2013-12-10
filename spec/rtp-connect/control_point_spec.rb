@@ -661,30 +661,51 @@ module RTP
     end
 
 
-    describe "#scale_convert" do
+    describe "#scale_convertion?" do
 
       it "should invert the value when the scale_convention attribute is '1'" do
-        value = 3
         @cp.scale_convention = '1'
-        @cp.send(:scale_convert, value).should eql -value
+        @cp.send(:scale_convertion?).should be_true
       end
 
       it "should return the same value when the scale_convention attribute is '2'" do
-        value = 3
         @cp.scale_convention = '2'
-        @cp.send(:scale_convert, value).should eql value
+        @cp.send(:scale_convertion?).should be_false
       end
 
       it "should return the same value when the scale_convention attribute is undefined" do
-        value = 3
         @cp.scale_convention = nil
-        @cp.send(:scale_convert, value).should eql value
+        @cp.send(:scale_convertion?).should be_false
       end
 
       it "should return the same value when the scale_convention attribute is invalid" do
-        value = 3
         @cp.scale_convention = 10
-        @cp.send(:scale_convert, value).should eql value
+        @cp.send(:scale_convertion?).should be_false
+      end
+
+    end
+
+
+    describe "#scale_factor" do
+
+      it "should invert the value when the scale_convention attribute is '1'" do
+        @cp.scale_convention = '1'
+        @cp.send(:scale_factor).should eql -1
+      end
+
+      it "should return the same value when the scale_convention attribute is '2'" do
+        @cp.scale_convention = '2'
+        @cp.send(:scale_factor).should eql 1
+      end
+
+      it "should return the same value when the scale_convention attribute is undefined" do
+        @cp.scale_convention = nil
+        @cp.send(:scale_factor).should eql 1
+      end
+
+      it "should return the same value when the scale_convention attribute is invalid" do
+        @cp.scale_convention = 10
+        @cp.send(:scale_factor).should eql 1
       end
 
     end
