@@ -1,6 +1,6 @@
 = 1.6
 
-=== (Unreleased)
+=== 12th December, 2013
 
 * Plan#to_dcm improvements:
   * Added support for VMAT by improving the handling of control point conversion.
