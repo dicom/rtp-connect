@@ -1,3 +1,22 @@
+= 1.6
+
+=== (Unreleased)
+
+* Plan#to_dcm improvements:
+  * Added support for VMAT by improving the handling of control point conversion.
+  * Made dose reference sequences optional.
+  * Order beam limiting device items alphabetically.
+  * Added rudimentary support for scale conversion (scale convention = 1 in control point records).
+  * More robust extraction of jaw position.
+  * More robust handling of cases with missing structure set in the RTP file.
+  * Add support for tolerance table sequence.
+  * Fixed a bug with missing leaf boundary value for 80 and 160 leaf MLCs.
+  * Switched to using fractional cumulative meterset weight, which seems to be more commonly used in commercial systems.
+  * Don't create an SSD DICOM element if the SSD attribute in the RTP file is undefined.
+  * Only write control point attributes which have changed since the previous/initial control point of each beam.
+  * Make sure that the last cumulative meterset weight exactly equals the final cumulative meterset weight.
+
+
 = 1.5
 
 === 24th October, 2013
