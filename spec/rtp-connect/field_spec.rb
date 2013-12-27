@@ -155,6 +155,78 @@ module RTP
     end
 
 
+    describe "#dcm_collimator_x1" do
+
+      it "should return the processed collimator_x1 attribute of the control point" do
+        value = -11.5
+        @f.collimator_x1 = value
+        @f.field_x_mode = 'SYM'
+        @f.dcm_collimator_x1.should eql value * 10
+      end
+
+      it "should return an inverted, negative value in the case of 'sym' field_x_mode and an original positive x1 value" do
+        @f.collimator_x1 = 5.0
+        @f.field_x_mode = 'SYM'
+        @f.dcm_collimator_x1.should eql -50.0
+      end
+
+      it "should return the original negative value in the case of 'sym' field_x_mode with an original negative x1 value" do
+        @f.collimator_x1 = -5.0
+        @f.field_x_mode = 'SYM'
+        @f.dcm_collimator_x1.should eql -50.0
+      end
+
+    end
+
+
+    describe "#dcm_collimator_y1" do
+
+      it "should return the processed collimator_y1 attribute of the control point" do
+        value = -11.5
+        @f.collimator_y1 = value
+        @f.field_y_mode = 'SYM'
+        @f.dcm_collimator_y1.should eql value * 10
+      end
+
+      it "should return an inverted, negative value in the case of 'sym' field_y_mode and an original positive y1 value" do
+        @f.collimator_y1 = 5.0
+        @f.field_y_mode = 'SYM'
+        @f.dcm_collimator_y1.should eql -50.0
+      end
+
+      it "should return the original negative value in the case of 'sym' field_y_mode with an original negative y1 value" do
+        @f.collimator_y1 = -5.0
+        @f.field_y_mode = 'SYM'
+        @f.dcm_collimator_y1.should eql -50.0
+      end
+
+    end
+
+
+    describe "#dcm_collimator_x2" do
+
+      it "should return the processed collimator_x2 attribute of the control point" do
+        value = 11.5
+        @f.collimator_x2 = value
+        @f.field_x_mode = 'SYM'
+        @f.dcm_collimator_x2.should eql value * 10
+      end
+
+    end
+
+
+    describe "#dcm_collimator_y2" do
+
+      it "should return the processed collimator_y2 attribute of the control point" do
+        value = 11.5
+        @f.collimator_y2 = value
+        @f.field_y_mode = 'SYM'
+        @f.dcm_collimator_y2.should eql value * 10
+      end
+
+    end
+
+
     describe "#eql?" do
 
       it "should be true when comparing two instances having the same attribute values" do

@@ -184,6 +184,48 @@ module RTP
       return [@extended_field, @control_points].flatten.compact
     end
 
+    # Converts the collimator_x1 attribute to proper DICOM format.
+    #
+    # @return [Float] the DICOM-formatted collimator_x1 attribute
+    #
+    def dcm_collimator_x1
+      value = @collimator_x1.to_f * 10
+      if @field_x_mode.upcase == 'SYM' && value > 0
+        -value
+      else
+        value
+      end
+    end
+
+    # Converts the collimator_x2 attribute to proper DICOM format.
+    #
+    # @return [Float] the DICOM-formatted collimator_x2 attribute
+    #
+    def dcm_collimator_x2
+      value = @collimator_x2.to_f * 10
+    end
+
+    # Converts the collimator_y1 attribute to proper DICOM format.
+    #
+    # @return [Float] the DICOM-formatted collimator_y1 attribute
+    #
+    def dcm_collimator_y1
+      value = @collimator_y1.to_f * 10
+      if @field_y_mode.upcase == 'SYM' && value > 0
+        -value
+      else
+        value
+      end
+    end
+
+    # Converts the collimator_y2 attribute to proper DICOM format.
+    #
+    # @return [Float] the DICOM-formatted collimator_y2 attribute
+    #
+    def dcm_collimator_y2
+      value = @collimator_y2.to_f * 10
+    end
+
     # Computes a hash code for this object.
     #
     # @note Two objects with the same attributes will have the same hash code.

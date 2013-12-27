@@ -125,6 +125,35 @@ module RTP
         @cp.dcm_collimator_x1.should eql value * 10
       end
 
+      it "should return an inverted, negative value in the case of 'sym' field_x_mode and an original positive x1 value" do
+        @cp.collimator_x1 = 5.0
+        @cp.field_x_mode = 'SYM'
+        @cp.dcm_collimator_x1.should eql -50.0
+      end
+
+      it "should return a negative value in the case of 'sym' field_x_mode and an original negative x1 value" do
+        @cp.collimator_x1 = -5.0
+        @cp.field_x_mode = 'SYM'
+        @cp.dcm_collimator_x1.should eql -50.0
+      end
+
+      it "should return an inverted, negative value in the case of 'sym' field_x_mode, scale convention 1 and an original positive x1 value" do
+        # FIXME: Scale conversion really needs to be investigated closer.
+        @cp.collimator_x1 = 5.0
+        @cp.collimator_y1 = 5.0
+        @cp.field_x_mode = 'SYM'
+        @cp.scale_convention = '1'
+        @cp.dcm_collimator_x1.should eql -50.0
+      end
+
+      it "should return a negative value in the case of 'sym' field_x_mode, scale convention 1 and an original negative x1 value" do
+        @cp.collimator_x1 = -5.0
+        @cp.collimator_y1 = -5.0
+        @cp.field_x_mode = 'SYM'
+        @cp.scale_convention = '1'
+        @cp.dcm_collimator_x1.should eql -50.0
+      end
+
     end
 
 
@@ -144,6 +173,35 @@ module RTP
         @cp.parent.collimator_y1 = value
         @cp.parent.field_y_mode = 'SYM'
         @cp.dcm_collimator_y1.should eql value * 10
+      end
+
+      it "should return an inverted, negative value in the case of 'sym' field_y_mode and an original positive y1 value" do
+        @cp.collimator_y1 = 5.0
+        @cp.field_y_mode = 'SYM'
+        @cp.dcm_collimator_y1.should eql -50.0
+      end
+
+      it "should return the original negative value in the case of 'sym' field_y_mode with an original negative y1 value" do
+        @cp.collimator_y1 = -5.0
+        @cp.field_y_mode = 'SYM'
+        @cp.dcm_collimator_y1.should eql -50.0
+      end
+
+      it "should return an inverted, negative value in the case of 'sym' field_y_mode, scale convention 1 and an original positive x1 value" do
+        # FIXME: Scale conversion really needs to be investigated closer.
+        @cp.collimator_x1 = 5.0
+        @cp.collimator_y1 = 5.0
+        @cp.field_y_mode = 'SYM'
+        @cp.scale_convention = '1'
+        @cp.dcm_collimator_y1.should eql -50.0
+      end
+
+      it "should return a negative value in the case of 'sym' field_y_mode, scale convention 1 and an original negative x1 value" do
+        @cp.collimator_x1 = 5.0
+        @cp.collimator_y1 = -5.0
+        @cp.field_y_mode = 'SYM'
+        @cp.scale_convention = '1'
+        @cp.dcm_collimator_y1.should eql -50.0
       end
 
     end

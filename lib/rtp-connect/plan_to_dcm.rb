@@ -651,11 +651,11 @@ module RTP
       # ASYMX:
       dp_item_x = DICOM::Item.new(:parent => dp_seq)
       DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
-      DICOM::Element.new('300A,011C', "#{field.collimator_x1}\\#{field.collimator_x2}", :parent => dp_item_x)
+      DICOM::Element.new('300A,011C', "#{field.dcm_collimator_x1}\\#{field.dcm_collimator_x2}", :parent => dp_item_x)
       # ASYMY:
       dp_item_y = DICOM::Item.new(:parent => dp_seq)
       DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
-      DICOM::Element.new('300A,011C', "#{field.collimator_y1}\\#{field.collimator_y2}", :parent => dp_item_y)
+      DICOM::Element.new('300A,011C', "#{field.dcm_collimator_y1}\\#{field.dcm_collimator_y2}", :parent => dp_item_y)
       dp_seq
     end
 

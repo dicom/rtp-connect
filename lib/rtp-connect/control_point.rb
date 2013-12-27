@@ -148,9 +148,16 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_x1 attribute
     #
     def dcm_collimator_x1
+      # Deal with scale convertion:
       attribute = (scale_convertion? ? :collimator_y1 : :collimator_x1)
       target = (@field_x_mode && !@field_x_mode.empty? ? self : @parent)
-      target.send(attribute).to_f * 10 * scale_factor
+      value = target.send(attribute).to_f * 10 * scale_factor
+      # Deal with 'SYM' mode:
+      if @field_x_mode && @field_x_mode.upcase == 'SYM' && value > 0
+        -value
+      else
+        value
+      end
     end
 
     # Converts the collimator_x2 attribute to proper DICOM format.
@@ -168,9 +175,16 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_y1 attribute
     #
     def dcm_collimator_y1
+      # Deal with scale convertion:
       attribute = (scale_convertion? ? :collimator_x1 : :collimator_y1)
       target = (@field_y_mode && !@field_y_mode.empty? ? self : @parent)
-      target.send(attribute).to_f * 10 * scale_factor
+      value = target.send(attribute).to_f * 10 * scale_factor
+      # Deal with 'SYM' mode:
+      if @field_y_mode && @field_y_mode.upcase == 'SYM' && value > 0
+        -value
+      else
+        value
+      end
     end
 
     # Converts the collimator_y2 attribute to proper DICOM format.
@@ -601,6 +615,8 @@ module RTP
     # @return [Numerical] the scale converted value
     #
     def scale_factor
+      # It should be noted that this scale factor is not satisfactory mapped.
+      # Perhaps its support should even be removed until it is sufficiently specced?
       scale_convertion? ? -1 : 1
     end
 

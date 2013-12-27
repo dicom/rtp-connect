@@ -500,8 +500,8 @@ module RTP
         dcm = p.to_dcm
         xjaws = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C')
         yjaws = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C')
-        xjaws.should eql "0.0\\10.8"
-        yjaws.should eql "-4.5\\4.5"
+        xjaws.should eql "0.0\\108.0"
+        yjaws.should eql "-45.0\\45.0"
       end
 
     end
