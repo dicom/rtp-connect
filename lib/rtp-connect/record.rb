@@ -10,6 +10,18 @@ module RTP
     # The CRC is used to validate the integrity of the content of the RTP string line.
     attr_reader :crc
 
+    # Creates a new Record.
+    #
+    # @param [String] keyword the keyword which identifies this record
+    # @param [Integer] min_elements the minimum number of data elements required for this record
+    # @param [Integer] max_elements the maximum supported number of data elements for this record
+    #
+    def initialize(keyword, min_elements, max_elements)
+      @keyword = keyword
+      @min_elements = min_elements
+      @max_elements = max_elements
+    end
+
     # Sets the crc (checksum) attribute.
     #
     # @note This value is not used when creating an RTP string from a record (a new crc is calculated)
@@ -54,6 +66,22 @@ module RTP
     def keyword=(value)
       value = value.to_s.upcase
       raise ArgumentError, "Invalid keyword. Expected '#{@keyword}', got #{value}." unless value == @keyword
+    end
+
+    # Sets up a record by parsing a RTPConnect string line.
+    #
+    # @param [#to_s] string the extended treatment field definition record string line
+    # @param [Record] parent a record which is used to determine the proper parent of this instance
+    # @return [Record] the updated Record instance
+    # @raise [ArgumentError] if given a string containing an invalid number of elements
+    #
+    def load(string)
+      # Extract processed values:
+      values = string.to_s.values
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{@min_elements} elements, got #{values.length}." if values.length < @min_elements
+      RTP.logger.warn "The number of given elements (#{values.length}) exceeds the known number of data elements for this record (#{@max_elements}). This may indicate an invalid string record or that the RTP format has recently been expanded with new elements." if values.length > @max_elements
+      self.send(:set_attributes, values)
+      self
     end
 
     # Returns self.

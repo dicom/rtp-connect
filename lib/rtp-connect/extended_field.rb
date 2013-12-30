@@ -27,15 +27,8 @@ module RTP
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
-      # Get the quote-less values:
-      values = string.to_s.values
-      low_limit = 4
-      high_limit = 10
-      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
-      RTP.logger.warn "The number of elements (#{values.length}) for this ExtendedField record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       ef = self.new(parent)
-      ef.send(:set_attributes, values)
-      ef
+      ef.load(string)
     end
 
     # Creates a new (treatment) ExtendedField.
@@ -43,10 +36,10 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
+      super('EXTENDED_FIELD_DEF', 4, 10)
       # Parent relation (may get more than one type of record here):
       @parent = get_parent(parent.to_record, Field)
       @parent.add_extended_field(self)
-      @keyword = 'EXTENDED_FIELD_DEF'
       @attributes = [
         # Required:
         :keyword,

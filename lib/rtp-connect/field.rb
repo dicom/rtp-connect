@@ -70,15 +70,8 @@ module RTP
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
-      # Get the quote-less values:
-      values = string.to_s.values
-      low_limit = 27
-      high_limit = 49
-      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
-      RTP.logger.warn "The number of elements (#{values.length}) for this Field record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       f = self.new(parent)
-      f.send(:set_attributes, values)
-      f
+      f.load(string)
     end
 
     # Creates a new (treatment) Field.
@@ -86,13 +79,13 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
+      super('FIELD_DEF', 27, 49)
       # Child records:
       @control_points = Array.new
       @extended_field = nil
       # Parent relation (may get more than one type of record here):
       @parent = get_parent(parent.to_record, Prescription)
       @parent.add_field(self)
-      @keyword = 'FIELD_DEF'
       @attributes = [
         # Required:
         :keyword,

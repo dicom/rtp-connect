@@ -33,15 +33,8 @@ module RTP
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
-      # Get the quote-less values:
-      values = string.to_s.values
-      low_limit = 5
-      high_limit = 16
-      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
-      RTP.logger.warn "The number of elements (#{values.length}) for this SiteSetup record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       s = self.new(parent)
-      s.send(:set_attributes, values)
-      s
+      s.load(string)
     end
 
     # Creates a new SiteSetup.
@@ -49,10 +42,10 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
+      super('SITE_SETUP_DEF', 5, 16)
       # Parent relation (always expecting a Prescription here):
       @parent = get_parent(parent.to_prescription, Prescription)
       @parent.add_site_setup(self)
-      @keyword = 'SITE_SETUP_DEF'
       @attributes = [
         # Required:
         :keyword,

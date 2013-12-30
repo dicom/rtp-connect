@@ -67,15 +67,8 @@ module RTP
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string)
-      # Get the quote-less values:
-      values = string.to_s.values
-      low_limit = 10
-      high_limit = 28
-      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
-      RTP.logger.warn "The number of elements (#{values.length}) for this Plan record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       rtp = self.new
-      rtp.send(:set_attributes, values)
-      rtp
+      rtp.load(string)
     end
 
     # Creates a Plan instance by parsing an RTPConnect string.
@@ -142,13 +135,13 @@ module RTP
     # Creates a new Plan.
     #
     def initialize
+      super('PLAN_DEF', 10, 28)
       @current_parent = self
       # Child records:
       @prescriptions = Array.new
       @dose_trackings = Array.new
       # No parent (by definition) for the Plan record:
       @parent = nil
-      @keyword = 'PLAN_DEF'
       @attributes = [
         # Required:
         :keyword,

@@ -70,15 +70,8 @@ module RTP
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
-      # Get the quote-less values:
-      values = string.to_s.values
-      low_limit = 17
-      high_limit = 53
-      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
-      RTP.logger.warn "The number of elements (#{values.length}) for this Simulation Field record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       sf = self.new(parent)
-      sf.send(:set_attributes, values)
-      sf
+      sf.load(string)
     end
 
     # Creates a new SimulationField.
@@ -86,10 +79,10 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
+      super('SIM_DEF', 17, 53)
       # Parent relation (may get more than one type of record here):
       @parent = get_parent(parent.to_record, Prescription)
       @parent.add_simulation_field(self)
-      @keyword = 'SIM_DEF'
       @attributes = [
         # Required:
         :keyword,

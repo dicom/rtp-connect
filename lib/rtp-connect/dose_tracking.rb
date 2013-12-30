@@ -29,15 +29,8 @@ module RTP
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
     def self.load(string, parent)
-      # Get the quote-less values:
-      values = string.to_s.values
-      low_limit = 24
-      high_limit = 26
-      raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
-      RTP.logger.warn "The number of elements (#{values.length}) for this DoseTracking record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       d = self.new(parent)
-      d.send(:set_attributes, values)
-      d
+      d.load(string)
     end
 
     # Creates a new DoseTracking.
@@ -45,12 +38,12 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
+      super('DOSE_DEF', 24, 26)
       # Child records:
       @dose_actions = Array.new
       # Parent relation (may get more than one type of record here):
       @parent = get_parent(parent.to_record, Plan)
       @parent.add_dose_tracking(self)
-      @keyword = 'DOSE_DEF'
       @field_ids = Array.new(10)
       @region_coeffs = Array.new(10)
       @attributes = [
