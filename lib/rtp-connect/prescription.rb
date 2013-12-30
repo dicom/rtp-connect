@@ -136,15 +136,6 @@ module RTP
       state.hash
     end
 
-    # Collects the values (attributes) of this instance.
-    #
-    # @note The CRC is not considered part of the actual values and is excluded.
-    # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
-    #
-    def values
-      @attributes.collect {|attribute| self.send(attribute)}
-    end
-
     # Returns self.
     #
     # @return [Prescription] self
