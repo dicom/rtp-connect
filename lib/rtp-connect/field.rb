@@ -77,57 +77,8 @@ module RTP
       raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
       RTP.logger.warn "The number of elements (#{values.length}) for this Field record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       f = self.new(parent)
-      # Assign the values to attributes:
-      f.keyword = values[0]
-      f.rx_site_name = values[1]
-      f.field_name = values[2]
-      f.field_id = values[3]
-      f.field_note = values[4]
-      f.field_dose = values[5]
-      f.field_monitor_units = values[6]
-      f.wedge_monitor_units = values[7]
-      f.treatment_machine = values[8]
-      f.treatment_type = values[9]
-      f.modality = values[10]
-      f.energy = values[11]
-      f.time = values[12]
-      f.doserate = values[13]
-      f.sad = values[14]
-      f.ssd = values[15]
-      f.gantry_angle = values[16]
-      f.collimator_angle = values[17]
-      f.field_x_mode = values[18]
-      f.field_x = values[19]
-      f.collimator_x1 = values[20]
-      f.collimator_x2 = values[21]
-      f.field_y_mode = values[22]
-      f.field_y = values[23]
-      f.collimator_y1 = values[24]
-      f.collimator_y2 = values[25]
-      f.couch_vertical = values[26]
-      f.couch_lateral = values[27]
-      f.couch_longitudinal = values[28]
-      f.couch_angle = values[29]
-      f.couch_pedestal = values[30]
-      f.tolerance_table = values[31]
-      f.arc_direction = values[32]
-      f.arc_start_angle = values[33]
-      f.arc_stop_angle = values[34]
-      f.arc_mu_degree = values[35]
-      f.wedge = values[36]
-      f.dynamic_wedge = values[37]
-      f.block = values[38]
-      f.compensator = values[39]
-      f.e_applicator = values[40]
-      f.e_field_def_aperture = values[41]
-      f.bolus = values[42]
-      f.portfilm_mu_open = values[43]
-      f.portfilm_coeff_open = values[44]
-      f.portfilm_delta_open = values[45]
-      f.portfilm_mu_treat = values[46]
-      f.portfilm_coeff_treat = values[47]
-      f.crc = values[-1]
-      return f
+      f.send(:set_attributes, values)
+      f
     end
 
     # Creates a new (treatment) Field.
@@ -142,6 +93,58 @@ module RTP
       @parent = get_parent(parent.to_record, Prescription)
       @parent.add_field(self)
       @keyword = 'FIELD_DEF'
+      @attributes = [
+        # Required:
+        :keyword,
+        :rx_site_name,
+        :field_name,
+        :field_id,
+        :field_note,
+        :field_dose,
+        :field_monitor_units,
+        :wedge_monitor_units,
+        :treatment_machine,
+        :treatment_type,
+        :modality,
+        :energy,
+        :time,
+        :doserate,
+        :sad,
+        :ssd,
+        :gantry_angle,
+        :collimator_angle,
+        :field_x_mode,
+        :field_x,
+        :collimator_x1,
+        :collimator_x2,
+        :field_y_mode,
+        :field_y,
+        :collimator_y1,
+        :collimator_y2,
+        # Optional:
+        :couch_vertical,
+        :couch_lateral,
+        :couch_longitudinal,
+        :couch_angle,
+        :couch_pedestal,
+        :tolerance_table,
+        :arc_direction,
+        :arc_start_angle,
+        :arc_stop_angle,
+        :arc_mu_degree,
+        :wedge,
+        :dynamic_wedge,
+        :block,
+        :compensator,
+        :e_applicator,
+        :e_field_def_aperture,
+        :bolus,
+        :portfilm_mu_open,
+        :portfilm_coeff_open,
+        :portfilm_delta_open,
+        :portfilm_mu_treat,
+        :portfilm_coeff_treat
+      ]
     end
 
     # Checks for equality.
@@ -242,56 +245,7 @@ module RTP
     # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
-      return [
-        @keyword,
-        @rx_site_name,
-        @field_name,
-        @field_id,
-        @field_note,
-        @field_dose,
-        @field_monitor_units,
-        @wedge_monitor_units,
-        @treatment_machine,
-        @treatment_type,
-        @modality,
-        @energy,
-        @time,
-        @doserate,
-        @sad,
-        @ssd,
-        @gantry_angle,
-        @collimator_angle,
-        @field_x_mode,
-        @field_x,
-        @collimator_x1,
-        @collimator_x2,
-        @field_y_mode,
-        @field_y,
-        @collimator_y1,
-        @collimator_y2,
-        @couch_vertical,
-        @couch_lateral,
-        @couch_longitudinal,
-        @couch_angle,
-        @couch_pedestal,
-        @tolerance_table,
-        @arc_direction,
-        @arc_start_angle,
-        @arc_stop_angle,
-        @arc_mu_degree,
-        @wedge,
-        @dynamic_wedge,
-        @block,
-        @compensator,
-        @e_applicator,
-        @e_field_def_aperture,
-        @bolus,
-        @portfilm_mu_open,
-        @portfilm_coeff_open,
-        @portfilm_delta_open,
-        @portfilm_mu_treat,
-        @portfilm_coeff_treat
-      ]
+      @attributes.collect {|attribute| self.send(attribute)}
     end
 
     # Returns self.

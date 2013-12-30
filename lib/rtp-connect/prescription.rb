@@ -43,21 +43,8 @@ module RTP
       raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
       RTP.logger.warn "The number of elements (#{values.length}) for this Prescription record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       p = self.new(parent)
-      # Assign the values to attributes:
-      p.keyword = values[0]
-      p.course_id = values[1]
-      p.rx_site_name = values[2]
-      p.technique = values[3]
-      p.modality = values[4]
-      p.dose_spec = values[5]
-      p.rx_depth = values[6]
-      p.dose_ttl = values[7]
-      p.dose_tx = values[8]
-      p.pattern = values[9]
-      p.rx_note = values[10]
-      p.number_of_fields = values[11]
-      p.crc = values[-1]
-      return p
+      p.send(:set_attributes, values)
+      p
     end
 
     # Creates a new Prescription site.
@@ -73,6 +60,22 @@ module RTP
       @parent = get_parent(parent.to_record, Plan)
       @parent.add_prescription(self)
       @keyword = 'RX_DEF'
+      @attributes = [
+        # Required:
+        :keyword,
+        :course_id,
+        :rx_site_name,
+        # Optional:
+        :technique,
+        :modality,
+        :dose_spec,
+        :rx_depth,
+        :dose_ttl,
+        :dose_tx,
+        :pattern,
+        :rx_note,
+        :number_of_fields
+      ]
     end
 
     # Checks for equality.
@@ -139,20 +142,7 @@ module RTP
     # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
-      return [
-        @keyword,
-        @course_id,
-        @rx_site_name,
-        @technique,
-        @modality,
-        @dose_spec,
-        @rx_depth,
-        @dose_ttl,
-        @dose_tx,
-        @pattern,
-        @rx_note,
-        @number_of_fields
-      ]
+      @attributes.collect {|attribute| self.send(attribute)}
     end
 
     # Returns self.

@@ -63,43 +63,8 @@ module RTP
       raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
       RTP.logger.warn "The number of elements (#{values.length}) for this ControlPoint record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       cp = self.new(parent)
-      # Assign the values to attributes:
-      cp.keyword = values[0]
-      cp.field_id = values[1]
-      cp.mlc_type = values[2]
-      cp.mlc_leaves = values[3]
-      cp.total_control_points = values[4]
-      cp.control_pt_number = values[5]
-      cp.mu_convention = values[6]
-      cp.monitor_units = values[7]
-      cp.wedge_position = values[8]
-      cp.energy = values[9]
-      cp.doserate = values[10]
-      cp.ssd = values[11]
-      cp.scale_convention = values[12]
-      cp.gantry_angle = values[13]
-      cp.gantry_dir = values[14]
-      cp.collimator_angle = values[15]
-      cp.collimator_dir = values[16]
-      cp.field_x_mode = values[17]
-      cp.field_x = values[18]
-      cp.collimator_x1 = values[19]
-      cp.collimator_x2 = values[20]
-      cp.field_y_mode = values[21]
-      cp.field_y = values[22]
-      cp.collimator_y1 = values[23]
-      cp.collimator_y2 = values[24]
-      cp.couch_vertical = values[25]
-      cp.couch_lateral = values[26]
-      cp.couch_longitudinal = values[27]
-      cp.couch_angle = values[28]
-      cp.couch_dir = values[29]
-      cp.couch_pedestal = values[30]
-      cp.couch_ped_dir = values[31]
-      cp.mlc_lp_a = [*values[32..131]]
-      cp.mlc_lp_b = [*values[132..231]]
-      cp.crc = values[-1]
-      return cp
+      cp.send(:set_attributes, values)
+      cp
     end
 
     # Creates a new ControlPoint.
@@ -115,6 +80,43 @@ module RTP
       @keyword = 'CONTROL_PT_DEF'
       @mlc_lp_a = Array.new(100)
       @mlc_lp_b = Array.new(100)
+      @attributes = [
+        # Required:
+        :keyword,
+        :field_id,
+        :mlc_type,
+        :mlc_leaves,
+        :total_control_points,
+        :control_pt_number,
+        :mu_convention,
+        :monitor_units,
+        :wedge_position,
+        :energy,
+        :doserate,
+        :ssd,
+        :scale_convention,
+        :gantry_angle,
+        :gantry_dir,
+        :collimator_angle,
+        :collimator_dir,
+        :field_x_mode,
+        :field_x,
+        :collimator_x1,
+        :collimator_x2,
+        :field_y_mode,
+        :field_y,
+        :collimator_y1,
+        :collimator_y2,
+        :couch_vertical,
+        :couch_lateral,
+        :couch_longitudinal,
+        :couch_angle,
+        :couch_dir,
+        :couch_pedestal,
+        :couch_ped_dir,
+        :mlc_lp_a,
+        :mlc_lp_b
+      ]
     end
 
     # Checks for equality.
@@ -233,7 +235,7 @@ module RTP
     # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
-      return [
+      [
         @keyword,
         @field_id,
         @mlc_type,
@@ -606,6 +608,48 @@ module RTP
       # It should be noted that this scale factor is not satisfactory mapped.
       # Perhaps its support should even be removed until it is sufficiently specced?
       scale_convertion? ? -1 : 1
+    end
+
+    # Sets the attributes of the record instance.
+    #
+    # @param [Array<String>] values the record attributes (as parsed from a record string)
+    #
+    def set_attributes(values)
+      self.keyword = values[0]
+      @field_id = values[1]
+      @mlc_type = values[2]
+      @mlc_leaves = values[3]
+      @total_control_points = values[4]
+      @control_pt_number = values[5]
+      @mu_convention = values[6]
+      @monitor_units = values[7]
+      @wedge_position = values[8]
+      @energy = values[9]
+      @doserate = values[10]
+      @ssd = values[11]
+      @scale_convention = values[12]
+      @gantry_angle = values[13]
+      @gantry_dir = values[14]
+      @collimator_angle = values[15]
+      @collimator_dir = values[16]
+      @field_x_mode = values[17]
+      @field_x = values[18]
+      @collimator_x1 = values[19]
+      @collimator_x2 = values[20]
+      @field_y_mode = values[21]
+      @field_y = values[22]
+      @collimator_y1 = values[23]
+      @collimator_y2 = values[24]
+      @couch_vertical = values[25]
+      @couch_lateral = values[26]
+      @couch_longitudinal = values[27]
+      @couch_angle = values[28]
+      @couch_dir = values[29]
+      @couch_pedestal = values[30]
+      @couch_ped_dir = values[31]
+      @mlc_lp_a = [*values[32..131]]
+      @mlc_lp_b = [*values[132..231]]
+      @crc = values[-1]
     end
 
   end

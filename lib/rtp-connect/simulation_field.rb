@@ -77,61 +77,8 @@ module RTP
       raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
       RTP.logger.warn "The number of elements (#{values.length}) for this Simulation Field record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       sf = self.new(parent)
-      # Assign the values to attributes:
-      sf.keyword = values[0]
-      sf.rx_site_name = values[1]
-      sf.field_name = values[2]
-      sf.field_id = values[3]
-      sf.field_note = values[4]
-      sf.treatment_machine = values[5]
-      sf.gantry_angle = values[6]
-      sf.collimator_angle = values[7]
-      sf.field_x_mode = values[8]
-      sf.field_x = values[9]
-      sf.collimator_x1 = values[10]
-      sf.collimator_x2 = values[11]
-      sf.field_y_mode = values[12]
-      sf.field_y = values[13]
-      sf.collimator_y1 = values[14]
-      sf.collimator_y2 = values[15]
-      sf.couch_vertical = values[16]
-      sf.couch_lateral = values[17]
-      sf.couch_longitudinal = values[18]
-      sf.couch_angle = values[19]
-      sf.couch_pedestal = values[20]
-      sf.sad = values[21]
-      sf.ap_separation = values[22]
-      sf.pa_separation = values[23]
-      sf.lateral_separation = values[24]
-      sf.tangential_separation = values[25]
-      sf.other_label_1 = values[26]
-      sf.ssd_1 = values[27]
-      sf.sfd_1 = values[28]
-      sf.other_label_2 = values[29]
-      sf.other_measurement_1 = values[30]
-      sf.other_measurement_2 = values[31]
-      sf.other_label_3 = values[32]
-      sf.other_measurement_3 = values[33]
-      sf.other_measurement_4 = values[34]
-      sf.other_label_4 = values[35]
-      sf.other_measurement_5 = values[36]
-      sf.other_measurement_6 = values[37]
-      sf.blade_x_mode = values[38]
-      sf.blade_x = values[39]
-      sf.blade_x1 = values[40]
-      sf.blade_x2 = values[41]
-      sf.blade_y_mode = values[42]
-      sf.blade_y = values[43]
-      sf.blade_y1 = values[44]
-      sf.blade_y2 = values[45]
-      sf.ii_lateral = values[46]
-      sf.ii_longitudinal = values[47]
-      sf.ii_vertical = values[48]
-      sf.kvp = values[49]
-      sf.ma = values[50]
-      sf.seconds = values[51]
-      sf.crc = values[-1]
-      return sf
+      sf.send(:set_attributes, values)
+      sf
     end
 
     # Creates a new SimulationField.
@@ -143,6 +90,62 @@ module RTP
       @parent = get_parent(parent.to_record, Prescription)
       @parent.add_simulation_field(self)
       @keyword = 'SIM_DEF'
+      @attributes = [
+        # Required:
+        :keyword,
+        :rx_site_name,
+        :field_name,
+        :field_id,
+        :field_note,
+        :treatment_machine,
+        :gantry_angle,
+        :collimator_angle,
+        :field_x_mode,
+        :field_x,
+        :collimator_x1,
+        :collimator_x2,
+        :field_y_mode,
+        :field_y,
+        :collimator_y1,
+        :collimator_y2,
+        # Optional:
+        :couch_vertical,
+        :couch_lateral,
+        :couch_longitudinal,
+        :couch_angle,
+        :couch_pedestal,
+        :sad,
+        :ap_separation,
+        :pa_separation,
+        :lateral_separation,
+        :tangential_separation,
+        :other_label_1,
+        :ssd_1,
+        :sfd_1,
+        :other_label_2,
+        :other_measurement_1,
+        :other_measurement_2,
+        :other_label_3,
+        :other_measurement_3,
+        :other_measurement_4,
+        :other_label_4,
+        :other_measurement_5,
+        :other_measurement_6,
+        :blade_x_mode,
+        :blade_x,
+        :blade_x1,
+        :blade_x2,
+        :blade_y_mode,
+        :blade_y,
+        :blade_y1,
+        :blade_y2,
+        :ii_lateral,
+        :ii_longitudinal,
+        :ii_vertical,
+        :kvp,
+        :ma,
+        :seconds
+      ]
     end
 
     # Checks for equality.
@@ -185,60 +188,7 @@ module RTP
     # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
-      return [
-        @keyword,
-        @rx_site_name,
-        @field_name,
-        @field_id,
-        @field_note,
-        @treatment_machine,
-        @gantry_angle,
-        @collimator_angle,
-        @field_x_mode,
-        @field_x,
-        @collimator_x1,
-        @collimator_x2,
-        @field_y_mode,
-        @field_y,
-        @collimator_y1,
-        @collimator_y2,
-        @couch_vertical,
-        @couch_lateral,
-        @couch_longitudinal,
-        @couch_angle,
-        @couch_pedestal,
-        @sad,
-        @ap_separation,
-        @pa_separation,
-        @lateral_separation,
-        @tangential_separation,
-        @other_label_1,
-        @ssd_1,
-        @sfd_1,
-        @other_label_2,
-        @other_measurement_1,
-        @other_measurement_2,
-        @other_label_3,
-        @other_measurement_3,
-        @other_measurement_4,
-        @other_label_4,
-        @other_measurement_5,
-        @other_measurement_6,
-        @blade_x_mode,
-        @blade_x,
-        @blade_x1,
-        @blade_x2,
-        @blade_y_mode,
-        @blade_y,
-        @blade_y1,
-        @blade_y2,
-        @ii_lateral,
-        @ii_longitudinal,
-        @ii_vertical,
-        @kvp,
-        @ma,
-        @seconds
-      ]
+      @attributes.collect {|attribute| self.send(attribute)}
     end
 
     # Returns self.

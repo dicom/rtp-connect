@@ -36,16 +36,8 @@ module RTP
       raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
       RTP.logger.warn "The number of elements (#{values.length}) for this DoseTracking record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       d = self.new(parent)
-      # Assign the values to attributes:
-      d.keyword = values[0]
-      d.region_name = values[1]
-      d.region_prior_dose = values[2]
-      d.field_ids = values.values_at(3, 5, 7, 9, 11, 13, 15, 17, 19, 21)
-      d.region_coeffs = values.values_at(4, 6, 8, 10, 12, 14, 16, 18, 20, 22)
-      d.actual_dose = values[23]
-      d.actual_fractions = values[24]
-      d.crc = values[-1]
-      return d
+      d.send(:set_attributes, values)
+      d
     end
 
     # Creates a new DoseTracking.
@@ -61,6 +53,17 @@ module RTP
       @keyword = 'DOSE_DEF'
       @field_ids = Array.new(10)
       @region_coeffs = Array.new(10)
+      @attributes = [
+        # Required:
+        :keyword,
+        :region_name,
+        :region_prior_dose,
+        :field_ids,
+        :region_coeffs,
+        # Optional:
+        :actual_dose,
+        :actual_fractions
+      ]
     end
 
     # Checks for equality.
@@ -105,7 +108,7 @@ module RTP
     # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
-      return [
+      [
         @keyword,
         @region_name,
         @region_prior_dose,
@@ -207,6 +210,21 @@ module RTP
     # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
+
+    # Sets the attributes of the record instance.
+    #
+    # @param [Array<String>] values the record attributes (as parsed from a record string)
+    #
+    def set_attributes(values)
+      self.keyword = values[0]
+      @region_name = values[1]
+      @region_prior_dose = values[2]
+      @field_ids = values.values_at(3, 5, 7, 9, 11, 13, 15, 17, 19, 21)
+      @region_coeffs = values.values_at(4, 6, 8, 10, 12, 14, 16, 18, 20, 22)
+      @actual_dose = values[23]
+      @actual_fractions = values[24]
+      @crc = values[-1]
+    end
 
   end
 

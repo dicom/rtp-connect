@@ -74,36 +74,8 @@ module RTP
       raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
       RTP.logger.warn "The number of elements (#{values.length}) for this Plan record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       rtp = self.new
-      # Assign the values to attributes:
-      rtp.keyword = values[0]
-      rtp.patient_id = values[1]
-      rtp.patient_last_name = values[2]
-      rtp.patient_first_name = values[3]
-      rtp.patient_middle_initial = values[4]
-      rtp.plan_id = values[5]
-      rtp.plan_date = values[6]
-      rtp.plan_time = values[7]
-      rtp.course_id = values[8]
-      rtp.diagnosis = values[9]
-      rtp.md_last_name = values[10]
-      rtp.md_first_name = values[11]
-      rtp.md_middle_initial = values[12]
-      rtp.md_approve_last_name = values[13]
-      rtp.md_approve_first_name = values[14]
-      rtp.md_approve_middle_initial = values[15]
-      rtp.phy_approve_last_name = values[16]
-      rtp.phy_approve_first_name = values[17]
-      rtp.phy_approve_middle_initial = values[18]
-      rtp.author_last_name = values[19]
-      rtp.author_first_name = values[20]
-      rtp.author_middle_initial = values[21]
-      rtp.rtp_mfg = values[22]
-      rtp.rtp_model = values[23]
-      rtp.rtp_version = values[24]
-      rtp.rtp_if_protocol = values[25]
-      rtp.rtp_if_version = values[26]
-      rtp.crc = values[-1]
-      return rtp
+      rtp.send(:set_attributes, values)
+      rtp
     end
 
     # Creates a Plan instance by parsing an RTPConnect string.
@@ -177,6 +149,37 @@ module RTP
       # No parent (by definition) for the Plan record:
       @parent = nil
       @keyword = 'PLAN_DEF'
+      @attributes = [
+        # Required:
+        :keyword,
+        :patient_id,
+        :patient_last_name,
+        :patient_first_name,
+        :patient_middle_initial,
+        :plan_id,
+        :plan_date,
+        :plan_time,
+        :course_id,
+        # Optional:
+        :diagnosis,
+        :md_last_name,
+        :md_first_name,
+        :md_middle_initial,
+        :md_approve_last_name,
+        :md_approve_first_name,
+        :md_approve_middle_initial,
+        :phy_approve_last_name,
+        :phy_approve_first_name,
+        :phy_approve_middle_initial,
+        :author_last_name,
+        :author_first_name,
+        :author_middle_initial,
+        :rtp_mfg,
+        :rtp_model,
+        :rtp_version,
+        :rtp_if_protocol,
+        :rtp_if_version
+      ]
     end
 
     # Checks for equality.
@@ -235,35 +238,7 @@ module RTP
     # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
-      return [
-        @keyword,
-        @patient_id,
-        @patient_last_name,
-        @patient_first_name,
-        @patient_middle_initial,
-        @plan_id,
-        @plan_date,
-        @plan_time,
-        @course_id,
-        @diagnosis,
-        @md_last_name,
-        @md_first_name,
-        @md_middle_initial,
-        @md_approve_last_name,
-        @md_approve_first_name,
-        @md_approve_middle_initial,
-        @phy_approve_last_name,
-        @phy_approve_first_name,
-        @phy_approve_middle_initial,
-        @author_last_name,
-        @author_first_name,
-        @author_middle_initial,
-        @rtp_mfg,
-        @rtp_model,
-        @rtp_version,
-        @rtp_if_protocol,
-        @rtp_if_version
-      ]
+      @attributes.collect {|attribute| self.send(attribute)}
     end
 
     # Returns self.
