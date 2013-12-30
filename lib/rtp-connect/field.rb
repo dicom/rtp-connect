@@ -319,18 +319,6 @@ module RTP
 
     alias :to_str :to_s
 
-    # Sets the keyword attribute.
-    #
-    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method
-    # @param [#to_s] value the new attribute value
-    # @raise [ArgumentError] if given an unexpected keyword
-    #
-    def keyword=(value)
-      value = value.to_s.upcase
-      raise ArgumentError, "Invalid keyword. Expected 'FIELD_DEF', got #{value}." unless value == "FIELD_DEF"
-      @keyword = value
-    end
-
     # Sets the rx_site_name attribute.
     #
     # @param [nil, #to_s] value the new attribute value

@@ -45,6 +45,17 @@ module RTP
       end
     end
 
+    # Vverifies a proposed keyword attribute.
+    #
+    # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method.
+    # @param [#to_s] value the proposed keyword attribute
+    # @raise [ArgumentError] if given an unexpected keyword
+    #
+    def keyword=(value)
+      value = value.to_s.upcase
+      raise ArgumentError, "Invalid keyword. Expected '#{@keyword}', got #{value}." unless value == @keyword
+    end
+
     # Returns self.
     #
     # @return [Record] self
