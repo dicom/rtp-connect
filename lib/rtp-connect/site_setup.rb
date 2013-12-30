@@ -40,24 +40,8 @@ module RTP
       raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
       RTP.logger.warn "The number of elements (#{values.length}) for this SiteSetup record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       s = self.new(parent)
-      # Assign the values to attributes:
-      s.keyword = values[0]
-      s.rx_site_name = values[1]
-      s.patient_orientation = values[2]
-      s.treatment_machine = values[3]
-      s.tolerance_table = values[4]
-      s.iso_pos_x = values[5]
-      s.iso_pos_y = values[6]
-      s.iso_pos_z = values[7]
-      s.structure_set_uid = values[8]
-      s.frame_of_ref_uid = values[9]
-      s.couch_vertical = values[10]
-      s.couch_lateral = values[11]
-      s.couch_longitudinal = values[12]
-      s.couch_angle = values[13]
-      s.couch_pedestal = values[14]
-      s.crc = values[-1]
-      return s
+      s.send(:set_attributes, values)
+      s
     end
 
     # Creates a new SiteSetup.
@@ -69,6 +53,25 @@ module RTP
       @parent = get_parent(parent.to_prescription, Prescription)
       @parent.add_site_setup(self)
       @keyword = 'SITE_SETUP_DEF'
+      @attributes = [
+        # Required:
+        :keyword,
+        :rx_site_name,
+        :patient_orientation,
+        :treatment_machine,
+        # Optional:
+        :tolerance_table,
+        :iso_pos_x,
+        :iso_pos_y,
+        :iso_pos_z,
+        :structure_set_uid,
+        :frame_of_ref_uid,
+        :couch_vertical,
+        :couch_lateral,
+        :couch_longitudinal,
+        :couch_angle,
+        :couch_pedestal
+      ]
     end
 
     # Checks for equality.
@@ -111,23 +114,7 @@ module RTP
     # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
-      return [
-        @keyword,
-        @rx_site_name,
-        @patient_orientation,
-        @treatment_machine,
-        @tolerance_table,
-        @iso_pos_x,
-        @iso_pos_y,
-        @iso_pos_z,
-        @structure_set_uid,
-        @frame_of_ref_uid,
-        @couch_vertical,
-        @couch_lateral,
-        @couch_longitudinal,
-        @couch_angle,
-        @couch_pedestal
-      ]
+      @attributes.collect {|attribute| self.send(attribute)}
     end
 
     # Encodes the SiteSetup object + any hiearchy of child objects,
@@ -277,6 +264,15 @@ module RTP
     # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
+
+    # Sets the attributes of the record instance.
+    #
+    # @param [Array<String>] values the record attributes (as parsed from a record string)
+    #
+    def set_attributes(values)
+      @attributes.each_index {|i| self.send("#{@attributes[i]}=", values[i])}
+      @crc = values[-1]
+    end
 
   end
 
