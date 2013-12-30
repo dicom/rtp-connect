@@ -174,11 +174,11 @@ module RTP
     describe "#field_ids=()" do
 
       it "should raise an error if the specified array has less than 10 elements" do
-        expect {@dt.field_ids=(Array.new(9, ''))}.to raise_error(ArgumentError, /'array'/)
+        expect {@dt.field_ids=(Array.new(9, ''))}.to raise_error(ArgumentError, /array/)
       end
 
       it "should raise an error if the specified array has more than 10 elements" do
-        expect {@dt.field_ids=(Array.new(11, ''))}.to raise_error(ArgumentError, /'array'/)
+        expect {@dt.field_ids=(Array.new(11, ''))}.to raise_error(ArgumentError, /array/)
       end
 
       it "should transfer the array (containing string and nil values) to the field_ids attribute" do
@@ -201,11 +201,11 @@ module RTP
     describe "#region_coeffs=()" do
 
       it "should raise an error if the specified array has less than 10 elements" do
-        expect {@dt.region_coeffs=(Array.new(9, ''))}.to raise_error(ArgumentError, /'array'/)
+        expect {@dt.region_coeffs=(Array.new(9, ''))}.to raise_error(ArgumentError, /array/)
       end
 
       it "should raise an error if the specified array has more than 10 elements" do
-        expect {@dt.region_coeffs=(Array.new(11, ''))}.to raise_error(ArgumentError, /'array'/)
+        expect {@dt.region_coeffs=(Array.new(11, ''))}.to raise_error(ArgumentError, /array/)
       end
 
       it "should transfer the array (containing string and nil values) to the region_coeffs attribute" do

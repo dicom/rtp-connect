@@ -76,6 +76,16 @@ class Array
     return wrapped.join(',')
   end
 
+  # Validates the number of elements in an array and converts all elements
+  # to strings.
+  #
+  # @param [Integer] nr the required number of elements in the array
+  #
+  def validate_and_process(nr)
+    raise ArgumentError, "Invalid array length. Expected exactly #{nr} elements, got #{self.length}." unless self.length == nr
+    self.collect {|e| e && e.to_s}
+  end
+
 end
 
 # An extension to the NilClass, facilitating a transformation from nil to

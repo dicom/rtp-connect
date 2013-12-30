@@ -144,9 +144,7 @@ module RTP
     # @param [Array<nil, #to_s>] array the new attribute values
     #
     def field_ids=(array)
-      array = array.to_a
-      raise ArgumentError, "Invalid argument 'array'. Expected length 10, got #{array.length}." unless array.length == 10
-      @field_ids = array.collect! {|e| e && e.to_s}
+      @field_ids = array.to_a.validate_and_process(10)
     end
 
     # Sets the region_coeffs attribute.
@@ -156,9 +154,7 @@ module RTP
     # @param [Array<nil, #to_s>] array the new attribute values
     #
     def region_coeffs=(array)
-      array = array.to_a
-      raise ArgumentError, "Invalid argument 'array'. Expected length 10, got #{array.length}." unless array.length == 10
-      @region_coeffs = array.collect! {|e| e && e.to_s}
+      @region_coeffs = array.to_a.validate_and_process(10)
     end
 
     # Sets the region_name attribute.
