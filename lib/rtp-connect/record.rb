@@ -64,6 +64,19 @@ module RTP
       self
     end
 
+
+    private
+
+
+    # Sets the attributes of the record instance.
+    #
+    # @param [Array<String>] values the record attributes (as parsed from a record string)
+    #
+    def set_attributes(values)
+      @attributes.each_index {|i| self.send("#{@attributes[i]}=", values[i])}
+      @crc = values[-1]
+    end
+
   end
 
 end
