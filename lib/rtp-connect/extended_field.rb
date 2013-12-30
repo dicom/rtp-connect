@@ -34,19 +34,8 @@ module RTP
       raise ArgumentError, "Invalid argument 'string': Expected at least #{low_limit} elements, got #{values.length}." if values.length < low_limit
       RTP.logger.warn "The number of elements (#{values.length}) for this ExtendedField record exceeds the known number of data items for this record (#{high_limit}). This may indicate an invalid record or that the RTP format has recently been expanded with new items." if values.length > high_limit
       ef = self.new(parent)
-      # Mandatory attributes:
-      ef.keyword = values[0]
-      ef.field_id = values[1]
-      ef.original_plan_uid = values[2]
-      # Optional attributes:
-      ef.original_beam_number = values[3]
-      ef.original_beam_name = values[4]
-      ef.is_fff = values[5] if values[5]
-      ef.accessory_code = values[6]
-      ef.accessory_type = values[7]
-      ef.high_dose_authorization = values[8]
-      ef.crc = values[-1]
-      return ef
+      ef.send(:set_attributes, values)
+      ef
     end
 
     # Creates a new (treatment) ExtendedField.
@@ -58,6 +47,19 @@ module RTP
       @parent = get_parent(parent.to_record, Field)
       @parent.add_extended_field(self)
       @keyword = 'EXTENDED_FIELD_DEF'
+      @attributes = [
+        # Required:
+        :keyword,
+        :field_id,
+        :original_plan_uid,
+        # Optional:
+        :original_beam_number,
+        :original_beam_name,
+        :is_fff,
+        :accessory_code,
+        :accessory_type,
+        :high_dose_authorization
+      ]
     end
 
     # Checks for equality.
@@ -100,17 +102,7 @@ module RTP
     # @return [Array<String>] an array of attributes (in the same order as they appear in the RTP string)
     #
     def values
-      return [
-        @keyword,
-        @field_id,
-        @original_plan_uid,
-        @original_beam_number,
-        @original_beam_name,
-        @is_fff,
-        @accessory_code,
-        @accessory_type,
-        @high_dose_authorization
-      ]
+      @attributes.collect {|attribute| self.send(attribute)}
     end
 
     # Returns self.
@@ -212,6 +204,15 @@ module RTP
     # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
+
+    # Sets the attributes of the record instance.
+    #
+    # @param [Array<String>] values the record attributes (as parsed from a record string)
+    #
+    def set_attributes(values)
+      @attributes.each_index {|i| self.send("#{@attributes[i]}=", values[i])}
+      @crc = values[-1]
+    end
 
   end
 
