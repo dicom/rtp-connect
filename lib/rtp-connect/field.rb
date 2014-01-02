@@ -185,12 +185,7 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_x1 attribute
     #
     def dcm_collimator_x1
-      value = @collimator_x1.to_f * 10
-      if @field_x_mode.upcase == 'SYM' && value > 0
-        -value
-      else
-        value
-      end
+      dcm_collimator1(:x)
     end
 
     # Converts the collimator_x2 attribute to proper DICOM format.
@@ -206,12 +201,7 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_y1 attribute
     #
     def dcm_collimator_y1
-      value = @collimator_y1.to_f * 10
-      if @field_y_mode.upcase == 'SYM' && value > 0
-        -value
-      else
-        value
-      end
+      dcm_collimator1(:y)
     end
 
     # Converts the collimator_y2 attribute to proper DICOM format.
@@ -643,6 +633,21 @@ module RTP
     # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
+
+    # Converts the collimator attribute to proper DICOM format.
+    #
+    # @param [Symbol] axis a representation for the axis of interes (:x or :y)
+    # @return [Float] the DICOM-formatted collimator attribute
+    #
+    def dcm_collimator1(axis)
+      value = self.send("collimator_#{axis}1").to_f * 10
+      mode = self.send("field_#{axis}_mode")
+      if mode.upcase == 'SYM' && value > 0
+        -value
+      else
+        value
+      end
+    end
 
   end
 
