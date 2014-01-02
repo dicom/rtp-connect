@@ -153,9 +153,8 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_x2 attribute
     #
     def dcm_collimator_x2
-      attribute = (scale_convertion? ? :collimator_y2 : :collimator_x2)
-      target = (@field_x_mode && !@field_x_mode.empty? ? self : @parent)
-      target.send(attribute).to_f * 10
+      axis = (scale_convertion? ? :y : :x)
+      dcm_collimator2(axis)
     end
 
     # Converts the collimator_y1 attribute to proper DICOM format.
@@ -173,9 +172,8 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_y2 attribute
     #
     def dcm_collimator_y2
-      attribute = (scale_convertion? ? :collimator_x2 : :collimator_y2)
-      target = (@field_y_mode && !@field_y_mode.empty? ? self : @parent)
-      target.send(attribute).to_f * 10
+      axis = (scale_convertion? ? :x : :y)
+      dcm_collimator2(axis)
     end
 
     # Converts the mlc_lp_a & mlc_lp_b attributes to a proper DICOM formatted string.
@@ -577,6 +575,21 @@ module RTP
       else
         value = @parent.send(:dcm_collimator1, axis)
       end
+    end
+
+    # Converts the collimator attribute to proper DICOM format.
+    #
+    # @param [Symbol] axis a representation for the axis of interest (x or y)
+    # @return [Float] the DICOM-formatted collimator attribute
+    #
+    def dcm_collimator2(axis)
+      mode = self.send("field_#{axis}_mode")
+      if mode && !mode.empty?
+        target = self
+      else
+        target = @parent
+      end
+      target.send("collimator_#{axis}2").to_f * 10
     end
 
     # Checks whether the contents of the this record indicates that scale
