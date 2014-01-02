@@ -2,6 +2,11 @@ module RTP
 
   class Plan < Record
 
+    attr_accessor :current_gantry
+    attr_accessor :current_collimator
+    attr_accessor :current_couch_pedestal
+    attr_accessor :current_couch_angle
+
     # Converts the Plan (and child) records to a
     # DICOM::DObject of modality RTPLAN.
     #
@@ -359,35 +364,23 @@ module RTP
     private
 
 
-    # Adds Collimator Angle elements to a Control Point Item.
+    # Adds an angular type value to a Control Point Item, by creating the
+    # necessary DICOM elements.
     # Note that the element is only added if there is no 'current' attribute
     # defined, or the given value is different form the current attribute.
     #
-    # @param [String, NilClass] value1 the collimator angle attribute
-    # @param [String, NilClass] value2 the collimator rotation direction attribute
-    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    # @param [DICOM::Item] item the DICOM control point item in which to create the elements
+    # @param [String] angle_tag the DICOM tag of the angle element
+    # @param [String] direction_tag the DICOM tag of the direction element
+    # @param [String, NilClass] angle the collimator angle attribute
+    # @param [String, NilClass] direction the collimator rotation direction attribute
+    # @param [Symbol] current_angle the instance variable that keeps track of the current value of this attribute
     #
-    def add_collimator(value1, value2, item)
-      if !@current_collimator || value1 != @current_collimator
-        @current_collimator = value1
-        DICOM::Element.new('300A,0120', value1, :parent => item)
-        DICOM::Element.new('300A,0121', (value2.empty? ? 'NONE' : value2), :parent => item)
-      end
-    end
-
-    # Adds Table Top Eccentric Angle elements to a Control Point Item.
-    # Note that the element is only added if there is no 'current' attribute
-    # defined, or the given value is different form the current attribute.
-    #
-    # @param [String, NilClass] value1 the table top eccentric angle attribute
-    # @param [String, NilClass] value2 the table top eccentric rotation direction attribute
-    # @param [DICOM::Item] item the DICOM control point item in which to create an element
-    #
-    def add_couch_angle(value1, value2, item)
-      if !@current_couch_angle || value1 != @current_couch_angle
-        @current_couch_angle = value1
-        DICOM::Element.new('300A,0125', value1, :parent => item)
-        DICOM::Element.new('300A,0126', (value2.empty? ? 'NONE' : value2), :parent => item)
+    def add_angle(item, angle_tag, direction_tag, angle, direction, current_angle)
+      if !self.send(current_angle) || angle != self.send(current_angle)
+        self.send("#{current_angle}=", angle)
+        DICOM::Element.new(angle_tag, angle, :parent => item)
+        DICOM::Element.new(direction_tag, (direction.empty? ? 'NONE' : direction), :parent => item)
       end
     end
 
@@ -416,22 +409,6 @@ module RTP
       if !@current_couch_longitudinal || value != @current_couch_longitudinal
         @current_couch_longitudinal = value
         DICOM::Element.new('300A,0129', (value.empty? ? '' : value.to_f * 10), :parent => item)
-      end
-    end
-
-    # Adds Patient Support Angle elements to a Control Point Item.
-    # Note that the element is only added if there is no 'current' attribute
-    # defined, or the given value is different form the current attribute.
-    #
-    # @param [String, NilClass] value1 the patient support angle attribute
-    # @param [String, NilClass] value2 the patient support rotation direction attribute
-    # @param [DICOM::Item] item the DICOM control point item in which to create an element
-    #
-    def add_couch_pedestal(value1, value2, item)
-      if !@current_couch_pedestal || value1 != @current_couch_pedestal
-        @current_couch_pedestal = value1
-        DICOM::Element.new('300A,0122', value1, :parent => item)
-        DICOM::Element.new('300A,0123', (value2.empty? ? 'NONE' : value2), :parent => item)
       end
     end
 
@@ -474,22 +451,6 @@ module RTP
       if !@current_energy || value != @current_energy
         @current_energy = value
         DICOM::Element.new('300A,0114', "#{value.to_f}", :parent => item)
-      end
-    end
-
-    # Adds Gantry Angle elements to a Control Point Item.
-    # Note that the element is only added if there is no 'current' attribute
-    # defined, or the given value is different form the current attribute.
-    #
-    # @param [String, NilClass] value1 the gantry angle attribute
-    # @param [String, NilClass] value2 the gantry rotation direction attribute
-    # @param [DICOM::Item] item the DICOM control point item in which to create an element
-    #
-    def add_gantry(value1, value2, item)
-      if !@current_gantry || value1 != @current_gantry
-        @current_gantry = value1
-        DICOM::Element.new('300A,011E', value1, :parent => item)
-        DICOM::Element.new('300A,011F', (value2.empty? ? 'NONE' : value2), :parent => item)
       end
     end
 
@@ -559,13 +520,13 @@ module RTP
       # Dose Rate Set:
       add_doserate(cp.doserate, cp_item)
       # Gantry Angle & Rotation Direction:
-      add_gantry(cp.gantry_angle, cp.gantry_dir, cp_item)
+      add_angle(cp_item, '300A,011E', '300A,011F', cp.gantry_angle, cp.gantry_dir, :current_gantry)
       # Beam Limiting Device Angle & Rotation Direction:
-      add_collimator(cp.collimator_angle, cp.collimator_dir, cp_item)
+      add_angle(cp_item, '300A,0120', '300A,0121', cp.collimator_angle, cp.collimator_dir, :current_collimator)
       # Patient Support Angle & Rotation Direction:
-      add_couch_pedestal(cp.couch_pedestal, cp.couch_ped_dir, cp_item)
+      add_angle(cp_item, '300A,0122', '300A,0123', cp.couch_pedestal, cp.couch_ped_dir, :current_couch_pedestal)
       # Table Top Eccentric Angle & Rotation Direction:
-      add_couch_angle(cp.couch_angle, cp.couch_dir, cp_item)
+      add_angle(cp_item, '300A,0125', '300A,0126', cp.couch_angle, cp.couch_dir, :current_couch_angle)
       # Table Top Vertical Position:
       add_couch_vertical(cp.couch_vertical, cp_item)
       # Table Top Longitudinal Position:
