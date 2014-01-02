@@ -320,11 +320,11 @@ module RTP
     describe "#mlc_lp_a=()" do
 
       it "should raise an error if the specified array has less than 100 elements" do
-        expect {@cp.mlc_lp_a=(Array.new(99, ''))}.to raise_error(ArgumentError, /'array'/)
+        expect {@cp.mlc_lp_a=(Array.new(99, ''))}.to raise_error(ArgumentError, /array/)
       end
 
       it "should raise an error if the specified array has more than 100 elements" do
-        expect {@cp.mlc_lp_a=(Array.new(101, ''))}.to raise_error(ArgumentError, /'array'/)
+        expect {@cp.mlc_lp_a=(Array.new(101, ''))}.to raise_error(ArgumentError, /array/)
       end
 
       it "should transfer the array (containing string and nil values) to the mlc_lp_a attribute" do
@@ -347,11 +347,11 @@ module RTP
     describe "#mlc_lp_b=()" do
 
       it "should raise an error if the specified array has less than 100 elements" do
-        expect {@cp.mlc_lp_b=(Array.new(99, ''))}.to raise_error(ArgumentError, /'array'/)
+        expect {@cp.mlc_lp_b=(Array.new(99, ''))}.to raise_error(ArgumentError, /array/)
       end
 
       it "should raise an error if the specified array has more than 100 elements" do
-        expect {@cp.mlc_lp_b=(Array.new(101, ''))}.to raise_error(ArgumentError, /'array'/)
+        expect {@cp.mlc_lp_b=(Array.new(101, ''))}.to raise_error(ArgumentError, /array/)
       end
 
       it "should transfer the array (containing string and nil values) to the mlc_lp_b attribute" do

@@ -83,7 +83,7 @@ class Array
   #
   def validate_and_process(nr)
     raise ArgumentError, "Invalid array length. Expected exactly #{nr} elements, got #{self.length}." unless self.length == nr
-    self.collect {|e| e && e.to_s}
+    self.collect {|e| e && e.to_s.strip}
   end
 
 end
