@@ -144,15 +144,8 @@ module RTP
     #
     def dcm_collimator_x1
       # Deal with scale convertion:
-      attribute = (scale_convertion? ? :collimator_y1 : :collimator_x1)
-      target = (@field_x_mode && !@field_x_mode.empty? ? self : @parent)
-      value = target.send(attribute).to_f * 10 * scale_factor
-      # Deal with 'SYM' mode:
-      if @field_x_mode && @field_x_mode.upcase == 'SYM' && value > 0
-        -value
-      else
-        value
-      end
+      axis = (scale_convertion? ? :y : :x)
+      dcm_collimator1(axis)
     end
 
     # Converts the collimator_x2 attribute to proper DICOM format.
@@ -171,15 +164,8 @@ module RTP
     #
     def dcm_collimator_y1
       # Deal with scale convertion:
-      attribute = (scale_convertion? ? :collimator_x1 : :collimator_y1)
-      target = (@field_y_mode && !@field_y_mode.empty? ? self : @parent)
-      value = target.send(attribute).to_f * 10 * scale_factor
-      # Deal with 'SYM' mode:
-      if @field_y_mode && @field_y_mode.upcase == 'SYM' && value > 0
-        -value
-      else
-        value
-      end
+      axis = (scale_convertion? ? :x : :y)
+      dcm_collimator1(axis)
     end
 
     # Converts the collimator_y2 attribute to proper DICOM format.
@@ -573,6 +559,25 @@ module RTP
     # @return [Array<String>] an array of attributes
     #
     alias_method :state, :values
+
+    # Converts the collimator attribute to proper DICOM format.
+    #
+    # @param [Symbol] axis a representation for the axis of interest (x or y)
+    # @return [Float] the DICOM-formatted collimator attribute
+    #
+    def dcm_collimator1(axis)
+      mode = self.send("field_#{axis}_mode")
+      if mode && !mode.empty?
+        value = self.send("collimator_#{axis}1").to_f * 10
+        if mode.upcase == 'SYM' && value > 0
+          -value
+        else
+          value
+        end
+      else
+        value = @parent.send(:dcm_collimator1, axis)
+      end
+    end
 
     # Checks whether the contents of the this record indicates that scale
     # convertion is to be applied. This convertion entails converting a value

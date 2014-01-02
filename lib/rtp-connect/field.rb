@@ -636,13 +636,13 @@ module RTP
 
     # Converts the collimator attribute to proper DICOM format.
     #
-    # @param [Symbol] axis a representation for the axis of interes (:x or :y)
+    # @param [Symbol] axis a representation for the axis of interest (x or y)
     # @return [Float] the DICOM-formatted collimator attribute
     #
     def dcm_collimator1(axis)
       value = self.send("collimator_#{axis}1").to_f * 10
       mode = self.send("field_#{axis}_mode")
-      if mode.upcase == 'SYM' && value > 0
+      if mode && mode.upcase == 'SYM' && value > 0
         -value
       else
         value

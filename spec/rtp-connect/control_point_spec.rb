@@ -142,6 +142,7 @@ module RTP
         @cp.collimator_x1 = 5.0
         @cp.collimator_y1 = 5.0
         @cp.field_x_mode = 'SYM'
+        @cp.field_y_mode = 'SYM'
         @cp.scale_convention = '1'
         @cp.dcm_collimator_x1.should eql -50.0
       end
@@ -150,6 +151,7 @@ module RTP
         @cp.collimator_x1 = -5.0
         @cp.collimator_y1 = -5.0
         @cp.field_x_mode = 'SYM'
+        @cp.field_y_mode = 'SYM'
         @cp.scale_convention = '1'
         @cp.dcm_collimator_x1.should eql -50.0
       end
@@ -191,6 +193,7 @@ module RTP
         # FIXME: Scale conversion really needs to be investigated closer.
         @cp.collimator_x1 = 5.0
         @cp.collimator_y1 = 5.0
+        @cp.field_x_mode = 'SYM'
         @cp.field_y_mode = 'SYM'
         @cp.scale_convention = '1'
         @cp.dcm_collimator_y1.should eql -50.0
@@ -199,6 +202,7 @@ module RTP
       it "should return a negative value in the case of 'sym' field_y_mode, scale convention 1 and an original negative x1 value" do
         @cp.collimator_x1 = 5.0
         @cp.collimator_y1 = -5.0
+        @cp.field_x_mode = 'SYM'
         @cp.field_y_mode = 'SYM'
         @cp.scale_convention = '1'
         @cp.dcm_collimator_y1.should eql -50.0
