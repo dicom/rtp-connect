@@ -71,7 +71,6 @@ module RTP
     # Sets up a record by parsing a RTPConnect string line.
     #
     # @param [#to_s] string the extended treatment field definition record string line
-    # @param [Record] parent a record which is used to determine the proper parent of this instance
     # @return [Record] the updated Record instance
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
