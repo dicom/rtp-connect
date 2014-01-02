@@ -16,27 +16,40 @@ module RTP
     def leaf_boundaries(nr_leaves)
       case nr_leaves
       when 29
-        [-200, -135, -125, -115, -105, -95, -85, -75, -65, -55, -45, -35, -25,
-          -15, -5, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 200
-        ]
+        leaf_boundaries_odd(29)
       when 40
-        Array.new(nr_leaves+1) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
+        leaf_boundaries_even(40)
       when 41
-        [-200, -195, -185, -175, -165, -155, -145, -135, -125, -115,
-          -105, -95, -85, -75, -65, -55, -45, -35, -25, -15, -5, 5, 15, 25, 35, 45,
-          55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 200
-        ]
+        leaf_boundaries_odd(41)
       when 60
-        [-200, -190, -180, -170, -160, -150, -140, -130, -120, -110,
-          -100, -95, -90, -85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30,
-          -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65,
-          70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
-        ]
+        Array.new(10) {|i| (i * 10 - 200).to_i}
+          .concat(Array.new(41) {|i| (i * 5 - 100).to_i})
+          .concat(Array.new(10) {|i| (i * 10 + 110).to_i})
       when 80
-        Array.new(nr_leaves+1) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
+        leaf_boundaries_even(80)
       else
         raise ArgumentError, "Unsupported number of leaves: #{nr_leaves}"
       end
+    end
+
+    # Gives an array of MLC leaf position boundaries for ordinary even numbered
+    # multi leaf collimators.
+    #
+    # @param [Fixnum] nr_leaves the number of leaves (in one leaf bank)
+    # @return [Array<Fixnum>] the leaf boundary positions
+    #
+    def leaf_boundaries_even(nr_leaves)
+      Array.new(nr_leaves+1) {|i| (i * 400 / nr_leaves.to_f - 200).to_i}
+    end
+
+    # Gives an array of MLC leaf position boundaries for ordinary odd numbered
+    # multi leaf collimators.
+    #
+    # @param [Fixnum] nr_leaves the number of leaves (in one leaf bank)
+    # @return [Array<Fixnum>] the leaf boundary positions
+    #
+    def leaf_boundaries_odd(nr_leaves)
+      Array.new(nr_leaves-1) {|i| (10 * (i - (0.5 * nr_leaves - 1))).to_i}.unshift(-200).push(200)
     end
 
     # Computes the CRC checksum of the given line and verifies that
