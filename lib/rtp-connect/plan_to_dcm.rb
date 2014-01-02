@@ -4,8 +4,11 @@ module RTP
 
     attr_accessor :current_gantry
     attr_accessor :current_collimator
-    attr_accessor :current_couch_pedestal
     attr_accessor :current_couch_angle
+    attr_accessor :current_couch_pedestal
+    attr_accessor :current_couch_lateral
+    attr_accessor :current_couch_longitudinal
+    attr_accessor :current_couch_vertical
 
     # Converts the Plan (and child) records to a
     # DICOM::DObject of modality RTPLAN.
@@ -384,45 +387,19 @@ module RTP
       end
     end
 
-    # Adds a Table Top Lateral Position element to a Control Point Item.
+    # Adds a Table Top Position element to a Control Point Item.
     # Note that the element is only added if there is no 'current' attribute
     # defined, or the given value is different form the current attribute.
     #
-    # @param [String, NilClass] value the couch lateral attribute
-    # @param [DICOM::Item] item the DICOM control point item in which to create an element
+    # @param [DICOM::Item] item the DICOM control point item in which to create the element
+    # @param [String] tag the DICOM tag of the couch position element
+    # @param [String, NilClass] value the couch position
+    # @param [Symbol] current the instance variable that keeps track of the current value of this attribute
     #
-    def add_couch_lateral(value, item)
-      if !@current_couch_lateral || value != @current_couch_lateral
-        @current_couch_lateral = value
-        DICOM::Element.new('300A,012A', (value.empty? ? '' : value.to_f * 10), :parent => item)
-      end
-    end
-
-    # Adds a Table Top Longitudinal Position element to a Control Point Item.
-    # Note that the element is only added if there is no 'current' attribute
-    # defined, or the given value is different form the current attribute.
-    #
-    # @param [String, NilClass] value the couch longitudinal attribute
-    # @param [DICOM::Item] item the DICOM control point item in which to create an element
-    #
-    def add_couch_longitudinal(value, item)
-      if !@current_couch_longitudinal || value != @current_couch_longitudinal
-        @current_couch_longitudinal = value
-        DICOM::Element.new('300A,0129', (value.empty? ? '' : value.to_f * 10), :parent => item)
-      end
-    end
-
-    # Adds a Table Top Vertical Position element to a Control Point Item.
-    # Note that the element is only added if there is no 'current' attribute
-    # defined, or the given value is different form the current attribute.
-    #
-    # @param [String, NilClass] value the couch vertical attribute
-    # @param [DICOM::Item] item the DICOM control point item in which to create an element
-    #
-    def add_couch_vertical(value, item)
-      if !@current_couch_vertical || value != @current_couch_vertical
-        @current_couch_vertical = value
-        DICOM::Element.new('300A,0128', (value.empty? ? '' : value.to_f * 10), :parent => item)
+    def add_couch_position(item, tag, value, current)
+      if !self.send(current) || value != self.send(current)
+        self.send("#{current}=", value)
+        DICOM::Element.new(tag, (value.empty? ? '' : value.to_f * 10), :parent => item)
       end
     end
 
@@ -528,11 +505,11 @@ module RTP
       # Table Top Eccentric Angle & Rotation Direction:
       add_angle(cp_item, '300A,0125', '300A,0126', cp.couch_angle, cp.couch_dir, :current_couch_angle)
       # Table Top Vertical Position:
-      add_couch_vertical(cp.couch_vertical, cp_item)
+      add_couch_position(cp_item, '300A,0128', cp.couch_vertical, :current_couch_vertical)
       # Table Top Longitudinal Position:
-      add_couch_longitudinal(cp.couch_vertical, cp_item)
+      add_couch_position(cp_item, '300A,0129', cp.couch_longitudinal, :current_couch_longitudinal)
       # Table Top Lateral Position:
-      add_couch_lateral(cp.couch_vertical, cp_item)
+      add_couch_position(cp_item, '300A,012A', cp.couch_lateral, :current_couch_lateral)
       # Isocenter Position (x\y\z):
       add_isosenter(cp.parent.parent.site_setup, cp_item)
       cp_item
