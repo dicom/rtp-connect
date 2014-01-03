@@ -75,6 +75,7 @@ automatically printed to the screen. A useful hack to avoid this effect is
 to append ";0" after a command.
 
 Example:
+
     rtp = Plan.read('some_file.rtp') ;0
 
 
