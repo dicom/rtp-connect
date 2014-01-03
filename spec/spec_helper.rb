@@ -38,6 +38,7 @@ suppress_warnings do
   RTP::RTP_ATTRIBUTE_QUOTED_COMMA = 'samples/attribute_with_quoted_comma.rtp'
   # Invalid files:
   RTP::RTP_INVALID_QUOTE = 'samples/invalid_csv_attribute_with_single_quote.rtp'
+  RTP::RTP_INVALID_CRC = 'samples/invalid_crc.rtp'
   # Directory for writing temporary files:
   RTP::TMPDIR = "tmp/"
   RTP::LOGDIR = RTP::TMPDIR + "logs/"

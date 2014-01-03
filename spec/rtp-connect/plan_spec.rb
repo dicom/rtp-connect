@@ -73,6 +73,13 @@ module RTP
         expect(p.rtp_version).to eql 'OTP V4.1.0'
       end
 
+      it "should successfully parse and load the RTP records in spite of an invalid CRC when the :ignore_crc option is used" do
+        str = File.open(RTP_INVALID_CRC, "rb") { |f| f.read }
+        p = Plan.parse(str, ignore_crc: true)
+        expect(p.patient_last_name).to eql 'Doe'
+        expect(p.prescriptions.first.rx_site_name).to eql 'Test'
+      end
+
     end
 
 
@@ -97,6 +104,12 @@ module RTP
         p = Plan.read(RTP_COLUMNA)
         expect(p.patient_last_name).to eql 'ALDERSON'
         expect(p.rtp_if_protocol).to eql 'IMPAC_DCM_SCP'
+      end
+
+      it "should successfully read and load the RTP records in spite of an invalid CRC when the :ignore_crc option is used" do
+        p = Plan.read(RTP_INVALID_CRC, ignore_crc: true)
+        expect(p.patient_last_name).to eql 'Doe'
+        expect(p.prescriptions.first.rx_site_name).to eql 'Test'
       end
 
     end

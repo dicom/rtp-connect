@@ -74,19 +74,21 @@ module RTP
     # Creates a Plan instance by parsing an RTPConnect string.
     #
     # @param [#to_s] string an RTPConnect ascii string (with single or multiple lines/records)
+    # @param [Hash] options the options to use for parsing the RTP string
+    # @option options [Boolean] :ignore_crc if true, the RTP records will be successfully loaded even if their checksums are invalid
     # @return [Plan] the created Plan instance
     # @raise [ArgumentError] if given an invalid string record
     #
-    def self.parse(string)
+    def self.parse(string, options={})
       lines = string.to_s.split("\r\n")
       # Create the Plan object:
       line = lines.first
-      RTP::verify(line)
+      RTP::verify(line, options)
       rtp = self.load(line)
       lines[1..-1].each do |line|
         # Validate, determine type, and process the line accordingly to
         # build the hierarchy of records:
-        RTP::verify(line)
+        RTP::verify(line, options)
         values = line.values
         keyword = values.first
         method = RTP::PARSE_METHOD[keyword]
@@ -99,10 +101,12 @@ module RTP
     # Creates an Plan instance by reading and parsing an RTPConnect file.
     #
     # @param [String] file a string which specifies the path of the RTPConnect file to be loaded
+    # @param [Hash] options the options to use for reading the RTP file
+    # @option options [Boolean] :ignore_crc if true, the RTP records will be successfully loaded even if their checksums are invalid
     # @return [Plan] the created Plan instance
     # @raise [ArgumentError] if given an invalid file or the file given contains an invalid record
     #
-    def self.read(file)
+    def self.read(file, options={})
       raise ArgumentError, "Invalid argument 'file'. Expected String, got #{file.class}." unless file.is_a?(String)
       # Read the file content:
       str = nil
@@ -125,7 +129,7 @@ module RTP
       end
       # Parse the file contents and create the RTP::Connect object:
       if str
-        rtp = self.parse(str)
+        rtp = self.parse(str, options)
       else
         raise "An RTP::Plan object could not be created from the specified file. Check the log for more details."
       end
