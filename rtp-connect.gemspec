@@ -19,10 +19,11 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 1.9.3'
 
-  s.add_development_dependency('bundler', '~> 1.3')
+  s.add_development_dependency('bundler', '~> 1.5')
   s.add_development_dependency('dicom', '~> 0.9.5')
-  s.add_development_dependency('mocha', '~> 0.13')
-  s.add_development_dependency('rake', '~> 0.9.6')
-  s.add_development_dependency('rspec', '~> 2.13')
-  s.add_development_dependency('yard', '~> 0.8.5')
+  s.add_development_dependency('mocha', '~> 0.14')
+  s.add_development_dependency('rake', '~> 10.1')
+  s.add_development_dependency('redcarpet', '~> 3.0')
+  s.add_development_dependency('rspec', '~> 2.14')
+  s.add_development_dependency('yard', '~> 0.8.7')
 end
