@@ -39,15 +39,15 @@ module RTP
       it "should create a ExtendedField object when given a valid string" do
         short = '"EXTENDED_FIELD_DEF","2","1.3.6.1","58898"'
         complete = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","0","9083"'
-        ExtendedField.load(short, @f).class.should eql ExtendedField
-        ExtendedField.load(complete, @f).class.should eql ExtendedField
+        expect(ExtendedField.load(short, @f).class).to eql ExtendedField
+        expect(ExtendedField.load(complete, @f).class).to eql ExtendedField
       end
 
       it "should set attributes from the given string" do
         str = '"EXTENDED_FIELD_DEF","BAKFR","1.3.6.1.4","8","BAKFRA","10442"'
         ef = ExtendedField.load(str, @f)
-        ef.field_id.should eql 'BAKFR'
-        ef.original_beam_number.should eql '8'
+        expect(ef.field_id).to eql 'BAKFR'
+        expect(ef.original_beam_number).to eql '8'
       end
 
     end
@@ -56,15 +56,15 @@ module RTP
     describe "::new" do
 
       it "should create a ExtendedField object" do
-        @ef.class.should eql ExtendedField
+        expect(@ef.class).to eql ExtendedField
       end
 
       it "should set the parent attribute" do
-        @ef.parent.should eql @f
+        expect(@ef.parent).to eql @f
       end
 
       it "should set the default keyword attribute" do
-        @ef.keyword.should eql "EXTENDED_FIELD_DEF"
+        expect(@ef.keyword).to eql "EXTENDED_FIELD_DEF"
       end
 
     end
@@ -76,18 +76,18 @@ module RTP
         ef_other = ExtendedField.new(@f)
         ef_other.field_id = '33'
         @ef.field_id = '33'
-        (@ef == ef_other).should be_true
+        expect(@ef == ef_other).to be_true
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         ef_other = ExtendedField.new(@f)
         ef_other.field_id = '22'
         @ef.field_id = '2'
-        (@ef == ef_other).should be_false
+        expect(@ef == ef_other).to be_false
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        (@ef == 42).should be_false
+        expect(@ef == 42).to be_false
       end
 
     end
@@ -96,7 +96,7 @@ module RTP
     describe "#children" do
 
       it "should return an empty array when called on a child-less instance" do
-        @ef.children.should eql Array.new
+        expect(@ef.children).to eql Array.new
       end
 
     end
@@ -108,7 +108,7 @@ module RTP
         ef_other = ExtendedField.new(@f)
         ef_other.field_id = '1'
         @ef.field_id = '1'
-        (@ef == ef_other).should be_true
+        expect(@ef == ef_other).to be_true
       end
 
     end
@@ -122,7 +122,7 @@ module RTP
         str = values + crc + "\r\n"
         ef1 = ExtendedField.load(str, @f)
         ef2 = ExtendedField.load(str, @f)
-        (ef1.hash == ef2.hash).should be_true
+        expect(ef1.hash == ef2.hash).to be_true
       end
 
     end
@@ -132,7 +132,7 @@ module RTP
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
         arr = ["EXTENDED_FIELD_DEF", [nil]*8].flatten
-        @ef.values.should eql arr
+        expect(@ef.values).to eql arr
       end
 
     end
@@ -141,7 +141,7 @@ module RTP
     describe "#to_extended_field" do
 
       it "should return itself" do
-        @ef.to_extended_field.equal?(@ef).should be_true
+        expect(@ef.to_extended_field.equal?(@ef)).to be_true
       end
 
     end
@@ -152,7 +152,7 @@ module RTP
       it "should return a string which matches the original string" do
         str = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","0","9083"' + "\r\n"
         ef = ExtendedField.load(str, @f)
-        ef.to_s.should eql str
+        expect(ef.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
@@ -160,7 +160,7 @@ module RTP
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ef = ExtendedField.load(str, @f)
-        ef.to_s.should eql str
+        expect(ef.to_s).to eql str
       end
 
     end
@@ -171,7 +171,7 @@ module RTP
       it "should raise an error unless 'EXTENDED_FIELD_DEF' is given as an argument" do
         expect {@ef.keyword=('RX_DEF')}.to raise_error(ArgumentError, /keyword/)
         @ef.keyword = 'EXTENDED_FIELD_DEF'
-        @ef.keyword.should eql 'EXTENDED_FIELD_DEF'
+        expect(@ef.keyword).to eql 'EXTENDED_FIELD_DEF'
       end
 
     end
@@ -182,7 +182,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '2'
         @ef.field_id = value
-        @ef.field_id.should eql value
+        expect(@ef.field_id).to eql value
       end
 
     end
@@ -193,7 +193,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1.2.987'
         @ef.original_plan_uid = value
-        @ef.original_plan_uid.should eql value
+        expect(@ef.original_plan_uid).to eql value
       end
 
     end
@@ -204,7 +204,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '12'
         @ef.original_beam_number = value
-        @ef.original_beam_number.should eql value
+        expect(@ef.original_beam_number).to eql value
       end
 
     end
@@ -215,7 +215,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Posterior'
         @ef.original_beam_name = value
-        @ef.original_beam_name.should eql value
+        expect(@ef.original_beam_name).to eql value
       end
 
     end
@@ -226,7 +226,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1'
         @ef.is_fff = value
-        @ef.is_fff.should eql value
+        expect(@ef.is_fff).to eql value
       end
 
     end
@@ -237,7 +237,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'SQUARE'
         @ef.accessory_code = value
-        @ef.accessory_code.should eql value
+        expect(@ef.accessory_code).to eql value
       end
 
     end
@@ -248,7 +248,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Accessory'
         @ef.accessory_type = value
-        @ef.accessory_type.should eql value
+        expect(@ef.accessory_type).to eql value
       end
 
     end
@@ -259,7 +259,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1'
         @ef.high_dose_authorization = value
-        @ef.high_dose_authorization.should eql value
+        expect(@ef.high_dose_authorization).to eql value
       end
 
     end

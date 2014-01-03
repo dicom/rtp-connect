@@ -10,7 +10,7 @@ module RTP
     describe "#wrap" do
 
       it "should return a string containing two double-quotes" do
-        nil.wrap.should eql '""'
+        expect(nil.wrap).to eql '""'
       end
 
     end

@@ -37,15 +37,15 @@ module RTP
       it "should create a SiteSetup object when given a valid string" do
         short = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","26934"'
         complete = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"'
-        SiteSetup.load(short, @p).class.should eql SiteSetup
-        SiteSetup.load(complete, @p).class.should eql SiteSetup
+        expect(SiteSetup.load(short, @p).class).to eql SiteSetup
+        expect(SiteSetup.load(complete, @p).class).to eql SiteSetup
       end
 
       it "should set attributes from the given string" do
         str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"'
         ss = SiteSetup.load(str, @p)
-        ss.patient_orientation.should eql 'HFS'
-        ss.frame_of_ref_uid.should eql '1.2.840.3'
+        expect(ss.patient_orientation).to eql 'HFS'
+        expect(ss.frame_of_ref_uid).to eql '1.2.840.3'
       end
 
     end
@@ -54,15 +54,15 @@ module RTP
     describe "::new" do
 
       it "should create a SiteSetup object" do
-        @ss.class.should eql SiteSetup
+        expect(@ss.class).to eql SiteSetup
       end
 
       it "should set the parent attribute" do
-        @ss.parent.should eql @p
+        expect(@ss.parent).to eql @p
       end
 
       it "should set the default keyword attribute" do
-        @ss.keyword.should eql "SITE_SETUP_DEF"
+        expect(@ss.keyword).to eql "SITE_SETUP_DEF"
       end
 
     end
@@ -74,18 +74,18 @@ module RTP
         ss_other = SiteSetup.new(@p)
         ss_other.rx_site_name = 'PROST'
         @ss.rx_site_name = 'PROST'
-        (@ss == ss_other).should be_true
+        expect(@ss == ss_other).to be_true
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         ss_other = SiteSetup.new(@p)
         ss_other.rx_site_name = 'PROST'
         @ss.rx_site_name = 'MAM'
-        (@ss == ss_other).should be_false
+        expect(@ss == ss_other).to be_false
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        (@ss == 42).should be_false
+        expect(@ss == 42).to be_false
       end
 
     end
@@ -94,7 +94,7 @@ module RTP
     describe "#children" do
 
       it "should return an empty array when called on a child-less instance" do
-        @ss.children.should eql Array.new
+        expect(@ss.children).to eql Array.new
       end
 
     end
@@ -106,7 +106,7 @@ module RTP
         ss_other = SiteSetup.new(@p)
         ss_other.rx_site_name = 'MAM'
         @ss.rx_site_name = 'MAM'
-        (@ss == ss_other).should be_true
+        expect(@ss == ss_other).to be_true
       end
 
     end
@@ -120,7 +120,7 @@ module RTP
         str = values + crc + "\r\n"
         ss1 = SiteSetup.load(str, @p)
         ss2 = SiteSetup.load(str, @p)
-        (ss1.hash == ss2.hash).should be_true
+        expect(ss1.hash == ss2.hash).to be_true
       end
 
     end
@@ -130,7 +130,7 @@ module RTP
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
         arr = ["SITE_SETUP_DEF", [nil]*14].flatten
-        @ss.values.should eql arr
+        expect(@ss.values).to eql arr
       end
 
     end
@@ -141,7 +141,7 @@ module RTP
       it "should return a string which matches the original string" do
         str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"' + "\r\n"
         ss = SiteSetup.load(str, @p)
-        ss.to_s.should eql str
+        expect(ss.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
@@ -149,7 +149,7 @@ module RTP
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ss = SiteSetup.load(str, @p)
-        ss.to_s.should eql str
+        expect(ss.to_s).to eql str
       end
 
     end
@@ -158,7 +158,7 @@ module RTP
     context "#to_site_setup" do
 
       it "should return itself" do
-        @ss.to_site_setup.equal?(@ss).should be_true
+        expect(@ss.to_site_setup.equal?(@ss)).to be_true
       end
 
     end
@@ -169,7 +169,7 @@ module RTP
       it "should raise an error unless 'SITE_SETUP_DEF' is given as an argument" do
         expect {@ss.keyword=('RX_DEF')}.to raise_error(ArgumentError, /keyword/)
         @ss.keyword = 'SITE_SETUP_DEF'
-        @ss.keyword.should eql 'SITE_SETUP_DEF'
+        expect(@ss.keyword).to eql 'SITE_SETUP_DEF'
       end
 
     end
@@ -180,7 +180,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Prostate'
         @ss.rx_site_name = value
-        @ss.rx_site_name.should eql value
+        expect(@ss.rx_site_name).to eql value
       end
 
     end
@@ -191,7 +191,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'HFS'
         @ss.patient_orientation = value
-        @ss.patient_orientation.should eql value
+        expect(@ss.patient_orientation).to eql value
       end
 
     end
@@ -202,7 +202,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'AL01'
         @ss.treatment_machine = value
-        @ss.treatment_machine.should eql value
+        expect(@ss.treatment_machine).to eql value
       end
 
     end
@@ -213,7 +213,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1'
         @ss.tolerance_table = value
-        @ss.tolerance_table.should eql value
+        expect(@ss.tolerance_table).to eql value
       end
 
     end
@@ -224,7 +224,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '5'
         @ss.iso_pos_x = value
-        @ss.iso_pos_x.should eql value
+        expect(@ss.iso_pos_x).to eql value
       end
 
     end
@@ -235,7 +235,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '7'
         @ss.iso_pos_y = value
-        @ss.iso_pos_y.should eql value
+        expect(@ss.iso_pos_y).to eql value
       end
 
     end
@@ -246,7 +246,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '9'
         @ss.iso_pos_z = value
-        @ss.iso_pos_z.should eql value
+        expect(@ss.iso_pos_z).to eql value
       end
 
     end
@@ -257,7 +257,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1.234.5'
         @ss.structure_set_uid = value
-        @ss.structure_set_uid.should eql value
+        expect(@ss.structure_set_uid).to eql value
       end
 
     end
@@ -268,7 +268,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1.567.8'
         @ss.frame_of_ref_uid = value
-        @ss.frame_of_ref_uid.should eql value
+        expect(@ss.frame_of_ref_uid).to eql value
       end
 
     end
@@ -279,7 +279,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '-3'
         @ss.couch_vertical = value
-        @ss.couch_vertical.should eql value
+        expect(@ss.couch_vertical).to eql value
       end
 
     end
@@ -290,7 +290,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '-1'
         @ss.couch_lateral = value
-        @ss.couch_lateral.should eql value
+        expect(@ss.couch_lateral).to eql value
       end
 
     end
@@ -301,7 +301,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '-6'
         @ss.couch_longitudinal = value
-        @ss.couch_longitudinal.should eql value
+        expect(@ss.couch_longitudinal).to eql value
       end
 
     end
@@ -312,7 +312,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '10'
         @ss.couch_angle = value
-        @ss.couch_angle.should eql value
+        expect(@ss.couch_angle).to eql value
       end
 
     end
@@ -323,7 +323,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '15'
         @ss.couch_pedestal = value
-        @ss.couch_pedestal.should eql value
+        expect(@ss.couch_pedestal).to eql value
       end
 
     end

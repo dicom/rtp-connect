@@ -37,15 +37,15 @@ module RTP
       it "should create a SimulationField object when given a valid string" do
         short = '"SIM_DEF","SPINE","L2-L4","B","PRONE","CT Sim","1.0","2.0","Sym","3.0","4.0","5.0","Sym","6.0","7.0","8.0","9132"'
         complete = '"SIM_DEF","SPINE","L2-L4","B","PRONE","CT Sim","1.0","2.0","Sym","3.0","4.0","5.0","Sym","6.0","7.0","8.0","9.0","0.1","0.2","0.3","0.4","0.5","0.6","0.7","0.8","0.9","","1.1","1.2","","1.3","1.4","","1.5","1.6","","1.7","1.8","","1.9","2.1","2.2","","2.3","2.4","2.5","2.6","2.7","2.8","3","4","5.5","18120"'
-        SimulationField.load(short, @p).class.should eql SimulationField
-        SimulationField.load(complete, @p).class.should eql SimulationField
+        expect(SimulationField.load(short, @p).class).to eql SimulationField
+        expect(SimulationField.load(complete, @p).class).to eql SimulationField
       end
 
       it "should set attributes from the given string" do
         str = '"SIM_DEF","SPINE","L2-L4","B","PRONE","CT Sim","1.0","2.0","Sym","3.0","4.0","5.0","Sym","6.0","7.0","8.0","9.0","0.1","0.2","0.3","0.4","0.5","0.6","0.7","0.8","0.9","","1.1","1.2","","1.3","1.4","","1.5","1.6","","1.7","1.8","","1.9","2.1","2.2","","2.3","2.4","2.5","2.6","2.7","2.8","3","4","5.5","18120"'
         sf = SimulationField.load(str, @p)
-        sf.field_name.should eql 'L2-L4'
-        sf.treatment_machine.should eql 'CT Sim'
+        expect(sf.field_name).to eql 'L2-L4'
+        expect(sf.treatment_machine).to eql 'CT Sim'
       end
 
     end
@@ -54,21 +54,21 @@ module RTP
     describe "::new" do
 
       it "should create a SimulationField object" do
-        @sf.class.should eql SimulationField
+        expect(@sf.class).to eql SimulationField
       end
 
       it "should set the parent attribute" do
-        @sf.parent.should eql @p
+        expect(@sf.parent).to eql @p
       end
 
       it "should set the default keyword attribute" do
-        @sf.keyword.should eql "SIM_DEF"
+        expect(@sf.keyword).to eql "SIM_DEF"
       end
 
       it "should determine the proper parent when given a lower level record in the hiearchy of records" do
         ss = SiteSetup.new(@p)
         sf = SimulationField.new(ss)
-        sf.parent.should eql @p
+        expect(sf.parent).to eql @p
       end
 
     end
@@ -80,18 +80,18 @@ module RTP
         sf_other = SimulationField.new(@p)
         sf_other.field_id = '33'
         @sf.field_id = '33'
-        (@sf == sf_other).should be_true
+        expect(@sf == sf_other).to be_true
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         sf_other = SimulationField.new(@p)
         sf_other.field_id = '11'
         @sf.field_id = '1'
-        (@sf == sf_other).should be_false
+        expect(@sf == sf_other).to be_false
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        (@f == 42).should be_false
+        expect(@f == 42).to be_false
       end
 
     end
@@ -100,7 +100,7 @@ module RTP
     describe "#children" do
 
       it "should return an empty array when called on a child-less instance" do
-        @sf.children.should eql Array.new
+        expect(@sf.children).to eql Array.new
       end
 
     end
@@ -112,7 +112,7 @@ module RTP
         sf_other = SimulationField.new(@p)
         sf_other.field_id = '1'
         @sf.field_id = '1'
-        (@sf == sf_other).should be_true
+        expect(@sf == sf_other).to be_true
       end
 
     end
@@ -126,7 +126,7 @@ module RTP
         str = values + crc + "\r\n"
         sf1 = SimulationField.load(str, @p)
         sf2 = SimulationField.load(str, @p)
-        (sf1.hash == sf2.hash).should be_true
+        expect(sf1.hash == sf2.hash).to be_true
       end
 
     end
@@ -136,7 +136,7 @@ module RTP
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
         arr = ["SIM_DEF", [nil]*51].flatten
-        @sf.values.should eql arr
+        expect(@sf.values).to eql arr
       end
 
     end
@@ -145,7 +145,7 @@ module RTP
     context "#to_simulation_field" do
 
       it "should return itself" do
-        @sf.to_simulation_field.equal?(@sf).should be_true
+        expect(@sf.to_simulation_field.equal?(@sf)).to be_true
       end
 
     end
@@ -156,7 +156,7 @@ module RTP
       it "should return a string which matches the original string" do
         str = '"SIM_DEF","SPINE","L2-L4","B","PRONE","CT Sim","1.0","2.0","Sym","3.0","4.0","5.0","Sym","6.0","7.0","8.0","9.0","0.1","0.2","0.3","0.4","0.5","0.6","0.7","0.8","0.9","","1.1","1.2","","1.3","1.4","","1.5","1.6","","1.7","1.8","","1.9","2.1","2.2","","2.3","2.4","2.5","2.6","2.7","2.8","3","4","5.5","18120"' + "\r\n"
         sf = SimulationField.load(str, @p)
-        sf.to_s.should eql str
+        expect(sf.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
@@ -164,7 +164,7 @@ module RTP
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         sf = SimulationField.load(str, @p)
-        sf.to_s.should eql str
+        expect(sf.to_s).to eql str
       end
 
     end
@@ -175,7 +175,7 @@ module RTP
       it "should raise an error unless 'SIM_DEF' is given as an argument" do
         expect {@sf.keyword=('RX_DEF')}.to raise_error(ArgumentError, /keyword/)
         @sf.keyword = 'SIM_DEF'
-        @sf.keyword.should eql 'SIM_DEF'
+        expect(@sf.keyword).to eql 'SIM_DEF'
       end
 
     end
@@ -186,7 +186,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Anterior'
         @sf.field_name = value
-        @sf.field_name.should eql value
+        expect(@sf.field_name).to eql value
       end
 
     end
@@ -197,7 +197,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1'
         @sf.field_id = value
-        @sf.field_id.should eql value
+        expect(@sf.field_id).to eql value
       end
 
     end
@@ -208,7 +208,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'AL01'
         @sf.treatment_machine = value
-        @sf.treatment_machine.should eql value
+        expect(@sf.treatment_machine).to eql value
       end
 
     end
@@ -219,7 +219,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '21'
         @sf.gantry_angle = value
-        @sf.gantry_angle.should eql value
+        expect(@sf.gantry_angle).to eql value
       end
 
     end
@@ -230,7 +230,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '110'
         @sf.collimator_angle = value
-        @sf.collimator_angle.should eql value
+        expect(@sf.collimator_angle).to eql value
       end
 
     end
@@ -241,7 +241,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Asym'
         @sf.field_x_mode = value
-        @sf.field_x_mode.should eql value
+        expect(@sf.field_x_mode).to eql value
       end
 
     end
@@ -252,7 +252,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '4.7'
         @sf.field_x = value
-        @sf.field_x.should eql value
+        expect(@sf.field_x).to eql value
       end
 
     end
@@ -263,7 +263,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '-2.7'
         @sf.collimator_x1 = value
-        @sf.collimator_x1.should eql value
+        expect(@sf.collimator_x1).to eql value
       end
 
     end
@@ -274,7 +274,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '2.0'
         @sf.collimator_x2 = value
-        @sf.collimator_x2.should eql value
+        expect(@sf.collimator_x2).to eql value
       end
 
     end
@@ -285,7 +285,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Sym'
         @sf.field_y_mode = value
-        @sf.field_y_mode.should eql value
+        expect(@sf.field_y_mode).to eql value
       end
 
     end
@@ -296,7 +296,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '6.0'
         @sf.field_y = value
-        @sf.field_y.should eql value
+        expect(@sf.field_y).to eql value
       end
 
     end
@@ -307,7 +307,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '-3.0'
         @sf.collimator_y1 = value
-        @sf.collimator_y1.should eql value
+        expect(@sf.collimator_y1).to eql value
       end
 
     end
@@ -318,7 +318,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '3.0'
         @sf.collimator_y2 = value
-        @sf.collimator_y2.should eql value
+        expect(@sf.collimator_y2).to eql value
       end
 
     end
@@ -329,7 +329,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '13.7'
         @sf.couch_vertical = value
-        @sf.couch_vertical.should eql value
+        expect(@sf.couch_vertical).to eql value
       end
 
     end
@@ -340,7 +340,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '-4.7'
         @sf.couch_lateral = value
-        @sf.couch_lateral.should eql value
+        expect(@sf.couch_lateral).to eql value
       end
 
     end
@@ -351,7 +351,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '61.7'
         @sf.couch_longitudinal = value
-        @sf.couch_longitudinal.should eql value
+        expect(@sf.couch_longitudinal).to eql value
       end
 
     end
@@ -362,7 +362,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '7'
         @sf.couch_angle = value
-        @sf.couch_angle.should eql value
+        expect(@sf.couch_angle).to eql value
       end
 
     end
@@ -373,7 +373,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '6'
         @sf.couch_pedestal = value
-        @sf.couch_pedestal.should eql value
+        expect(@sf.couch_pedestal).to eql value
       end
 
     end
@@ -384,7 +384,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '103'
         @sf.sad = value
-        @sf.sad.should eql value
+        expect(@sf.sad).to eql value
       end
 
     end
@@ -395,7 +395,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '3'
         @sf.ap_separation = value
-        @sf.ap_separation.should eql value
+        expect(@sf.ap_separation).to eql value
       end
 
     end
@@ -406,7 +406,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '4.0'
         @sf.pa_separation = value
-        @sf.pa_separation.should eql value
+        expect(@sf.pa_separation).to eql value
       end
 
     end
@@ -417,7 +417,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '18'
         @sf.lateral_separation = value
-        @sf.lateral_separation.should eql value
+        expect(@sf.lateral_separation).to eql value
       end
 
     end
@@ -428,7 +428,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '9.1'
         @sf.tangential_separation = value
-        @sf.tangential_separation.should eql value
+        expect(@sf.tangential_separation).to eql value
       end
 
     end
@@ -439,7 +439,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '60'
         @sf.other_label_1 = value
-        @sf.other_label_1.should eql value
+        expect(@sf.other_label_1).to eql value
       end
 
     end
@@ -450,7 +450,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '97'
         @sf.ssd_1 = value
-        @sf.ssd_1.should eql value
+        expect(@sf.ssd_1).to eql value
       end
 
     end
@@ -461,7 +461,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '99'
         @sf.sfd_1 = value
-        @sf.sfd_1.should eql value
+        expect(@sf.sfd_1).to eql value
       end
 
     end
@@ -472,7 +472,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'B'
         @sf.other_label_2 = value
-        @sf.other_label_2.should eql value
+        expect(@sf.other_label_2).to eql value
       end
 
     end
@@ -483,7 +483,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '2'
         @sf.other_measurement_1 = value
-        @sf.other_measurement_1.should eql value
+        expect(@sf.other_measurement_1).to eql value
       end
 
     end
@@ -494,7 +494,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '4.4'
         @sf.other_measurement_2 = value
-        @sf.other_measurement_2.should eql value
+        expect(@sf.other_measurement_2).to eql value
       end
 
     end
@@ -505,7 +505,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Custom'
         @sf.other_label_3 = value
-        @sf.other_label_3.should eql value
+        expect(@sf.other_label_3).to eql value
       end
 
     end
@@ -516,7 +516,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '6'
         @sf.other_measurement_3 = value
-        @sf.other_measurement_3.should eql value
+        expect(@sf.other_measurement_3).to eql value
       end
 
     end
@@ -527,7 +527,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1.0'
         @sf.other_measurement_4 = value
-        @sf.other_measurement_4.should eql value
+        expect(@sf.other_measurement_4).to eql value
       end
 
     end
@@ -538,7 +538,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'PC'
         @sf.other_label_4 = value
-        @sf.other_label_4.should eql value
+        expect(@sf.other_label_4).to eql value
       end
 
     end
@@ -549,7 +549,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '8'
         @sf.other_measurement_5 = value
-        @sf.other_measurement_5.should eql value
+        expect(@sf.other_measurement_5).to eql value
       end
 
     end
@@ -560,7 +560,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '0.9'
         @sf.other_measurement_6 = value
-        @sf.other_measurement_6.should eql value
+        expect(@sf.other_measurement_6).to eql value
       end
 
     end
@@ -571,7 +571,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Y'
         @sf.blade_x_mode = value
-        @sf.blade_x_mode.should eql value
+        expect(@sf.blade_x_mode).to eql value
       end
 
     end
@@ -582,7 +582,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1.9'
         @sf.blade_x = value
-        @sf.blade_x.should eql value
+        expect(@sf.blade_x).to eql value
       end
 
     end
@@ -593,7 +593,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '4.3'
         @sf.blade_x1 = value
-        @sf.blade_x1.should eql value
+        expect(@sf.blade_x1).to eql value
       end
 
     end
@@ -604,7 +604,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '6.6'
         @sf.blade_x2 = value
-        @sf.blade_x2.should eql value
+        expect(@sf.blade_x2).to eql value
       end
 
     end
@@ -615,7 +615,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'N'
         @sf.blade_y_mode = value
-        @sf.blade_y_mode.should eql value
+        expect(@sf.blade_y_mode).to eql value
       end
 
     end
@@ -626,7 +626,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '8.8'
         @sf.blade_y = value
-        @sf.blade_y.should eql value
+        expect(@sf.blade_y).to eql value
       end
 
     end
@@ -637,7 +637,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '5.5'
         @sf.blade_y1 = value
-        @sf.blade_y1.should eql value
+        expect(@sf.blade_y1).to eql value
       end
 
     end
@@ -648,7 +648,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '6.6'
         @sf.blade_y2 = value
-        @sf.blade_y2.should eql value
+        expect(@sf.blade_y2).to eql value
       end
 
     end
@@ -659,7 +659,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '0.6'
         @sf.ii_lateral = value
-        @sf.ii_lateral.should eql value
+        expect(@sf.ii_lateral).to eql value
       end
 
     end
@@ -670,7 +670,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '3.2'
         @sf.ii_longitudinal = value
-        @sf.ii_longitudinal.should eql value
+        expect(@sf.ii_longitudinal).to eql value
       end
 
     end
@@ -681,7 +681,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '4.7'
         @sf.ii_vertical = value
-        @sf.ii_vertical.should eql value
+        expect(@sf.ii_vertical).to eql value
       end
 
     end
@@ -692,7 +692,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '120'
         @sf.kvp = value
-        @sf.kvp.should eql value
+        expect(@sf.kvp).to eql value
       end
 
     end
@@ -703,7 +703,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '15'
         @sf.ma = value
-        @sf.ma.should eql value
+        expect(@sf.ma).to eql value
       end
 
     end
@@ -714,7 +714,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '12'
         @sf.seconds = value
-        @sf.seconds.should eql value
+        expect(@sf.seconds).to eql value
       end
 
     end

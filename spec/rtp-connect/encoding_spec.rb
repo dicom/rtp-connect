@@ -24,9 +24,9 @@ module RTP
         file = File.join(TMPDIR, 'encoding_01.rtp')
         @p.write(file)
         p = Plan.read(file)
-        p.patient_last_name.encoding.should eql Encoding::ISO8859_1
-        p.patient_last_name.should eql @p.patient_last_name
-        p.prescriptions.first.fields.first.field_name.should eql @f.field_name
+        expect(p.patient_last_name.encoding).to eql Encoding::ISO8859_1
+        expect(p.patient_last_name).to eql @p.patient_last_name
+        expect(p.prescriptions.first.fields.first.field_name).to eql @f.field_name
       end
 
     end

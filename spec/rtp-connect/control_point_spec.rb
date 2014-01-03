@@ -39,14 +39,14 @@ module RTP
       it "should create a ControlPoint object when given a valid string" do
         # Since (currently) the last element of this record is a required one, there is no (valid) short version.
         complete = '"CONTROL_PT_DEF","BAKFR","11","40","1","0","1","0.000000","","15","0","96.3","2","180.0","","0.0","","","","","","","","","","0.0","0.0","0.0","0.0","","0.0","","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","7923"'
-        ControlPoint.load(complete, @f).class.should eql ControlPoint
+        expect(ControlPoint.load(complete, @f).class).to eql ControlPoint
       end
 
       it "should set attributes from the given string" do
         str = '"CONTROL_PT_DEF","BAKFR","11","40","1","0","1","0.000000","","15","0","96.3","2","180.0","","0.0","","","","","","","","","","0.0","0.0","0.0","0.0","","0.0","","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","7923"'
         cp = ControlPoint.load(str, @f)
-        cp.field_id.should eql 'BAKFR'
-        cp.gantry_angle.should eql '180.0'
+        expect(cp.field_id).to eql 'BAKFR'
+        expect(cp.gantry_angle).to eql '180.0'
       end
 
     end
@@ -55,21 +55,21 @@ module RTP
     describe "::new" do
 
       it "should create a ControlPoint object" do
-        @cp.class.should eql ControlPoint
+        expect(@cp.class).to eql ControlPoint
       end
 
       it "should set the parent attribute" do
-        @cp.parent.should eql @f
+        expect(@cp.parent).to eql @f
       end
 
       it "should set the default keyword attribute" do
-        @cp.keyword.should eql "CONTROL_PT_DEF"
+        expect(@cp.keyword).to eql "CONTROL_PT_DEF"
       end
 
       it "should determine the proper parent when given a lower level record in the hiearchy of records" do
         ef = ExtendedField.new(@f)
         cp = ControlPoint.new(ef)
-        cp.parent.should eql @f
+        expect(cp.parent).to eql @f
       end
 
     end
@@ -81,18 +81,18 @@ module RTP
         cp_other = ControlPoint.new(@f)
         cp_other.field_id = '123'
         @cp.field_id = '123'
-        (@cp == cp_other).should be_true
+        expect(@cp == cp_other).to be_true
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         cp_other = ControlPoint.new(@f)
         cp_other.field_id = '123'
         @cp.field_id = '456'
-        (@cp == cp_other).should be_false
+        expect(@cp == cp_other).to be_false
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        (@cp == 42).should be_false
+        expect(@cp == 42).to be_false
       end
 
     end
@@ -101,7 +101,7 @@ module RTP
     describe "#children" do
 
       it "should return an empty array when called on a child-less instance" do
-        @cp.children.should eql Array.new
+        expect(@cp.children).to eql Array.new
       end
 
     end
@@ -113,7 +113,7 @@ module RTP
         value = -11.5
         @cp.collimator_x1 = value
         @cp.field_x_mode = 'SYM'
-        @cp.dcm_collimator_x1.should eql value * 10
+        expect(@cp.dcm_collimator_x1).to eql value * 10
       end
 
       it "should get the collimator_x1 attribute from the parent field when field parameters for the control point is not defined" do
@@ -122,19 +122,19 @@ module RTP
         @cp.field_x_mode = ''
         @cp.parent.collimator_x1 = value
         @cp.parent.field_x_mode = 'SYM'
-        @cp.dcm_collimator_x1.should eql value * 10
+        expect(@cp.dcm_collimator_x1).to eql value * 10
       end
 
       it "should return an inverted, negative value in the case of 'sym' field_x_mode and an original positive x1 value" do
         @cp.collimator_x1 = 5.0
         @cp.field_x_mode = 'SYM'
-        @cp.dcm_collimator_x1.should eql -50.0
+        expect(@cp.dcm_collimator_x1).to eql -50.0
       end
 
       it "should return a negative value in the case of 'sym' field_x_mode and an original negative x1 value" do
         @cp.collimator_x1 = -5.0
         @cp.field_x_mode = 'SYM'
-        @cp.dcm_collimator_x1.should eql -50.0
+        expect(@cp.dcm_collimator_x1).to eql -50.0
       end
 
       it "should return an inverted, negative value in the case of 'sym' field_x_mode, scale convention 1 and an original positive x1 value" do
@@ -144,7 +144,7 @@ module RTP
         @cp.field_x_mode = 'SYM'
         @cp.field_y_mode = 'SYM'
         @cp.scale_convention = '1'
-        @cp.dcm_collimator_x1.should eql -50.0
+        expect(@cp.dcm_collimator_x1).to eql -50.0
       end
 
       it "should return a negative value in the case of 'sym' field_x_mode, scale convention 1 and an original negative x1 value" do
@@ -153,7 +153,7 @@ module RTP
         @cp.field_x_mode = 'SYM'
         @cp.field_y_mode = 'SYM'
         @cp.scale_convention = '1'
-        @cp.dcm_collimator_x1.should eql -50.0
+        expect(@cp.dcm_collimator_x1).to eql -50.0
       end
 
     end
@@ -165,7 +165,7 @@ module RTP
         value = -11.5
         @cp.collimator_y1 = value
         @cp.field_y_mode = 'SYM'
-        @cp.dcm_collimator_y1.should eql value * 10
+        expect(@cp.dcm_collimator_y1).to eql value * 10
       end
 
       it "should get the collimator_y1 attribute from the parent field when field parameters for the control point is not defined" do
@@ -174,19 +174,19 @@ module RTP
         @cp.field_y_mode = ''
         @cp.parent.collimator_y1 = value
         @cp.parent.field_y_mode = 'SYM'
-        @cp.dcm_collimator_y1.should eql value * 10
+        expect(@cp.dcm_collimator_y1).to eql value * 10
       end
 
       it "should return an inverted, negative value in the case of 'sym' field_y_mode and an original positive y1 value" do
         @cp.collimator_y1 = 5.0
         @cp.field_y_mode = 'SYM'
-        @cp.dcm_collimator_y1.should eql -50.0
+        expect(@cp.dcm_collimator_y1).to eql -50.0
       end
 
       it "should return the original negative value in the case of 'sym' field_y_mode with an original negative y1 value" do
         @cp.collimator_y1 = -5.0
         @cp.field_y_mode = 'SYM'
-        @cp.dcm_collimator_y1.should eql -50.0
+        expect(@cp.dcm_collimator_y1).to eql -50.0
       end
 
       it "should return an inverted, negative value in the case of 'sym' field_y_mode, scale convention 1 and an original positive x1 value" do
@@ -196,7 +196,7 @@ module RTP
         @cp.field_x_mode = 'SYM'
         @cp.field_y_mode = 'SYM'
         @cp.scale_convention = '1'
-        @cp.dcm_collimator_y1.should eql -50.0
+        expect(@cp.dcm_collimator_y1).to eql -50.0
       end
 
       it "should return a negative value in the case of 'sym' field_y_mode, scale convention 1 and an original negative x1 value" do
@@ -205,7 +205,7 @@ module RTP
         @cp.field_x_mode = 'SYM'
         @cp.field_y_mode = 'SYM'
         @cp.scale_convention = '1'
-        @cp.dcm_collimator_y1.should eql -50.0
+        expect(@cp.dcm_collimator_y1).to eql -50.0
       end
 
     end
@@ -217,7 +217,7 @@ module RTP
         value = 11.5
         @cp.collimator_x2 = value
         @cp.field_x_mode = 'SYM'
-        @cp.dcm_collimator_x2.should eql value * 10
+        expect(@cp.dcm_collimator_x2).to eql value * 10
       end
 
       it "should get the collimator_x2 attribute from the parent field when field parameters for the control point is not defined" do
@@ -226,7 +226,7 @@ module RTP
         @cp.field_x_mode = ''
         @cp.parent.collimator_x2 = value
         @cp.parent.field_x_mode = 'SYM'
-        @cp.dcm_collimator_x2.should eql value * 10
+        expect(@cp.dcm_collimator_x2).to eql value * 10
       end
 
     end
@@ -238,7 +238,7 @@ module RTP
         value = 11.5
         @cp.collimator_y2 = value
         @cp.field_y_mode = 'SYM'
-        @cp.dcm_collimator_y2.should eql value * 10
+        expect(@cp.dcm_collimator_y2).to eql value * 10
       end
 
       it "should get the collimator_y2 attribute from the parent field when field parameters for the control point is not defined" do
@@ -247,7 +247,7 @@ module RTP
         @cp.field_y_mode = ''
         @cp.parent.collimator_y2 = value
         @cp.parent.field_y_mode = 'SYM'
-        @cp.dcm_collimator_y2.should eql value * 10
+        expect(@cp.dcm_collimator_y2).to eql value * 10
       end
 
     end
@@ -259,7 +259,7 @@ module RTP
         cp_other = ControlPoint.new(@f)
         cp_other.field_id = '1'
         @cp.field_id = '1'
-        (@cp == cp_other).should be_true
+        expect(@cp == cp_other).to be_true
       end
 
     end
@@ -273,7 +273,7 @@ module RTP
         str = values + crc + "\r\n"
         cp1 = ControlPoint.load(str, @f)
         cp2 = ControlPoint.load(str, @f)
-        (cp1.hash == cp2.hash).should be_true
+        expect(cp1.hash == cp2.hash).to be_true
       end
 
     end
@@ -283,7 +283,7 @@ module RTP
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
         arr = ["CONTROL_PT_DEF", [nil]*231].flatten
-        @cp.values.should eql arr
+        expect(@cp.values).to eql arr
       end
 
     end
@@ -292,7 +292,7 @@ module RTP
     describe "#to_control_point" do
 
       it "should return itself" do
-        @cp.to_control_point.equal?(@cp).should be_true
+        expect(@cp.to_control_point.equal?(@cp)).to be_true
       end
 
     end
@@ -303,7 +303,7 @@ module RTP
       it "should return a string which matches the original string" do
         str = '"CONTROL_PT_DEF","BAKFR","11","40","1","0","1","0.000000","","15","0","96.3","2","180.0","","0.0","","","","","","","","","","0.0","0.0","0.0","0.0","","0.0","","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","7923"' + "\r\n"
         cp = ControlPoint.load(str, @f)
-        cp.to_s.should eql str
+        expect(cp.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
@@ -311,7 +311,7 @@ module RTP
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         cp = ControlPoint.load(str, @f)
-        cp.to_s.should eql str
+        expect(cp.to_s).to eql str
       end
 
     end
@@ -332,13 +332,13 @@ module RTP
         arr[10] = '5.00'
         arr[90] = '-5.00'
         @cp.mlc_lp_a = arr
-        @cp.mlc_lp_a.should eql arr
+        expect(@cp.mlc_lp_a).to eql arr
       end
 
       it "should transfer the array (containing only string values) to the mlc_lp_a attribute" do
         arr =Array.new(100) {|i| (i-50).to_f.to_s}
         @cp.mlc_lp_a = arr
-        @cp.mlc_lp_a.should eql arr
+        expect(@cp.mlc_lp_a).to eql arr
       end
 
     end
@@ -359,13 +359,13 @@ module RTP
         arr[10] = '15.00'
         arr[90] = '-15.00'
         @cp.mlc_lp_b = arr
-        @cp.mlc_lp_b.should eql arr
+        expect(@cp.mlc_lp_b).to eql arr
       end
 
       it "should transfer the array (containing only string values) to the mlc_lp_b attribute" do
         arr =Array.new(100) {|i| (i-50).to_f.to_s}
         @cp.mlc_lp_b = arr
-        @cp.mlc_lp_b.should eql arr
+        expect(@cp.mlc_lp_b).to eql arr
       end
 
     end
@@ -376,7 +376,7 @@ module RTP
       it "should raise an error unless 'CONTROL_PT_DEF' is given as an argument" do
         expect {@cp.keyword=('RX_DEF')}.to raise_error(ArgumentError, /keyword/)
         @cp.keyword = 'CONTROL_PT_DEF'
-        @cp.keyword.should eql 'CONTROL_PT_DEF'
+        expect(@cp.keyword).to eql 'CONTROL_PT_DEF'
       end
 
     end
@@ -387,7 +387,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1'
         @cp.field_id = value
-        @cp.field_id.should eql value
+        expect(@cp.field_id).to eql value
       end
 
     end
@@ -398,7 +398,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '11'
         @cp.mlc_type = value
-        @cp.mlc_type.should eql value
+        expect(@cp.mlc_type).to eql value
       end
 
     end
@@ -409,7 +409,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '40'
         @cp.mlc_leaves = value
-        @cp.mlc_leaves.should eql value
+        expect(@cp.mlc_leaves).to eql value
       end
 
     end
@@ -420,7 +420,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '12'
         @cp.total_control_points = value
-        @cp.total_control_points.should eql value
+        expect(@cp.total_control_points).to eql value
       end
 
     end
@@ -431,7 +431,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '0'
         @cp.control_pt_number = value
-        @cp.control_pt_number.should eql value
+        expect(@cp.control_pt_number).to eql value
       end
 
     end
@@ -442,7 +442,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1'
         @cp.mu_convention = value
-        @cp.mu_convention.should eql value
+        expect(@cp.mu_convention).to eql value
       end
 
     end
@@ -453,7 +453,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '9'
         @cp.monitor_units = value
-        @cp.monitor_units.should eql value
+        expect(@cp.monitor_units).to eql value
       end
 
     end
@@ -464,7 +464,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Out'
         @cp.wedge_position = value
-        @cp.wedge_position.should eql value
+        expect(@cp.wedge_position).to eql value
       end
 
     end
@@ -475,7 +475,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '15'
         @cp.energy = value
-        @cp.energy.should eql value
+        expect(@cp.energy).to eql value
       end
 
     end
@@ -486,7 +486,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '300'
         @cp.doserate = value
-        @cp.doserate.should eql value
+        expect(@cp.doserate).to eql value
       end
 
     end
@@ -497,7 +497,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '93.8'
         @cp.ssd = value
-        @cp.ssd.should eql value
+        expect(@cp.ssd).to eql value
       end
 
     end
@@ -508,7 +508,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '2'
         @cp.scale_convention = value
-        @cp.scale_convention.should eql value
+        expect(@cp.scale_convention).to eql value
       end
 
     end
@@ -519,7 +519,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '45'
         @cp.gantry_angle = value
-        @cp.gantry_angle.should eql value
+        expect(@cp.gantry_angle).to eql value
       end
 
     end
@@ -530,7 +530,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'CW'
         @cp.gantry_dir = value
-        @cp.gantry_dir.should eql value
+        expect(@cp.gantry_dir).to eql value
       end
 
     end
@@ -541,7 +541,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '65'
         @cp.collimator_angle = value
-        @cp.collimator_angle.should eql value
+        expect(@cp.collimator_angle).to eql value
       end
 
     end
@@ -552,7 +552,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'CW'
         @cp.collimator_dir = value
-        @cp.collimator_dir.should eql value
+        expect(@cp.collimator_dir).to eql value
       end
 
     end
@@ -563,7 +563,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Sym'
         @cp.field_x_mode = value
-        @cp.field_x_mode.should eql value
+        expect(@cp.field_x_mode).to eql value
       end
 
     end
@@ -574,7 +574,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '4.0'
         @cp.field_x = value
-        @cp.field_x.should eql value
+        expect(@cp.field_x).to eql value
       end
 
     end
@@ -585,7 +585,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '-2.0'
         @cp.collimator_x1 = value
-        @cp.collimator_x1.should eql value
+        expect(@cp.collimator_x1).to eql value
       end
 
     end
@@ -596,7 +596,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '2.0'
         @cp.collimator_x2 = value
-        @cp.collimator_x2.should eql value
+        expect(@cp.collimator_x2).to eql value
       end
 
     end
@@ -607,7 +607,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'Asy'
         @cp.field_y_mode = value
-        @cp.field_y_mode.should eql value
+        expect(@cp.field_y_mode).to eql value
       end
 
     end
@@ -618,7 +618,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '5.0'
         @cp.field_y = value
-        @cp.field_y.should eql value
+        expect(@cp.field_y).to eql value
       end
 
     end
@@ -629,7 +629,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '-3.5'
         @cp.collimator_y1 = value
-        @cp.collimator_y1.should eql value
+        expect(@cp.collimator_y1).to eql value
       end
 
     end
@@ -640,7 +640,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '1.5'
         @cp.collimator_y2 = value
-        @cp.collimator_y2.should eql value
+        expect(@cp.collimator_y2).to eql value
       end
 
     end
@@ -651,7 +651,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '4.5'
         @cp.couch_vertical = value
-        @cp.couch_vertical.should eql value
+        expect(@cp.couch_vertical).to eql value
       end
 
     end
@@ -662,7 +662,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '2.3'
         @cp.couch_lateral = value
-        @cp.couch_lateral.should eql value
+        expect(@cp.couch_lateral).to eql value
       end
 
     end
@@ -673,7 +673,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '55.3'
         @cp.couch_longitudinal = value
-        @cp.couch_longitudinal.should eql value
+        expect(@cp.couch_longitudinal).to eql value
       end
 
     end
@@ -684,7 +684,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '4'
         @cp.couch_angle = value
-        @cp.couch_angle.should eql value
+        expect(@cp.couch_angle).to eql value
       end
 
     end
@@ -695,7 +695,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'CCW'
         @cp.couch_dir = value
-        @cp.couch_dir.should eql value
+        expect(@cp.couch_dir).to eql value
       end
 
     end
@@ -706,7 +706,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = '7'
         @cp.couch_pedestal = value
-        @cp.couch_pedestal.should eql value
+        expect(@cp.couch_pedestal).to eql value
       end
 
     end
@@ -717,7 +717,7 @@ module RTP
       it "should pass the argument to the corresponding attribute" do
         value = 'CCW'
         @cp.couch_ped_dir = value
-        @cp.couch_ped_dir.should eql value
+        expect(@cp.couch_ped_dir).to eql value
       end
 
     end
@@ -727,22 +727,22 @@ module RTP
 
       it "should invert the value when the scale_convention attribute is '1'" do
         @cp.scale_convention = '1'
-        @cp.send(:scale_convertion?).should be_true
+        expect(@cp.send(:scale_convertion?)).to be_true
       end
 
       it "should return the same value when the scale_convention attribute is '2'" do
         @cp.scale_convention = '2'
-        @cp.send(:scale_convertion?).should be_false
+        expect(@cp.send(:scale_convertion?)).to be_false
       end
 
       it "should return the same value when the scale_convention attribute is undefined" do
         @cp.scale_convention = nil
-        @cp.send(:scale_convertion?).should be_false
+        expect(@cp.send(:scale_convertion?)).to be_false
       end
 
       it "should return the same value when the scale_convention attribute is invalid" do
         @cp.scale_convention = 10
-        @cp.send(:scale_convertion?).should be_false
+        expect(@cp.send(:scale_convertion?)).to be_false
       end
 
     end
@@ -752,22 +752,22 @@ module RTP
 
       it "should invert the value when the scale_convention attribute is '1'" do
         @cp.scale_convention = '1'
-        @cp.send(:scale_factor).should eql -1
+        expect(@cp.send(:scale_factor)).to eql -1
       end
 
       it "should return the same value when the scale_convention attribute is '2'" do
         @cp.scale_convention = '2'
-        @cp.send(:scale_factor).should eql 1
+        expect(@cp.send(:scale_factor)).to eql 1
       end
 
       it "should return the same value when the scale_convention attribute is undefined" do
         @cp.scale_convention = nil
-        @cp.send(:scale_factor).should eql 1
+        expect(@cp.send(:scale_factor)).to eql 1
       end
 
       it "should return the same value when the scale_convention attribute is invalid" do
         @cp.scale_convention = 10
-        @cp.send(:scale_factor).should eql 1
+        expect(@cp.send(:scale_factor)).to eql 1
       end
 
     end
