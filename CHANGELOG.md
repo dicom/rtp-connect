@@ -1,6 +1,12 @@
-= 1.6
+# 1.7
 
-=== 12th December, 2013
+## (Unreleased)
+
+* Plan#to_dcm improvements.
+
+# 1.6
+
+## 12th December, 2013
 
 * Plan#to_dcm improvements:
   * Added support for VMAT by improving the handling of control point conversion.
@@ -17,9 +23,9 @@
   * Make sure that the last cumulative meterset weight exactly equals the final cumulative meterset weight.
 
 
-= 1.5
+# 1.5
 
-=== 24th October, 2013
+## 24th October, 2013
 
 * Added support for the Simulation Field record.
 * Bumped required Ruby version to 1.9.3.
@@ -42,25 +48,25 @@
     * Device Serial Number
 
 
-= 1.4
+# 1.4
 
-=== 10th April, 2013
+## 10th April, 2013
 
 * Support an extended ascii character set (ISO8859-1 encoding) for record values and file read/write.
 
 
-= 1.3
+# 1.3
 
-=== 12th October, 2012
+## 12th October, 2012
 
 * Added support for the updated ExtendedField record values introduced in Mosaiq 2.4.
 * Simply log a warning instead of raising an exception when reading a record with more values than excpected.
 * Allow reading (incomplete) records that contain the required values but not all the optional ones (instead of raising an exception).
 
 
-= 1.2
+# 1.2
 
-=== 13th July, 2012
+## 13th July, 2012
 
 * Converted documentation format from RDoc to YARD.
 * Added support for the Dose Tracking record.
@@ -68,9 +74,9 @@
 * Added the to_dcm conversion method for converting from RTP to DICOM.
 
 
-= 1.1
+# 1.1
 
-=== 18th April, 2012
+## 18th April, 2012
 
 * Added to_* methods for all records to complete the implementation of dynamic typing
 * Added comparison related methods to the record classes: #==, #eql? and #hash
@@ -80,9 +86,9 @@
 * Fixed an issue where reading a string with a single digit checksum would fail.
 
 
-= 1.0
+# 1.0
 
-=== 29th December, 2011
+## 29th December, 2011
 
 First public release.
 The library, although missing support for a number of record types, should be usable

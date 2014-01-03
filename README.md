@@ -1,4 +1,4 @@
-= RTPConnect
+# RTPConnect
 
 The RTPConnect library allows you to read, edit and write RTPConnect files in Ruby.
 RTPConnect is a file format used in radiotherapy (e.g. Mosaiq) for export & import
@@ -6,24 +6,24 @@ of treatment planning data. The library is written entirely in Ruby and has no
 external dependencies.
 
 
-== INSTALLATION
+## INSTALLATION
 
   gem install rtp-connect
 
 
-== REQUIREMENTS
+## REQUIREMENTS
 
 * Ruby 1.9.3 (or higher)
 
 
-== BASIC USAGE
+## BASIC USAGE
 
-=== Load & Include
+### Load & Include
 
   require 'rtp-connect'
   include RTP
 
-=== Read, modify and write
+### Read, modify and write
 
   # Read file:
   rtp = Plan.read('some_file.rtp')
@@ -34,7 +34,7 @@ external dependencies.
   # Write to file:
   rtp.write('new_file.rtp')
 
-=== Create a new Plan Definition Record from scratch
+### Create a new Plan Definition Record from scratch
 
   # Create the instance:
   rtp = Plan.new
@@ -43,13 +43,13 @@ external dependencies.
   # Export the instance to an RTP string (with CRC):
   output = rtp.to_s
 
-=== Convert an RTP file to DICOM:
+### Convert an RTP file to DICOM:
 
   p = Plan.read('some_file.rtp')
   dcm = p.to_dcm
   dcm.write('rtplan.dcm')
 
-=== Log settings
+### Log settings
 
   # Change the log level so that only error messages are displayed:
   RTP.logger.level = Logger::ERROR
@@ -60,13 +60,13 @@ external dependencies.
   RTP.logger = Logger.new('foo.log', 'daily')
   RTP.logger = Logger.new('foo.log', 'monthly')
 
-=== Scripts
+### Scripts
 
 For more comprehensive and useful examples, check out the scripts folder
 which contains various Ruby scripts that intends to show off real world
 usage scenarios of the RTPConnect library.
 
-=== IRB Tip
+### IRB Tip
 
 When working with the RTPConnect library in irb, you may be annoyed with all
 the information that is printed to screen, regardless of your log level.
@@ -78,16 +78,16 @@ Example:
   rtp = Plan.read('some_file.rtp') ;0
 
 
-== RESOURCES
+## RESOURCES
 
-* {Rubygems download}[https://rubygems.org/gems/rtp-connect]
-* {Documentation}[http://rubydoc.info/gems/rtp-connect/frames]
-* {Source code repository}[https://github.com/dicom/rtp-connect]
+* [Rubygems download](https://rubygems.org/gems/rtp-connect)
+* [Documentation](http://rubydoc.info/gems/rtp-connect/frames)
+* [Source code repository](https://github.com/dicom/rtp-connect)
 
 
-== RESTRICTIONS
+## RESTRICTIONS
 
-=== Supported records
+### Supported records
 
 * Plan definition [PLAN_DEF]
 * Prescription site [RX_DEF]
@@ -98,7 +98,7 @@ Example:
 * Control point record [CONTROL_PT_DEF]
 * Dose tracking record [DOSE_DEF]
 
-=== Unsupported records
+### Unsupported records
 
 * Extended plan definition [EXTENDED_PLAN_DEF]
 * Document based treatment field [PDF_FIELD_DEF]
@@ -109,9 +109,9 @@ Example:
 If you encounter an RTP file with an unsupported record type, please contact me.
 
 
-== COPYRIGHT
+## COPYRIGHT
 
-Copyright 2011-2013 Christoffer Lervåg
+Copyright 2011-2014 Christoffer Lervåg
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -127,7 +127,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/ .
 
 
-== ABOUT THE AUTHOR
+## ABOUT THE AUTHOR
 
 * Name: Christoffer Lervåg
 * Location: Norway
