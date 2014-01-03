@@ -20,45 +20,45 @@ external dependencies.
 
 ### Load & Include
 
-  require 'rtp-connect'
-  include RTP
+    require 'rtp-connect'
+    include RTP
 
 ### Read, modify and write
 
-  # Read file:
-  rtp = Plan.read('some_file.rtp')
-  # Extract the Patient's Name:
-  name = rtp.patient_last_name
-  # Modify the Patient's Name:
-  rtp.patient_last_name = 'Anonymous'
-  # Write to file:
-  rtp.write('new_file.rtp')
+    # Read file:
+    rtp = Plan.read('some_file.rtp')
+    # Extract the Patient's Name:
+    name = rtp.patient_last_name
+    # Modify the Patient's Name:
+    rtp.patient_last_name = 'Anonymous'
+    # Write to file:
+    rtp.write('new_file.rtp')
 
 ### Create a new Plan Definition Record from scratch
 
-  # Create the instance:
-  rtp = Plan.new
-  # Set the Patient's ID attribute:
-  rtp.patient_id = '12345'
-  # Export the instance to an RTP string (with CRC):
-  output = rtp.to_s
+    # Create the instance:
+    rtp = Plan.new
+    # Set the Patient's ID attribute:
+    rtp.patient_id = '12345'
+    # Export the instance to an RTP string (with CRC):
+    output = rtp.to_s
 
 ### Convert an RTP file to DICOM:
 
-  p = Plan.read('some_file.rtp')
-  dcm = p.to_dcm
-  dcm.write('rtplan.dcm')
+    p = Plan.read('some_file.rtp')
+    dcm = p.to_dcm
+    dcm.write('rtplan.dcm')
 
 ### Log settings
 
-  # Change the log level so that only error messages are displayed:
-  RTP.logger.level = Logger::ERROR
-  # Setting up a simple file log:
-  l = Logger.new('my_logfile.log')
-  RTP.logger = l
-  # Create a logger which ages logfile daily/monthly:
-  RTP.logger = Logger.new('foo.log', 'daily')
-  RTP.logger = Logger.new('foo.log', 'monthly')
+    # Change the log level so that only error messages are displayed:
+    RTP.logger.level = Logger::ERROR
+    # Setting up a simple file log:
+    l = Logger.new('my_logfile.log')
+    RTP.logger = l
+    # Create a logger which ages logfile daily/monthly:
+    RTP.logger = Logger.new('foo.log', 'daily')
+    RTP.logger = Logger.new('foo.log', 'monthly')
 
 ### Scripts
 
@@ -75,7 +75,7 @@ automatically printed to the screen. A useful hack to avoid this effect is
 to append ";0" after a command.
 
 Example:
-  rtp = Plan.read('some_file.rtp') ;0
+    rtp = Plan.read('some_file.rtp') ;0
 
 
 ## RESOURCES
