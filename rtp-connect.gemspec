@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
   s.license = 'GPLv3'
   s.description = 'RTPConnect is a file format used in radiotherapy for export & import of treatment planning data.'
   s.files = Dir["{lib}/**/*", "[A-Z]*"]
-  s.rubyforge_project = 'rtp-connect'
 
   s.required_ruby_version = '>= 1.9.3'
 
