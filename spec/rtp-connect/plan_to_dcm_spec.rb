@@ -184,26 +184,6 @@ module RTP
         expect(bld_numbers).to eql ['1', '1', '40']
       end
 
-      it "should encode proper (negative) x1 and y1 jaw positions for this RTP file with scale convention 1" do
-        p = Plan.read(RTP_VMAT)
-        dcm = p.to_dcm
-        asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
-        asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
-        # Without scale conversion these results would be [80, 80] & [105, 105] (i.e. all positive).
-        expect(asymx[0]).to be < 0
-        expect(asymy[0]).to be < 0
-      end
-
-      it "should properly encode (switch) x and y jaw positions for this RTP file with scale convention 1" do
-        p = Plan.read(RTP_VMAT)
-        dcm = p.to_dcm
-        asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
-        asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
-        # Without scale conversion asymx results would be asymy, and vice versa:
-        expect(asymx).to eql [-105.0, 105.0]
-        expect(asymy).to eql [-80.0, 80.0]
-      end
-
       it "should encode proper jaw positions for an RTP file where the jaws are not defined in the control point (only the field)" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm
@@ -224,30 +204,6 @@ module RTP
           -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0,
           5.0, 5.0, 5.0, 5.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0,
           50.0, 50.0, 50.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0,5.0, 5.0
-        ]
-      end
-
-      it "should encode the expected MLC positions for this VMAT case with scale convention 1" do
-        p = Plan.read(RTP_VMAT)
-        dcm = p.to_dcm
-        mlc_retain = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][2].value('300A,011C').split("\\").collect {|v| v.to_f}
-        mlc_invert = dcm['300A,00B0'][0]['300A,0111'][21]['300A,011A'][2].value('300A,011C').split("\\").collect {|v| v.to_f}
-        expect(mlc_retain).to eql [
-          98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0,
-          98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0,
-          98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
-          100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
-          100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
-          100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0
-        ]
-        expect(mlc_invert).to eql [
-          -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0,
-          -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0,
-          -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0,
-          -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -98.0, -98.0, -98.0, -98.0, -98.0,
-          -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0,
-          -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0,
-          -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0
         ]
       end
 
@@ -306,6 +262,68 @@ module RTP
         yjaws = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C')
         expect(xjaws).to eql "0.0\\108.0"
         expect(yjaws).to eql "-45.0\\45.0"
+      end
+
+      context "(:scale => :elekta)" do
+
+        it "encodes proper (inverted) x1 and y1 jaw positions for this Elekta case with native readout format" do
+          p = Plan.read(RTP_VMAT)
+          dcm = p.to_dcm(:scale => :elekta)
+          asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
+          asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
+          # Without scale conversion these results would be [80, 80] & [105, 105] (i.e. all positive).
+          expect(asymx[0]).to be < 0
+          expect(asymy[0]).to be < 0
+        end
+
+        it "encodes(switches) the x and y jaw positions for this Elekta case with native readout format" do
+          p = Plan.read(RTP_VMAT)
+          dcm = p.to_dcm(:scale => :elekta)
+          asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
+          asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
+          # Without scale conversion asymx results would be asymy, and vice versa:
+          expect(asymx).to eql [-105.0, 105.0]
+          expect(asymy).to eql [-80.0, 80.0]
+        end
+
+        it "encodes as expected the MLC positions for this Elekta VMAT case with native readout format" do
+          p = Plan.read(RTP_VMAT)
+          dcm = p.to_dcm(:scale => :elekta)
+          mlc_retain = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][2].value('300A,011C').split("\\").collect {|v| v.to_f}
+          mlc_invert = dcm['300A,00B0'][0]['300A,0111'][21]['300A,011A'][2].value('300A,011C').split("\\").collect {|v| v.to_f}
+          expect(mlc_retain).to eql [
+            98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0,
+            98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0,
+            98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 98.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
+            100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
+            100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
+            100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0
+          ]
+          expect(mlc_invert).to eql [
+            -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0,
+            -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0,
+            -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0,
+            -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -98.0, -98.0, -98.0, -98.0, -98.0,
+            -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0,
+            -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0,
+            -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0, -98.0
+          ]
+        end
+
+      end
+
+      context "(:scale => :varian)" do
+
+        it "encodes proper (inverted) x1 and y1 jaw positions for this Varian case with native readout format" do
+          p = Plan.read(RTP_VARIAN_NATIVE)
+          dcm = p.to_dcm(:scale => :varian)
+          asymx = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][0].value('300A,011C').split("\\").collect {|v| v.to_f}
+          asymy = dcm['300A,00B0'][0]['300A,0111'][0]['300A,011A'][1].value('300A,011C').split("\\").collect {|v| v.to_f}
+          # Without scale conversion these results would be [63, 45] & [33, 45] (i.e. all positive).
+          expect(asymx[0]).to be < 0
+          expect(asymy[0]).to be < 0
+        end
+
       end
 
     end

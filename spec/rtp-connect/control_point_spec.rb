@@ -125,35 +125,42 @@ module RTP
         expect(@cp.dcm_collimator_x1).to eql value * 10
       end
 
-      it "should return an inverted, negative value in the case of 'sym' field_x_mode and an original positive x1 value" do
-        @cp.collimator_x1 = 5.0
-        @cp.field_x_mode = 'SYM'
-        expect(@cp.dcm_collimator_x1).to eql -50.0
+      context "(scale=:elekta)" do
+
+        it "should return an inverted, negative value (with field_x_mode being defined)" do
+          # FIXME: Scale conversion really needs to be investigated closer.
+          @cp.collimator_x1 = 5.0
+          @cp.collimator_y1 = 5.0
+          @cp.field_x_mode = 'SYM'
+          @cp.field_y_mode = 'SYM'
+          expect(@cp.dcm_collimator_x1(scale=:elekta)).to eql -50.0
+        end
+
+        it "should return an inverted, negative value pulled from the parent field (with field_x_mode being undefined)" do
+          @cp.collimator_x1 = 0.0
+          @cp.collimator_y1 = 0.0
+          @cp.field_x_mode = ''
+          @cp.field_y_mode = ''
+          @cp.parent.collimator_x1 = 5.0
+          @cp.parent.collimator_y1 = 5.0
+          @cp.parent.field_x_mode = 'SYM'
+          @cp.parent.field_y_mode = 'SYM'
+          expect(@cp.dcm_collimator_x1(scale=:elekta)).to eql -50.0
+        end
+
       end
 
-      it "should return a negative value in the case of 'sym' field_x_mode and an original negative x1 value" do
-        @cp.collimator_x1 = -5.0
-        @cp.field_x_mode = 'SYM'
-        expect(@cp.dcm_collimator_x1).to eql -50.0
-      end
+      context "(scale=:varian)" do
 
-      it "should return an inverted, negative value in the case of 'sym' field_x_mode, scale convention 1 and an original positive x1 value" do
-        # FIXME: Scale conversion really needs to be investigated closer.
-        @cp.collimator_x1 = 5.0
-        @cp.collimator_y1 = 5.0
-        @cp.field_x_mode = 'SYM'
-        @cp.field_y_mode = 'SYM'
-        @cp.scale_convention = '1'
-        expect(@cp.dcm_collimator_x1).to eql -50.0
-      end
+        it "should return an inverted value" do
+          # FIXME: Scale conversion really needs to be investigated closer.
+          @cp.collimator_x1 = 5.0
+          @cp.collimator_y1 = 5.0
+          @cp.field_x_mode = 'Asy'
+          @cp.field_y_mode = 'Asy'
+          expect(@cp.dcm_collimator_x1(scale=:varian)).to eql -50.0
+        end
 
-      it "should return a negative value in the case of 'sym' field_x_mode, scale convention 1 and an original negative x1 value" do
-        @cp.collimator_x1 = -5.0
-        @cp.collimator_y1 = -5.0
-        @cp.field_x_mode = 'SYM'
-        @cp.field_y_mode = 'SYM'
-        @cp.scale_convention = '1'
-        expect(@cp.dcm_collimator_x1).to eql -50.0
       end
 
     end
@@ -177,35 +184,42 @@ module RTP
         expect(@cp.dcm_collimator_y1).to eql value * 10
       end
 
-      it "should return an inverted, negative value in the case of 'sym' field_y_mode and an original positive y1 value" do
-        @cp.collimator_y1 = 5.0
-        @cp.field_y_mode = 'SYM'
-        expect(@cp.dcm_collimator_y1).to eql -50.0
+      context "(scale=:elekta)" do
+
+        it "should return an inverted, negative value (with field_y_mode being defined)" do
+          # FIXME: Scale conversion really needs to be investigated closer.
+          @cp.collimator_x1 = 5.0
+          @cp.collimator_y1 = 5.0
+          @cp.field_x_mode = 'SYM'
+          @cp.field_y_mode = 'SYM'
+          expect(@cp.dcm_collimator_y1(scale=:elekta)).to eql -50.0
+        end
+
+        it "should return an inverted, negative value pulled from the parent field (with field_y_mode being undefined)" do
+          @cp.collimator_x1 = 0.0
+          @cp.collimator_y1 = 0.0
+          @cp.field_x_mode = ''
+          @cp.field_y_mode = ''
+          @cp.parent.collimator_x1 = 5.0
+          @cp.parent.collimator_y1 = 5.0
+          @cp.parent.field_x_mode = 'SYM'
+          @cp.parent.field_y_mode = 'SYM'
+          expect(@cp.dcm_collimator_y1(scale=:elekta)).to eql -50.0
+        end
+
       end
 
-      it "should return the original negative value in the case of 'sym' field_y_mode with an original negative y1 value" do
-        @cp.collimator_y1 = -5.0
-        @cp.field_y_mode = 'SYM'
-        expect(@cp.dcm_collimator_y1).to eql -50.0
-      end
+      context "(scale=:varian)" do
 
-      it "should return an inverted, negative value in the case of 'sym' field_y_mode, scale convention 1 and an original positive x1 value" do
-        # FIXME: Scale conversion really needs to be investigated closer.
-        @cp.collimator_x1 = 5.0
-        @cp.collimator_y1 = 5.0
-        @cp.field_x_mode = 'SYM'
-        @cp.field_y_mode = 'SYM'
-        @cp.scale_convention = '1'
-        expect(@cp.dcm_collimator_y1).to eql -50.0
-      end
+        it "should return an inverted value" do
+          # FIXME: Scale conversion really needs to be investigated closer.
+          @cp.collimator_x1 = 5.0
+          @cp.collimator_y1 = 5.0
+          @cp.field_x_mode = 'Asy'
+          @cp.field_y_mode = 'Asy'
+          expect(@cp.dcm_collimator_y1(scale=:varian)).to eql -50.0
+        end
 
-      it "should return a negative value in the case of 'sym' field_y_mode, scale convention 1 and an original negative x1 value" do
-        @cp.collimator_x1 = 5.0
-        @cp.collimator_y1 = -5.0
-        @cp.field_x_mode = 'SYM'
-        @cp.field_y_mode = 'SYM'
-        @cp.scale_convention = '1'
-        expect(@cp.dcm_collimator_y1).to eql -50.0
       end
 
     end
@@ -718,56 +732,6 @@ module RTP
         value = 'CCW'
         @cp.couch_ped_dir = value
         expect(@cp.couch_ped_dir).to eql value
-      end
-
-    end
-
-
-    describe "#scale_convertion?" do
-
-      it "should invert the value when the scale_convention attribute is '1'" do
-        @cp.scale_convention = '1'
-        expect(@cp.send(:scale_convertion?)).to be_true
-      end
-
-      it "should return the same value when the scale_convention attribute is '2'" do
-        @cp.scale_convention = '2'
-        expect(@cp.send(:scale_convertion?)).to be_false
-      end
-
-      it "should return the same value when the scale_convention attribute is undefined" do
-        @cp.scale_convention = nil
-        expect(@cp.send(:scale_convertion?)).to be_false
-      end
-
-      it "should return the same value when the scale_convention attribute is invalid" do
-        @cp.scale_convention = 10
-        expect(@cp.send(:scale_convertion?)).to be_false
-      end
-
-    end
-
-
-    describe "#scale_factor" do
-
-      it "should invert the value when the scale_convention attribute is '1'" do
-        @cp.scale_convention = '1'
-        expect(@cp.send(:scale_factor)).to eql -1
-      end
-
-      it "should return the same value when the scale_convention attribute is '2'" do
-        @cp.scale_convention = '2'
-        expect(@cp.send(:scale_factor)).to eql 1
-      end
-
-      it "should return the same value when the scale_convention attribute is undefined" do
-        @cp.scale_convention = nil
-        expect(@cp.send(:scale_factor)).to eql 1
-      end
-
-      it "should return the same value when the scale_convention attribute is invalid" do
-        @cp.scale_convention = 10
-        expect(@cp.send(:scale_factor)).to eql 1
       end
 
     end

@@ -140,49 +140,67 @@ module RTP
 
     # Converts the collimator_x1 attribute to proper DICOM format.
     #
+    # @param [Symbol] scale if set, relevant device parameters are converted from a native readout format to IEC1217 (supported values are :elekta & :varian)
     # @return [Float] the DICOM-formatted collimator_x1 attribute
     #
-    def dcm_collimator_x1
-      # Deal with scale convertion:
-      axis = (scale_convertion? ? :y : :x)
-      dcm_collimator1(axis)
+    def dcm_collimator_x1(scale=nil)
+      coeff = 1
+      axis = :x
+      if scale == :elekta
+        axis = :y
+        coeff = -1
+      elsif scale == :varian
+        coeff = -1
+      end
+      dcm_collimator1(axis, coeff)
     end
 
     # Converts the collimator_x2 attribute to proper DICOM format.
     #
+    # @param [Symbol] scale if set, relevant device parameters are converted from native readout format to IEC1217 (supported values are :elekta & :varian)
     # @return [Float] the DICOM-formatted collimator_x2 attribute
     #
-    def dcm_collimator_x2
-      axis = (scale_convertion? ? :y : :x)
-      dcm_collimator2(axis)
+    def dcm_collimator_x2(scale=nil)
+      axis = (scale == :elekta ? :y : :x)
+      dcm_collimator2(axis, coeff=1)
     end
 
     # Converts the collimator_y1 attribute to proper DICOM format.
     #
+    # @param [Symbol] scale if set, relevant device parameters are converted from native readout format to IEC1217 (supported values are :elekta & :varian)
     # @return [Float] the DICOM-formatted collimator_y1 attribute
     #
-    def dcm_collimator_y1
-      # Deal with scale convertion:
-      axis = (scale_convertion? ? :x : :y)
-      dcm_collimator1(axis)
+    def dcm_collimator_y1(scale=nil)
+      coeff = 1
+      axis = :y
+      if scale == :elekta
+        axis = :x
+        coeff = -1
+      elsif scale == :varian
+        coeff = -1
+      end
+      dcm_collimator1(axis, coeff)
     end
 
     # Converts the collimator_y2 attribute to proper DICOM format.
     #
+    # @param [Symbol] scale if set, relevant device parameters are converted from native readout format to IEC1217 (supported values are :elekta & :varian)
     # @return [Float] the DICOM-formatted collimator_y2 attribute
     #
-    def dcm_collimator_y2
-      axis = (scale_convertion? ? :x : :y)
-      dcm_collimator2(axis)
+    def dcm_collimator_y2(scale=nil)
+      axis = (scale == :elekta ? :x : :y)
+      dcm_collimator2(axis, coeff=1)
     end
 
     # Converts the mlc_lp_a & mlc_lp_b attributes to a proper DICOM formatted string.
     #
+    # @param [Symbol] scale if set, relevant device parameters are converted from native readout format to IEC1217 (supported values are :elekta & :varian)
     # @return [String] the DICOM-formatted leaf pair positions
     #
-    def dcm_mlc_positions
+    def dcm_mlc_positions(scale=nil)
+      coeff = (scale == :elekta ? -1 : 1)
       # As with the collimators, the first side (1/a) may need scale invertion:
-      pos_a = @mlc_lp_a.collect{|p| (p.to_f * 10 * scale_factor).round(1) unless p.empty?}.compact
+      pos_a = @mlc_lp_a.collect{|p| (p.to_f * 10 * coeff).round(1) unless p.empty?}.compact
       pos_b = @mlc_lp_b.collect{|p| (p.to_f * 10).round(1) unless p.empty?}.compact
       (pos_a + pos_b).join("\\")
     end
@@ -557,64 +575,33 @@ module RTP
     # Converts the collimator attribute to proper DICOM format.
     #
     # @param [Symbol] axis a representation for the axis of interest (x or y)
+    # @param [Integer] coeff a coeffecient (of -1 or 1) which the attribute is multiplied with
     # @return [Float] the DICOM-formatted collimator attribute
     #
-    def dcm_collimator1(axis)
-      mode = self.send("field_#{axis}_mode")
-      if mode && !mode.empty?
-        value = self.send("collimator_#{axis}1").to_f * 10
-        if mode.upcase == 'SYM' && value > 0
-          -value
-        else
-          value
-        end
-      else
-        value = @parent.send(:dcm_collimator1, axis)
-      end
-    end
-
-    # Converts the collimator attribute to proper DICOM format.
-    #
-    # @param [Symbol] axis a representation for the axis of interest (x or y)
-    # @return [Float] the DICOM-formatted collimator attribute
-    #
-    def dcm_collimator2(axis)
+    def dcm_collimator1(axis, coeff)
       mode = self.send("field_#{axis}_mode")
       if mode && !mode.empty?
         target = self
       else
         target = @parent
       end
-      target.send("collimator_#{axis}2").to_f * 10
+      target.send("collimator_#{axis}1").to_f * 10 * coeff
     end
 
-    # Checks whether the contents of the this record indicates that scale
-    # convertion is to be applied. This convertion entails converting a value
-    # from IEC1217 format to the target machine's native readout format.
-    # Note that the scope of this scale conversion is not precisely known (the
-    # current implementation is based on a few observations made from a single
-    # RTP file).
+    # Converts the collimator attribute to proper DICOM format.
     #
-    # @return [Boolean] true if the scale convention attribute indicates scale convertion
+    # @param [Symbol] axis a representation for the axis of interest (x or y)
+    # @param [Integer] coeff a coeffecient (of -1 or 1) which the attribute is multiplied with
+    # @return [Float] the DICOM-formatted collimator attribute
     #
-    def scale_convertion?
-      # A scale convention of 1 means that geometric parameters are represented
-      # in the target machine's native readout format, as opposed to the IEC 1217
-      # convention. The consequences of this is not totally clear, but at least for
-      # an Elekta device, there are a number of convertions which seems to be indicated.
-      @scale_convention.to_i == 1 ? true : false
-    end
-
-    # Gives a factor used for scale convertion, which depends on the
-    # 'scale_convention' attribute.
-    #
-    # @param [Numerical] value the value to process
-    # @return [Numerical] the scale converted value
-    #
-    def scale_factor
-      # It should be noted that this scale factor is not satisfactory mapped.
-      # Perhaps its support should even be removed until it is sufficiently specced?
-      scale_convertion? ? -1 : 1
+    def dcm_collimator2(axis, coeff)
+      mode = self.send("field_#{axis}_mode")
+      if mode && !mode.empty?
+        target = self
+      else
+        target = @parent
+      end
+      target.send("collimator_#{axis}2").to_f * 10 * coeff
     end
 
     # Sets the attributes of the record instance.

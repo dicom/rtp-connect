@@ -21,6 +21,7 @@ module RTP
     # @option options [Boolean] :dose_ref if set, Dose Reference & Referenced Dose Reference sequences will be included in the generated DICOM file
     # @option options [String] :manufacturer the value used for the manufacturer tag (0008,0070) in the beam sequence
     # @option options [String] :model the value used for the manufacturer's model name tag (0008,1090) in the beam sequence
+    # @option options [Symbol] :scale if set, relevant device parameters are converted from native readout format to IEC1217 (supported values are :elekta & :varian)
     # @option options [String] :serial_number the value used for the device serial number tag (0018,1000) in the beam sequence
     # @return [DICOM::DObject] the converted DICOM object
     #
@@ -332,9 +333,9 @@ module RTP
               DICOM::Element.new('300A,0134', '0', :parent => cp_item)
               # Beam Limiting Device Position Sequence:
               if field.control_points.length > 0
-                create_beam_limiting_device_positions(cp_item, field.control_points.first)
+                create_beam_limiting_device_positions(cp_item, field.control_points.first, options)
               else
-                create_beam_limiting_device_positions_from_field(cp_item, field)
+                create_beam_limiting_device_positions_from_field(cp_item, field, options)
               end
               # Referenced Dose Reference Sequence:
               create_referenced_dose_reference(cp_item) if options[:dose_ref]
@@ -484,7 +485,7 @@ module RTP
       # Control Point Index:
       DICOM::Element.new('300A,0112', "#{cp.index}", :parent => cp_item)
       # Beam Limiting Device Position Sequence:
-      create_beam_limiting_device_positions(cp_item, cp)
+      create_beam_limiting_device_positions(cp_item, cp, options)
       # Source to Surface Distance:
       add_ssd(cp.ssd, cp_item)
       # Cumulative Meterset Weight:
@@ -555,26 +556,26 @@ module RTP
     # @param [ControlPoint] cp the RTP control point to fetch device parameters from
     # @return [DICOM::Sequence] the constructed beam limiting device positions sequence
     #
-    def create_beam_limiting_device_positions(cp_item, cp)
+    def create_beam_limiting_device_positions(cp_item, cp, options={})
       dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item)
       # The ASYMX item ('backup jaws') doesn't exist on all models:
       if ['SYM', 'ASY'].include?(cp.parent.field_x_mode.upcase)
         dp_item_x = DICOM::Item.new(:parent => dp_seq)
         DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
-        DICOM::Element.new('300A,011C', "#{cp.dcm_collimator_x1}\\#{cp.dcm_collimator_x2}", :parent => dp_item_x)
+        DICOM::Element.new('300A,011C', "#{cp.dcm_collimator_x1(options[:scale])}\\#{cp.dcm_collimator_x2(options[:scale])}", :parent => dp_item_x)
       end
       # Always create one ASYMY item:
       dp_item_y = DICOM::Item.new(:parent => dp_seq)
       # RT Beam Limiting Device Type:
       DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
       # Leaf/Jaw Positions:
-      DICOM::Element.new('300A,011C', "#{cp.dcm_collimator_y1}\\#{cp.dcm_collimator_y2}", :parent => dp_item_y)
+      DICOM::Element.new('300A,011C', "#{cp.dcm_collimator_y1(options[:scale])}\\#{cp.dcm_collimator_y2(options[:scale])}", :parent => dp_item_y)
       # MLCX:
       dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
       # RT Beam Limiting Device Type:
       DICOM::Element.new('300A,00B8', "MLCX", :parent => dp_item_mlcx)
       # Leaf/Jaw Positions:
-      DICOM::Element.new('300A,011C', cp.dcm_mlc_positions, :parent => dp_item_mlcx)
+      DICOM::Element.new('300A,011C', cp.dcm_mlc_positions(options[:scale]), :parent => dp_item_mlcx)
       dp_seq
     end
 
@@ -584,7 +585,7 @@ module RTP
     # @param [Field] field the RTP treatment field to fetch device parameters from
     # @return [DICOM::Sequence] the constructed beam limiting device positions sequence
     #
-    def create_beam_limiting_device_positions_from_field(cp_item, field)
+    def create_beam_limiting_device_positions_from_field(cp_item, field, options={})
       dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item)
       # ASYMX:
       dp_item_x = DICOM::Item.new(:parent => dp_seq)

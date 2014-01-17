@@ -32,6 +32,8 @@ suppress_warnings do
   RTP::RTP_VMAT = 'samples/mosaiq_2.5_vmat_scale_convention_1.rtp'
   # Other Mosaiq:
   RTP::RTP_SIM = 'samples/simulation_field.rtp'
+  # Mosaiq 2.0 & Varian:
+  RTP::RTP_VARIAN_NATIVE = 'samples/varian_imrt_scale_convention_1.rtp'
   # Other:
   RTP::RTP_ATTRIBUTE_COMMA = 'samples/attribute_with_comma.rtp'
   RTP::RTP_ATTRIBUTE_PAIRS_QUOTES = 'samples/attribute_with_pairs_of_quotes.rtp'
