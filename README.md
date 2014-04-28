@@ -91,6 +91,7 @@ Example:
 ### Supported records
 
 * Plan definition [PLAN_DEF]
+* Extended plan definition [EXTENDED_PLAN_DEF]
 * Prescription site [RX_DEF]
 * Site setup [SITE_SETUP_DEF]
 * Simulation field [SIM_DEF]
@@ -101,7 +102,6 @@ Example:
 
 ### Unsupported records
 
-* Extended plan definition [EXTENDED_PLAN_DEF]
 * Document based treatment field [PDF_FIELD_DEF]
 * Multileaf collimator [MLC_DEF]
 * MLC shape [MLC_SHAPE_DEF]

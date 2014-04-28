@@ -2,6 +2,7 @@
 
 ## (Unreleased)
 
+* Added support for the Extended Plan Definition record.
 * Plan#to_dcm improvements.
 
 # 1.6

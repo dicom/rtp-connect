@@ -42,6 +42,7 @@ module RTP
   # Pairs of RTPConnect keywords and parse method names.
   PARSE_METHOD = {
     "PLAN_DEF" => :plan_definition,
+    "EXTENDED_PLAN_DEF" => :extended_plan,
     "RX_DEF" => :prescription_site,
     "SITE_SETUP_DEF" => :site_setup,
     "SIM_DEF" => :simulation_field,

@@ -29,6 +29,7 @@ suppress_warnings do
   # File created with Mosaiq 2.4:
   RTP::RTP_MOSAIQ_24 = 'samples/mosaiq_2.4.rtp'
   # File created with Mosaiq 2.5:
+  RTP::RTP_MOSAIQ_25 = 'samples/mosaiq_2.5_extended_plan.rtp'
   RTP::RTP_VMAT = 'samples/mosaiq_2.5_vmat_scale_convention_1.rtp'
   # Other Mosaiq:
   RTP::RTP_SIM = 'samples/simulation_field.rtp'

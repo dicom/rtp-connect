@@ -6,6 +6,7 @@ require_relative 'rtp-connect/logging'
 require_relative 'rtp-connect/record'
 # Core library:
 require_relative 'rtp-connect/plan'
+require_relative 'rtp-connect/extended_plan'
 require_relative 'rtp-connect/plan_to_dcm'
 require_relative 'rtp-connect/prescription'
 require_relative 'rtp-connect/site_setup'

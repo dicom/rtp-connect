@@ -77,6 +77,11 @@ module RTP
         expect(rtp.class).to eql Plan
       end
 
+      it "should parse this RTPConnect file and build a valid record object hierarchy" do
+        rtp = Plan.read(RTP_MOSAIQ_25)
+        expect(rtp.class).to eql Plan
+      end
+
     end
 
   end

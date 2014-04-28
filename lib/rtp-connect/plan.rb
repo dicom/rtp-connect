@@ -142,6 +142,7 @@ module RTP
       super('PLAN_DEF', 10, 28)
       @current_parent = self
       # Child records:
+      @extended_plan = nil
       @prescriptions = Array.new
       @dose_trackings = Array.new
       # No parent (by definition) for the Plan record:
@@ -203,6 +204,14 @@ module RTP
       @dose_trackings << child.to_dose_tracking
     end
 
+    # Adds an extended plan record to this instance.
+    #
+    # @param [ExtendedPlan] child an ExtendedPlan instance which is to be associated with self
+    #
+    def add_extended_plan(child)
+      @extended_plan = child.to_extended_plan
+    end
+
     # Adds a prescription site record to this instance.
     #
     # @param [Prescription] child a Prescription instance which is to be associated with self
@@ -216,7 +225,7 @@ module RTP
     # @return [Array<Prescription, DoseTracking>] a sorted array of self's child records
     #
     def children
-      return [@prescriptions, @dose_trackings].flatten.compact
+      return [@extended_plan, @prescriptions, @dose_trackings].flatten.compact
     end
 
     # Computes a hash code for this object.
@@ -497,6 +506,15 @@ module RTP
     def dose_tracking(string)
       dt = DoseTracking.load(string, @current_parent)
       @current_parent = dt
+    end
+
+    # Creates an extended plan record from the given string.
+    #
+    # @param [String] string a string line containing an extended plan definition
+    #
+    def extended_plan(string)
+      ep = ExtendedPlan.load(string, @current_parent)
+      @current_parent = ep
     end
 
     # Creates an extended treatment field record from the given string.
