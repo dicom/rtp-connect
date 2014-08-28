@@ -38,7 +38,8 @@ module RTP
     # @return [String] a proper RTPConnect type CSV string
     #
     def encode
-      content = CSV.generate_line(values, force_quotes: true, row_sep: '') + ","
+      encoded_values = values.collect {|v| v && v.encode('ISO8859-1')}
+      content = CSV.generate_line(encoded_values, force_quotes: true, row_sep: '') + ","
       checksum = content.checksum
       # Complete string is content + checksum (in double quotes) + carriage return + line feed
       return (content + checksum.to_s.wrap + "\r\n").encode('ISO8859-1')

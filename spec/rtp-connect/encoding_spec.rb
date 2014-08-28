@@ -31,6 +31,24 @@ module RTP
 
     end
 
+
+    context "when dealing with attributes of mixed encoding" do
+
+      before :example do
+        @p = Plan.new
+        @p.patient_last_name = 'Flø'.encode('ISO8859-1')
+        @p.patient_first_name = 'John'.encode('ASCII')
+        @p.md_last_name = 'Ås'.encode('UTF-8')
+      end
+
+      it "should successfully encode an output string" do
+        output = @p.encode
+        expect(output.encoding).to eql Encoding::ISO8859_1
+        expect(output).to eql ('"PLAN_DEF","","Flø","John","","","","","","","Ås","","","","","","","","","","","","","","","","","27777"' + "\r\n").encode('ISO8859-1')
+      end
+
+    end
+
   end
 
 end
