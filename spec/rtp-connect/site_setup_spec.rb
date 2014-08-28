@@ -30,13 +30,13 @@ module RTP
 
       it "should give a warning when a string with too many values is passed as the 'string' argument" do
         RTP.logger.expects(:warn).once
-        str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","extra","26790"'
+        str = '"SITE_SETUP_DEF","test","HFS","SB3","","2.78","7.66","-7.25","1.3.6.1","1.2.840","","","","","","-3.0","-3.0","-3.0","extra","6386"'
         ss = SiteSetup.load(str, @p)
       end
 
       it "should create a SiteSetup object when given a valid string" do
         short = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","26934"'
-        complete = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"'
+        complete = '"SITE_SETUP_DEF","test","HFS","SB3","","2.78","7.66","-7.25","1.3.6.1","1.2.840","","","","","","-3.0","-3.0","-3.0","47438"'
         expect(SiteSetup.load(short, @p).class).to eql SiteSetup
         expect(SiteSetup.load(complete, @p).class).to eql SiteSetup
       end
@@ -129,23 +129,23 @@ module RTP
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
-        arr = ["SITE_SETUP_DEF", [nil]*14].flatten
+        arr = ["SITE_SETUP_DEF", [nil]*17].flatten
         expect(@ss.values).to eql arr
       end
 
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
-        str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"' + "\r\n"
+        str = '"SITE_SETUP_DEF","test","HFS","SB3","","2.78","7.66","-7.25","1.3.6.1","1.2.840","","","","","","-3.0","-3.0","-3.0","47438"' + "\r\n"
         ss = SiteSetup.load(str, @p)
         expect(ss.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
-        values = '"SITE_SETUP_DEF",' + Array.new(14){|i| i.to_s}.encode + ','
+        values = '"SITE_SETUP_DEF",' + Array.new(17){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ss = SiteSetup.load(str, @p)
@@ -324,6 +324,39 @@ module RTP
         value = '15'
         @ss.couch_pedestal = value
         expect(@ss.couch_pedestal).to eql value
+      end
+
+    end
+
+
+    describe "#table_top_vert_displacement=()" do
+
+      it "should pass the argument to the corresponding attribute" do
+        value = '-2'
+        @ss.table_top_vert_displacement = value
+        expect(@ss.table_top_vert_displacement).to eql value
+      end
+
+    end
+
+
+    describe "#table_top_long_displacement=()" do
+
+      it "should pass the argument to the corresponding attribute" do
+        value = '-0.6'
+        @ss.table_top_long_displacement = value
+        expect(@ss.table_top_long_displacement).to eql value
+      end
+
+    end
+
+
+    describe "#table_top_lat_displacement=()" do
+
+      it "should pass the argument to the corresponding attribute" do
+        value = '7.3'
+        @ss.table_top_lat_displacement = value
+        expect(@ss.table_top_lat_displacement).to eql value
       end
 
     end

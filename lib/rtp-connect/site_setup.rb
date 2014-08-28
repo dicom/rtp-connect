@@ -24,6 +24,9 @@ module RTP
     attr_reader :couch_longitudinal
     attr_reader :couch_angle
     attr_reader :couch_pedestal
+    attr_reader :table_top_vert_displacement
+    attr_reader :table_top_long_displacement
+    attr_reader :table_top_lat_displacement
 
     # Creates a new SiteSetup by parsing a RTPConnect string line.
     #
@@ -63,7 +66,10 @@ module RTP
         :couch_lateral,
         :couch_longitudinal,
         :couch_angle,
-        :couch_pedestal
+        :couch_pedestal,
+        :table_top_vert_displacement,
+        :table_top_long_displacement,
+        :table_top_lat_displacement
       ]
     end
 
@@ -236,6 +242,30 @@ module RTP
     #
     def couch_pedestal=(value)
       @couch_pedestal = value && value.to_s.strip
+    end
+
+    # Sets the table_top_vert_displacement attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def table_top_vert_displacement=(value)
+      @table_top_vert_displacement = value && value.to_s.strip
+    end
+
+    # Sets the table_top_long_displacement attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def table_top_long_displacement=(value)
+      @table_top_long_displacement = value && value.to_s.strip
+    end
+
+    # Sets the table_top_lat_displacement attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def table_top_lat_displacement=(value)
+      @table_top_lat_displacement = value && value.to_s.strip
     end
 
 
