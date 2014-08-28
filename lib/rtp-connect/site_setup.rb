@@ -45,7 +45,7 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
-      super('SITE_SETUP_DEF', 5, 16)
+      super('SITE_SETUP_DEF', 5, 19)
       # Parent relation (always expecting a Prescription here):
       @parent = get_parent(parent.to_prescription, Prescription)
       @parent.add_site_setup(self)
