@@ -7,7 +7,7 @@ module RTP
 
   describe ExtendedPlan do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
       @ep = ExtendedPlan.new(@rtp)
     end
@@ -77,18 +77,18 @@ module RTP
         ep_other = ExtendedPlan.new(@rtp)
         ep_other.fullname = 'FULLNAME=AFEFAADD'
         @ep.fullname = 'FULLNAME=AFEFAADD'
-        expect(@ep == ep_other).to be_true
+        expect(@ep == ep_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         ep_other = ExtendedPlan.new(@rtp)
         ep_other.fullname = 'FULLNAME=AFEFAADD'
         @ep.fullname = 'FULLNAME=DDCCBBBB'
-        expect(@ep == ep_other).to be_false
+        expect(@ep == ep_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@ep == 42).to be_false
+        expect(@ep == 42).to be_falsey
       end
 
     end
@@ -109,7 +109,7 @@ module RTP
         ep_other = ExtendedPlan.new(@rtp)
         ep_other.fullname = 'FULLNAME=AFEFAADD'
         @ep.fullname = 'FULLNAME=AFEFAADD'
-        expect(@ep.eql? ep_other).to be_true
+        expect(@ep.eql? ep_other).to be_truthy
       end
 
     end
@@ -123,7 +123,7 @@ module RTP
         str = values + crc + "\r\n"
         ep1 = ExtendedPlan.load(str, @rtp)
         ep2 = ExtendedPlan.load(str, @rtp)
-        expect(ep1.hash == ep2.hash).to be_true
+        expect(ep1.hash == ep2.hash).to be_truthy
       end
 
     end
@@ -139,16 +139,16 @@ module RTP
     end
 
 
-    context "#to_extended_plan" do
+    describe "#to_extended_plan" do
 
       it "should return itself" do
-        expect(@ep.to_extended_plan.equal?(@ep)).to be_true
+        expect(@ep.to_extended_plan.equal?(@ep)).to be_truthy
       end
 
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
         str = '"EXTENDED_PLAN_DEF","ENCODING=BASE64","FULLNAME=QQBsAGQAZQByAHMAbwBuAF4AUAByAG8AcwB0AGEAdABhAA==","6504"' + "\r\n"

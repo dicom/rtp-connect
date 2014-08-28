@@ -7,7 +7,7 @@ module RTP
 
   describe Plan do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
     end
 
@@ -137,18 +137,18 @@ module RTP
         rtp_other = Plan.new
         rtp_other.patient_id = '123'
         @rtp.patient_id = '123'
-        expect(@rtp == rtp_other).to be_true
+        expect(@rtp == rtp_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         rtp_other = Plan.new
         rtp_other.patient_id = '123'
         @rtp.patient_id = '456'
-        expect(@rtp == rtp_other).to be_false
+        expect(@rtp == rtp_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@rtp == 42).to be_false
+        expect(@rtp == 42).to be_falsey
       end
 
     end
@@ -196,7 +196,7 @@ module RTP
         rtp_other = Plan.new
         rtp_other.patient_last_name = 'John'
         @rtp.patient_last_name = 'John'
-        expect(@rtp == rtp_other).to be_true
+        expect(@rtp == rtp_other).to be_truthy
       end
 
     end
@@ -210,7 +210,7 @@ module RTP
         str = values + crc + "\r\n"
         rtp1 = Plan.load(str)
         rtp2 = Plan.load(str)
-        expect(rtp1.hash == rtp2.hash).to be_true
+        expect(rtp1.hash == rtp2.hash).to be_truthy
       end
 
     end
@@ -219,7 +219,7 @@ module RTP
     describe "#to_plan" do
 
       it "should return itself" do
-        expect(@rtp.to_plan.equal?(@rtp)).to be_true
+        expect(@rtp.to_plan.equal?(@rtp)).to be_truthy
       end
 
     end
@@ -228,7 +228,7 @@ module RTP
     describe "#to_rtp" do
 
       it "should return itself" do
-        expect(@rtp.to_rtp.equal?(@rtp)).to be_true
+        expect(@rtp.to_rtp.equal?(@rtp)).to be_truthy
       end
 
     end
@@ -244,7 +244,7 @@ module RTP
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
         str = '"PLAN_DEF","12345","ALDERSON","TANGMAM","","STE:0-20:4","20111123","150457","20","","","","","skonil","","","","","","skonil","","","Nucletron","Oncentra","OTP V4.1.0","IMPAC_DCM_SCP","2.20.08D7","61220"' + "\r\n"

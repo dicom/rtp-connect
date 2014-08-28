@@ -7,7 +7,7 @@ module RTP
 
   describe Prescription do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
       @p = Prescription.new(@rtp)
     end
@@ -88,18 +88,18 @@ module RTP
         p_other = Prescription.new(@rtp)
         p_other.course_id = '7'
         @p.course_id = '7'
-        expect(@p == p_other).to be_true
+        expect(@p == p_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         p_other = Prescription.new(@rtp)
         p_other.course_id = '12'
         @p.course_id = '1'
-        expect(@p == p_other).to be_false
+        expect(@p == p_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@p == 42).to be_false
+        expect(@p == 42).to be_falsey
       end
 
     end
@@ -169,7 +169,7 @@ module RTP
         p_other = Prescription.new(@rtp)
         p_other.course_id = '1'
         @p.course_id = '1'
-        expect(@p == p_other).to be_true
+        expect(@p == p_other).to be_truthy
       end
 
     end
@@ -183,7 +183,7 @@ module RTP
         str = values + crc + "\r\n"
         p1 = Prescription.load(str, @rtp)
         p2 = Prescription.load(str, @rtp)
-        expect(p1.hash == p2.hash).to be_true
+        expect(p1.hash == p2.hash).to be_truthy
       end
 
     end
@@ -199,16 +199,16 @@ module RTP
     end
 
 
-    context "#to_prescription" do
+    describe "#to_prescription" do
 
       it "should return itself" do
-        expect(@p.to_prescription.equal?(@p)).to be_true
+        expect(@p.to_prescription.equal?(@p)).to be_truthy
       end
 
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
         str = '"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","17677"' + "\r\n"

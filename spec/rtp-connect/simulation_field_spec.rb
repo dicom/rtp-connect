@@ -7,7 +7,7 @@ module RTP
 
   describe SimulationField do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
       @p = Prescription.new(@rtp)
       @sf = SimulationField.new(@p)
@@ -80,18 +80,18 @@ module RTP
         sf_other = SimulationField.new(@p)
         sf_other.field_id = '33'
         @sf.field_id = '33'
-        expect(@sf == sf_other).to be_true
+        expect(@sf == sf_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         sf_other = SimulationField.new(@p)
         sf_other.field_id = '11'
         @sf.field_id = '1'
-        expect(@sf == sf_other).to be_false
+        expect(@sf == sf_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@f == 42).to be_false
+        expect(@f == 42).to be_falsey
       end
 
     end
@@ -112,7 +112,7 @@ module RTP
         sf_other = SimulationField.new(@p)
         sf_other.field_id = '1'
         @sf.field_id = '1'
-        expect(@sf == sf_other).to be_true
+        expect(@sf == sf_other).to be_truthy
       end
 
     end
@@ -126,7 +126,7 @@ module RTP
         str = values + crc + "\r\n"
         sf1 = SimulationField.load(str, @p)
         sf2 = SimulationField.load(str, @p)
-        expect(sf1.hash == sf2.hash).to be_true
+        expect(sf1.hash == sf2.hash).to be_truthy
       end
 
     end
@@ -142,16 +142,16 @@ module RTP
     end
 
 
-    context "#to_simulation_field" do
+    describe "#to_simulation_field" do
 
       it "should return itself" do
-        expect(@sf.to_simulation_field.equal?(@sf)).to be_true
+        expect(@sf.to_simulation_field.equal?(@sf)).to be_truthy
       end
 
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
         str = '"SIM_DEF","SPINE","L2-L4","B","PRONE","CT Sim","1.0","2.0","Sym","3.0","4.0","5.0","Sym","6.0","7.0","8.0","9.0","0.1","0.2","0.3","0.4","0.5","0.6","0.7","0.8","0.9","","1.1","1.2","","1.3","1.4","","1.5","1.6","","1.7","1.8","","1.9","2.1","2.2","","2.3","2.4","2.5","2.6","2.7","2.8","3","4","5.5","18120"' + "\r\n"

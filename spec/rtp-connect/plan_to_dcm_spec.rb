@@ -7,7 +7,7 @@ module RTP
 
   describe Plan do
 
-    before :all do
+    before :context do
       require 'dicom'
       DICOM.logger.level = Logger::ERROR
     end
@@ -34,16 +34,16 @@ module RTP
         p.to_dcm.write(TMPDIR + "rtplan.dcm")
         dcm = DICOM::DObject.read(TMPDIR + "rtplan.dcm")
         expect(dcm.class).to eql DICOM::DObject
-        expect(dcm.read?).to be_true
+        expect(dcm.read?).to be_truthy
       end
 
       it "should leave these undeterminable tags out of the Beam Sequence when no tag options are specified" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm
         beam_item = dcm['300A,00B0'][0]
-        expect(beam_item.exists?('0008,0070')).to be_false
-        expect(beam_item.exists?('0008,1090')).to be_false
-        expect(beam_item.exists?('0018,1000')).to be_false
+        expect(beam_item.exists?('0008,0070')).to be_falsey
+        expect(beam_item.exists?('0008,1090')).to be_falsey
+        expect(beam_item.exists?('0018,1000')).to be_falsey
       end
 
       it "should fill in the Manufacturer tag in the Beam Sequence when specified by the :manufacturer option" do
@@ -74,12 +74,12 @@ module RTP
         # Beam Limiting Device Sequence:
         expect(beam_item['300A,00B6'].items.length).to eql 2
         types = beam_item['300A,00B6'].items.collect {|item| item.value('300A,00B8')}
-        expect(types.include?('ASYMX')).to be_false
+        expect(types.include?('ASYMX')).to be_falsey
         # Beam Limiting Device Position Sequence (First control point item):
         seq = beam_item['300A,0111'][0]['300A,011A']
         expect(seq.items.length).to eql 2
         types = seq.items.collect {|item| item.value('300A,00B8')}
-        expect(types.include?('ASYMX')).to be_false
+        expect(types.include?('ASYMX')).to be_falsey
       end
 
       it "should create the ASYMX items for a plan using a model which is known to have an X jaw" do
@@ -89,12 +89,12 @@ module RTP
         # Beam Limiting Device Sequence:
         expect(beam_item['300A,00B6'].items.length).to eql 3
         types = beam_item['300A,00B6'].items.collect {|item| item.value('300A,00B8')}
-        expect(types.include?('ASYMX')).to be_true
+        expect(types.include?('ASYMX')).to be_truthy
         # Beam Limiting Device Position Sequence (First control point item):
         seq = beam_item['300A,0111'][0]['300A,011A']
         expect(seq.items.length).to eql 3
         types = seq.items.collect {|item| item.value('300A,00B8')}
-        expect(types.include?('ASYMX')).to be_true
+        expect(types.include?('ASYMX')).to be_truthy
       end
 
       it "should give a warning (but still create a DICOM object) if the site setup record is missing" do
@@ -110,14 +110,14 @@ module RTP
         p.prescriptions.first.stubs(:site_setup)
         dcm = p.to_dcm
         expect(dcm.value('300A,000C')).to eql 'TREATMENT_DEVICE'
-        expect(dcm.exists?('300C,0060')).to be_false
+        expect(dcm.exists?('300C,0060')).to be_falsey
       end
 
       it "should include the Referenced Structure Set Sequence and set RT Plan Geometry as 'PATIENT' when structure set information is present in the RTP file" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm
         expect(dcm.value('300A,000C')).to eql 'PATIENT'
-        expect(dcm.exists?('300C,0060')).to be_true
+        expect(dcm.exists?('300C,0060')).to be_truthy
         expect(dcm['300C,0060'][0].value('0008,1150')).to eql '1.2.840.10008.5.1.4.1.1.481.3'
         expect(dcm['300C,0060'][0].value('0008,1155')).to eql p.prescriptions.first.site_setup.structure_set_uid
       end
@@ -132,39 +132,39 @@ module RTP
       it "should include the Tolerance Table Sequence if the RTP contains a field with a tolerance table number" do
         p = Plan.read(RTP_VMAT)
         dcm = p.to_dcm
-        expect(dcm.exists?('300A,0040')).to be_true
+        expect(dcm.exists?('300A,0040')).to be_truthy
         expect(dcm['300A,0040'][0].value('300A,0042')).to eql p.prescriptions.first.fields.first.tolerance_table
       end
 
       it "should not include the Tolerance Table Sequence when the RTP record's (first) field doesn't have a tolerance table number" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm
-        expect(dcm.exists?('300A,0040')).to be_false
+        expect(dcm.exists?('300A,0040')).to be_falsey
       end
 
       it "should by default not include Dose Reference & Referenced Dose Reference sequences" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm
-        expect(dcm.exists?('300A,0010')).to be_false
+        expect(dcm.exists?('300A,0010')).to be_falsey
         dcm['300A,00B0'].items.each do |beam_item|
           ref_dose_in_beam_cpts = false
           beam_item['300A,0111'].items.each do |cp_item|
             ref_dose_in_beam_cpts = true if cp_item.exists?('300C,0050')
           end
-          expect(ref_dose_in_beam_cpts).to be_false
+          expect(ref_dose_in_beam_cpts).to be_falsey
         end
       end
 
       it "should include Dose Reference & Referenced Dose Reference sequences when the :dose_ref option is set as true" do
         p = Plan.read(RTP_COLUMNA)
         dcm = p.to_dcm(dose_ref: true)
-        expect(dcm.exists?('300A,0010')).to be_true
+        expect(dcm.exists?('300A,0010')).to be_truthy
         dcm['300A,00B0'].items.each do |beam_item|
           ref_dose_in_beam_cpts = false
           beam_item['300A,0111'].items.each do |cp_item|
             ref_dose_in_beam_cpts = true if cp_item.exists?('300C,0050')
           end
-          expect(ref_dose_in_beam_cpts).to be_true
+          expect(ref_dose_in_beam_cpts).to be_truthy
         end
       end
 
@@ -236,7 +236,7 @@ module RTP
         p.prescriptions.first.fields.first.ssd = ''
         p.prescriptions.first.fields.first.control_points.first.ssd = ''
         dcm = p.to_dcm
-        expect(dcm['300A,00B0'][0]['300A,0111'][0].exists?('300A,0130')).to be_false
+        expect(dcm['300A,00B0'][0]['300A,0111'][0].exists?('300A,0130')).to be_falsey
       end
 
       it "should not create the SSD element when the RTP record contains a nil SSD value" do
@@ -244,7 +244,7 @@ module RTP
         p.prescriptions.first.fields.first.ssd = nil
         p.prescriptions.first.fields.first.control_points.first.ssd = nil
         dcm = p.to_dcm
-        expect(dcm['300A,00B0'][0]['300A,0111'][0].exists?('300A,0130')).to be_false
+        expect(dcm['300A,00B0'][0]['300A,0111'][0].exists?('300A,0130')).to be_falsey
       end
 
       it "should set exactly the same value of the cumulative meterset weight attribute in the last control point as that of the final cumulative meterset weight in the beam item" do
@@ -264,7 +264,7 @@ module RTP
         expect(yjaws).to eql "-45.0\\45.0"
       end
 
-      context "(:scale => :elekta)" do
+      context "with :scale => :elekta" do
 
         it "encodes proper (inverted) x1 and y1 jaw positions for this Elekta case with native readout format" do
           p = Plan.read(RTP_VMAT)
@@ -312,7 +312,7 @@ module RTP
 
       end
 
-      context "(:scale => :varian)" do
+      context "with :scale => :varian" do
 
         it "encodes proper (inverted) x1 and y1 jaw positions for this Varian case with native readout format" do
           p = Plan.read(RTP_VARIAN_NATIVE)

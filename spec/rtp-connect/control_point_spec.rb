@@ -7,7 +7,7 @@ module RTP
 
   describe ControlPoint do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
       @p = Prescription.new(@rtp)
       @f = Field.new(@p)
@@ -81,18 +81,18 @@ module RTP
         cp_other = ControlPoint.new(@f)
         cp_other.field_id = '123'
         @cp.field_id = '123'
-        expect(@cp == cp_other).to be_true
+        expect(@cp == cp_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         cp_other = ControlPoint.new(@f)
         cp_other.field_id = '123'
         @cp.field_id = '456'
-        expect(@cp == cp_other).to be_false
+        expect(@cp == cp_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@cp == 42).to be_false
+        expect(@cp == 42).to be_falsey
       end
 
     end
@@ -125,7 +125,7 @@ module RTP
         expect(@cp.dcm_collimator_x1).to eql value * 10
       end
 
-      context "(scale=:elekta)" do
+      context "with scale=:elekta" do
 
         it "should return an inverted, negative value (with field_x_mode being defined)" do
           # FIXME: Scale conversion really needs to be investigated closer.
@@ -150,7 +150,7 @@ module RTP
 
       end
 
-      context "(scale=:varian)" do
+      context "with scale=:varian" do
 
         it "should return an inverted value" do
           # FIXME: Scale conversion really needs to be investigated closer.
@@ -184,7 +184,7 @@ module RTP
         expect(@cp.dcm_collimator_y1).to eql value * 10
       end
 
-      context "(scale=:elekta)" do
+      context "with scale=:elekta" do
 
         it "should return an inverted, negative value (with field_y_mode being defined)" do
           # FIXME: Scale conversion really needs to be investigated closer.
@@ -209,7 +209,7 @@ module RTP
 
       end
 
-      context "(scale=:varian)" do
+      context "with scale=:varian " do
 
         it "should return an inverted value" do
           # FIXME: Scale conversion really needs to be investigated closer.
@@ -273,7 +273,7 @@ module RTP
         cp_other = ControlPoint.new(@f)
         cp_other.field_id = '1'
         @cp.field_id = '1'
-        expect(@cp == cp_other).to be_true
+        expect(@cp == cp_other).to be_truthy
       end
 
     end
@@ -287,7 +287,7 @@ module RTP
         str = values + crc + "\r\n"
         cp1 = ControlPoint.load(str, @f)
         cp2 = ControlPoint.load(str, @f)
-        expect(cp1.hash == cp2.hash).to be_true
+        expect(cp1.hash == cp2.hash).to be_truthy
       end
 
     end
@@ -306,13 +306,13 @@ module RTP
     describe "#to_control_point" do
 
       it "should return itself" do
-        expect(@cp.to_control_point.equal?(@cp)).to be_true
+        expect(@cp.to_control_point.equal?(@cp)).to be_truthy
       end
 
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
         str = '"CONTROL_PT_DEF","BAKFR","11","40","1","0","1","0.000000","","15","0","96.3","2","180.0","","0.0","","","","","","","","","","0.0","0.0","0.0","0.0","","0.0","","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-5.00","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","-0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","5.00","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","0.50","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","7923"' + "\r\n"

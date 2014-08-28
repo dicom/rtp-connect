@@ -7,9 +7,9 @@ module RTP
 
   describe Plan do
 
-    describe " [encoding]" do
+    context "when dealing with extended ASCII (ISO8859-1) characters" do
 
-      before :each do
+      before :example do
         @p = Plan.new
         @p.patient_id = '12345'.encode('ASCII')
         @p.patient_last_name = 'Værnes'.encode('ISO8859-1')
@@ -20,7 +20,7 @@ module RTP
         @f.field_name = 'Høyre Å'.encode('ISO8859-1')
       end
 
-      it "should preserve the extended ASCII (ISO8859-1) characters in a write-read cycle" do
+      it "should preserve these throughout a write-read cycle" do
         file = File.join(TMPDIR, 'encoding_01.rtp')
         @p.write(file)
         p = Plan.read(file)

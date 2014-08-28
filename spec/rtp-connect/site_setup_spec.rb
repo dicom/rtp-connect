@@ -7,7 +7,7 @@ module RTP
 
   describe SiteSetup do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
       @p = Prescription.new(@rtp)
       @ss = SiteSetup.new(@p)
@@ -74,18 +74,18 @@ module RTP
         ss_other = SiteSetup.new(@p)
         ss_other.rx_site_name = 'PROST'
         @ss.rx_site_name = 'PROST'
-        expect(@ss == ss_other).to be_true
+        expect(@ss == ss_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         ss_other = SiteSetup.new(@p)
         ss_other.rx_site_name = 'PROST'
         @ss.rx_site_name = 'MAM'
-        expect(@ss == ss_other).to be_false
+        expect(@ss == ss_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@ss == 42).to be_false
+        expect(@ss == 42).to be_falsey
       end
 
     end
@@ -106,7 +106,7 @@ module RTP
         ss_other = SiteSetup.new(@p)
         ss_other.rx_site_name = 'MAM'
         @ss.rx_site_name = 'MAM'
-        expect(@ss == ss_other).to be_true
+        expect(@ss == ss_other).to be_truthy
       end
 
     end
@@ -120,7 +120,7 @@ module RTP
         str = values + crc + "\r\n"
         ss1 = SiteSetup.load(str, @p)
         ss2 = SiteSetup.load(str, @p)
-        expect(ss1.hash == ss2.hash).to be_true
+        expect(ss1.hash == ss2.hash).to be_truthy
       end
 
     end
@@ -155,10 +155,10 @@ module RTP
     end
 
 
-    context "#to_site_setup" do
+    describe "#to_site_setup" do
 
       it "should return itself" do
-        expect(@ss.to_site_setup.equal?(@ss)).to be_true
+        expect(@ss.to_site_setup.equal?(@ss)).to be_truthy
       end
 
     end

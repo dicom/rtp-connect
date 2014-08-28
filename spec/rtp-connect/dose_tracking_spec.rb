@@ -7,7 +7,7 @@ module RTP
 
   describe DoseTracking do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
       @dt = DoseTracking.new(@rtp)
     end
@@ -81,18 +81,18 @@ module RTP
         dt_other = DoseTracking.new(@rtp)
         dt_other.region_name = 'Prostate'
         @dt.region_name = 'Prostate'
-        expect(@dt == dt_other).to be_true
+        expect(@dt == dt_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         dt_other = DoseTracking.new(@rtp)
         dt_other.region_name = 'Prostate'
         @dt.region_name = 'Brain'
-        expect(@dt == dt_other).to be_false
+        expect(@dt == dt_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@dt == 42).to be_false
+        expect(@dt == 42).to be_falsey
       end
 
     end
@@ -113,7 +113,7 @@ module RTP
         dt_other = DoseTracking.new(@rtp)
         dt_other.region_name = 'Brain'
         @dt.region_name = 'Brain'
-        expect(@dt == dt_other).to be_true
+        expect(@dt == dt_other).to be_truthy
       end
 
     end
@@ -127,7 +127,7 @@ module RTP
         str = values + crc + "\r\n"
         dt1 = DoseTracking.load(str, @rtp)
         dt2 = DoseTracking.load(str, @rtp)
-        expect(dt1.hash == dt2.hash).to be_true
+        expect(dt1.hash == dt2.hash).to be_truthy
       end
 
     end
@@ -146,13 +146,13 @@ module RTP
     describe "#to_dose_tracking" do
 
       it "should return itself" do
-        expect(@dt.to_dose_tracking.equal?(@dt)).to be_true
+        expect(@dt.to_dose_tracking.equal?(@dt)).to be_truthy
       end
 
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
         str = '"DOSE_DEF","V.Orbita 0-30","","6","1.00000","","","","","","","","","","","","","","","","","","","","","29762"' + "\r\n"

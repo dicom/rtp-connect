@@ -7,7 +7,7 @@ module RTP
 
   describe ExtendedField do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
       @p = Prescription.new(@rtp)
       @f = Field.new(@p)
@@ -76,18 +76,18 @@ module RTP
         ef_other = ExtendedField.new(@f)
         ef_other.field_id = '33'
         @ef.field_id = '33'
-        expect(@ef == ef_other).to be_true
+        expect(@ef == ef_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         ef_other = ExtendedField.new(@f)
         ef_other.field_id = '22'
         @ef.field_id = '2'
-        expect(@ef == ef_other).to be_false
+        expect(@ef == ef_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@ef == 42).to be_false
+        expect(@ef == 42).to be_falsey
       end
 
     end
@@ -108,7 +108,7 @@ module RTP
         ef_other = ExtendedField.new(@f)
         ef_other.field_id = '1'
         @ef.field_id = '1'
-        expect(@ef == ef_other).to be_true
+        expect(@ef == ef_other).to be_truthy
       end
 
     end
@@ -122,7 +122,7 @@ module RTP
         str = values + crc + "\r\n"
         ef1 = ExtendedField.load(str, @f)
         ef2 = ExtendedField.load(str, @f)
-        expect(ef1.hash == ef2.hash).to be_true
+        expect(ef1.hash == ef2.hash).to be_truthy
       end
 
     end
@@ -141,13 +141,13 @@ module RTP
     describe "#to_extended_field" do
 
       it "should return itself" do
-        expect(@ef.to_extended_field.equal?(@ef)).to be_true
+        expect(@ef.to_extended_field.equal?(@ef)).to be_truthy
       end
 
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
         str = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","0","9083"' + "\r\n"

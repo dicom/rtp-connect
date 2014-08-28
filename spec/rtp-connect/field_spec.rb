@@ -7,7 +7,7 @@ module RTP
 
   describe Field do
 
-    before :each do
+    before :example do
       @rtp = Plan.new
       @p = Prescription.new(@rtp)
       @f = Field.new(@p)
@@ -80,18 +80,18 @@ module RTP
         f_other = Field.new(@p)
         f_other.field_id = '33'
         @f.field_id = '33'
-        expect(@f == f_other).to be_true
+        expect(@f == f_other).to be_truthy
       end
 
       it "should be false when comparing two instances having the different attribute values" do
         f_other = Field.new(@p)
         f_other.field_id = '11'
         @f.field_id = '1'
-        expect(@f == f_other).to be_false
+        expect(@f == f_other).to be_falsey
       end
 
       it "should be false when comparing against an instance of incompatible type" do
-        expect(@f == 42).to be_false
+        expect(@f == 42).to be_falsey
       end
 
     end
@@ -233,7 +233,7 @@ module RTP
         f_other = Field.new(@p)
         f_other.field_id = '1'
         @f.field_id = '1'
-        expect(@f == f_other).to be_true
+        expect(@f == f_other).to be_truthy
       end
 
     end
@@ -247,7 +247,7 @@ module RTP
         str = values + crc + "\r\n"
         f1 = Field.load(str, @p)
         f2 = Field.load(str, @p)
-        expect(f1.hash == f2.hash).to be_true
+        expect(f1.hash == f2.hash).to be_truthy
       end
 
     end
@@ -263,16 +263,16 @@ module RTP
     end
 
 
-    context "#to_field" do
+    describe "#to_field" do
 
       it "should return itself" do
-        expect(@f.to_field.equal?(@f)).to be_true
+        expect(@f.to_field.equal?(@f)).to be_truthy
       end
 
     end
 
 
-    describe "to_s" do
+    describe "#to_s" do
 
       it "should return a string which matches the original string" do
         str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"' + "\r\n"

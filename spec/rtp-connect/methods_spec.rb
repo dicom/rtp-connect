@@ -65,7 +65,7 @@ module RTP
 
     it "should validate a string which is (correctly) tagged with a single-digit checksum" do
       str = '"PLAN_DEF","","828710","","","","","","","","","","","","","","","","","","","","","","","","","8"'
-      expect(RTP.verify(str)).to be_true
+      expect(RTP.verify(str)).to be_truthy
     end
 
   end
