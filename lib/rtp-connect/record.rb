@@ -58,7 +58,7 @@ module RTP
       end
     end
 
-    # Vverifies a proposed keyword attribute.
+    # Verifies a proposed keyword attribute.
     #
     # @note Since only a specific string is accepted, this is more of an argument check than a traditional setter method.
     # @param [#to_s] value the proposed keyword attribute
@@ -78,7 +78,7 @@ module RTP
     def load(string)
       # Extract processed values:
       values = string.to_s.values
-      raise ArgumentError, "Invalid argument 'string': Expected at least #{@min_elements} elements, got #{values.length}." if values.length < @min_elements
+      raise ArgumentError, "Invalid argument 'string': Expected at least #{@min_elements} elements for #{@keyword}, got #{values.length}." if values.length < @min_elements
       RTP.logger.warn "The number of given elements (#{values.length}) exceeds the known number of data elements for this record (#{@max_elements}). This may indicate an invalid string record or that the RTP format has recently been expanded with new elements." if values.length > @max_elements
       self.send(:set_attributes, values)
       self
