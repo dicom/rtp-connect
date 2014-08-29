@@ -118,6 +118,17 @@ module RTP
     end
 
 
+    describe "#repair_csv" do
+
+      it "should return the elements of a RTP string line (an array of string elements)" do
+        invalid = '"PLAN_DEF","123","Doe","John"Joe","","","",""," 3","","","","","","","","","","","","","","","","","RTP","1.0","31446"'
+        proper = '"PLAN_DEF","123","Doe","JohnJoe","","","",""," 3","","","","","","","","","","","","","","","","","RTP","1.0","31446"'
+        expect(invalid.repair_csv).to eql proper
+      end
+
+    end
+
+
     describe "#value" do
 
       it "should return the string with it's double quotes removed" do
@@ -168,6 +179,12 @@ module RTP
         str = '"PLAN_DEF","123","Doe","John"Joe","","","",""," 3","","","","","","","","","","","","","","","","","RTP","1.0","31446"'
         RTP.logger.expects(:error).once
         expect {str.values}.to raise_error
+      end
+
+      it "should successfully parse an invalid csv string (containing one double quote character) when repair=true is used" do
+        str = '"PLAN_DEF","123","Doe","John"Joe","50716"'
+        arr = ['PLAN_DEF', '123', 'Doe', 'JohnJoe', '50716']
+        expect(str.values(repair=true)).to eql arr
       end
 
     end

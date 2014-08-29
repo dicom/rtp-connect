@@ -75,9 +75,9 @@ module RTP
     # @return [Record] the updated Record instance
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
-    def load(string)
+    def load(string, options={})
       # Extract processed values:
-      values = string.to_s.values
+      values = string.to_s.values(options[:repair])
       raise ArgumentError, "Invalid argument 'string': Expected at least #{@min_elements} elements for #{@keyword}, got #{values.length}." if values.length < @min_elements
       RTP.logger.warn "The number of given elements (#{values.length}) exceeds the known number of data elements for this record (#{@max_elements}). This may indicate an invalid string record or that the RTP format has recently been expanded with new elements." if values.length > @max_elements
       self.send(:set_attributes, values)

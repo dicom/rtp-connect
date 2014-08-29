@@ -26,6 +26,17 @@ class String
     self.split(',')
   end
 
+  # Reformats a string, attempting to fix broken CSV format. Note that this
+  # method attempts to fix the CSV in a rather primitive, crude way: Any attributes
+  # containing a " character, will have these characters simply removed.
+  #
+  # @return [String] the processed string
+  #
+  def repair_csv
+    arr = self[1..-2].split('","')
+    "\"#{arr.collect{|e| e.gsub('"', '')}.join('","')}\""
+  end
+
   # Removes leading & trailing double quotes from a string.
   #
   # @return [String] the processed string
@@ -38,14 +49,24 @@ class String
   # quotation (leading and trailing double-quote characters) from the extracted
   # string elements.
   #
+  # @param [Boolean] repair if true, the method will attempt to repair a string that fails CSV processing, and then try to process it a second time
   # @return [Array<String>] an array of the comma separated values
   #
-  def values
+  def values(repair=false)
     begin
       CSV.parse(self).first
     rescue StandardError => e
-      RTP.logger.error("Unable to parse the given string record. Probably invalid CSV format: #{self}")
-      raise e
+      if repair
+        RTP.logger.warn("CSV processing failed. Will attempt to reformat and reprocess the string record.")
+        begin
+          CSV.parse(self.repair_csv).first
+        rescue StandardError => e
+          RTP.logger.error("Unable to parse the given string record. Probably the CSV format is invalid and beyond repair: #{self}")
+        end
+      else
+        RTP.logger.error("Unable to parse the given string record. Probably invalid CSV format: #{self}")
+        raise e
+      end
     end
   end
 

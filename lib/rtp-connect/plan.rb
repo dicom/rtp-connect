@@ -63,12 +63,14 @@ module RTP
     # @note This method does not perform crc verification on the given string.
     #   If such verification is desired, use methods ::parse or ::read instead.
     # @param [#to_s] string the plan definition record string line
+    # @param [Hash] options the options to use for loading the plan definition string
+    # @option options [Boolean] :repair if true, a record containing invalid CSV will be attempted fixed and loaded
     # @return [Plan] the created Plan instance
     # @raise [ArgumentError] if given a string containing an invalid number of elements
     #
-    def self.load(string)
+    def self.load(string, options={})
       rtp = self.new
-      rtp.load(string)
+      rtp.load(string, options)
     end
 
     # Creates a Plan instance by parsing an RTPConnect string.
@@ -76,6 +78,7 @@ module RTP
     # @param [#to_s] string an RTPConnect ascii string (with single or multiple lines/records)
     # @param [Hash] options the options to use for parsing the RTP string
     # @option options [Boolean] :ignore_crc if true, the RTP records will be successfully loaded even if their checksums are invalid
+    # @option options [Boolean] :repair if true, any RTP records containing invalid CSV will be attempted fixed and loaded
     # @option options [Boolean] :skip_unknown if true, unknown records will be skipped, and record instances will be built from the remaining recognized string records
     # @return [Plan] the created Plan instance
     # @raise [ArgumentError] if given an invalid string record
@@ -85,12 +88,12 @@ module RTP
       # Create the Plan object:
       line = lines.first
       RTP::verify(line, options)
-      rtp = self.load(line)
+      rtp = self.load(line, options)
       lines[1..-1].each do |line|
         # Validate, determine type, and process the line accordingly to
         # build the hierarchy of records:
         RTP::verify(line, options)
-        values = line.values
+        values = line.values(options[:repair])
         keyword = values.first
         method = RTP::PARSE_METHOD[keyword]
         if method
@@ -111,6 +114,7 @@ module RTP
     # @param [String] file a string which specifies the path of the RTPConnect file to be loaded
     # @param [Hash] options the options to use for reading the RTP file
     # @option options [Boolean] :ignore_crc if true, the RTP records will be successfully loaded even if their checksums are invalid
+    # @option options [Boolean] :repair if true, any RTP records containing invalid CSV will be attempted fixed and loaded
     # @option options [Boolean] :skip_unknown if true, unknown records will be skipped, and record instances will be built from the remaining recognized string records
     # @return [Plan] the created Plan instance
     # @raise [ArgumentError] if given an invalid file or the file given contains an invalid record

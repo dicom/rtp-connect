@@ -112,6 +112,16 @@ module RTP
 
     end
 
+
+    context "with repair: true" do
+
+      it "should successfully read this file containing invalid CSV attributes (by repairing the invalid CSV attributes)" do
+        rtp = Plan.read(RTP_INVALID_QUOTE, repair: true)
+        expect(rtp.patient_id).to eql "123"
+      end
+
+    end
+
   end
 
 end
