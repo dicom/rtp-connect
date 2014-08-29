@@ -44,6 +44,7 @@ suppress_warnings do
   # Invalid files:
   RTP::RTP_INVALID_QUOTE = 'samples/invalid_csv_attribute_with_single_quote.rtp'
   RTP::RTP_INVALID_CRC = 'samples/invalid_crc.rtp'
+  RTP::RTP_UNKNOWN_RECORD = 'samples/unknown_record.rtp'
   # Directory for writing temporary files:
   RTP::TMPDIR = "tmp/"
   RTP::LOGDIR = RTP::TMPDIR + "logs/"

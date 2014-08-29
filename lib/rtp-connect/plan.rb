@@ -76,6 +76,7 @@ module RTP
     # @param [#to_s] string an RTPConnect ascii string (with single or multiple lines/records)
     # @param [Hash] options the options to use for parsing the RTP string
     # @option options [Boolean] :ignore_crc if true, the RTP records will be successfully loaded even if their checksums are invalid
+    # @option options [Boolean] :skip_unknown if true, unknown records will be skipped, and record instances will be built from the remaining recognized string records
     # @return [Plan] the created Plan instance
     # @raise [ArgumentError] if given an invalid string record
     #
@@ -92,8 +93,15 @@ module RTP
         values = line.values
         keyword = values.first
         method = RTP::PARSE_METHOD[keyword]
-        raise ArgumentError, "Unknown keyword #{keyword} extracted from string." unless method
-        rtp.send(method, line)
+        if method
+          rtp.send(method, line)
+        else
+          if options[:skip_unknown]
+            logger.warn("Skipped unknown record definition: #{keyword}")
+          else
+            raise ArgumentError, "Unknown keyword #{keyword} extracted from string."
+          end
+        end
       end
       return rtp
     end
@@ -103,6 +111,7 @@ module RTP
     # @param [String] file a string which specifies the path of the RTPConnect file to be loaded
     # @param [Hash] options the options to use for reading the RTP file
     # @option options [Boolean] :ignore_crc if true, the RTP records will be successfully loaded even if their checksums are invalid
+    # @option options [Boolean] :skip_unknown if true, unknown records will be skipped, and record instances will be built from the remaining recognized string records
     # @return [Plan] the created Plan instance
     # @raise [ArgumentError] if given an invalid file or the file given contains an invalid record
     #

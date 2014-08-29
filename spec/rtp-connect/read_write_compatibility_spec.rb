@@ -89,6 +89,29 @@ module RTP
 
     end
 
+
+    context "with ignore_crc: true" do
+
+      it "should successfully read this file with invalid CRCs" do
+        rtp = Plan.read(RTP_INVALID_CRC, ignore_crc: true)
+        expect(rtp.patient_id).to eql "123"
+        expect(rtp.prescriptions.first.course_id).to eql "7"
+      end
+
+    end
+
+
+    context "with skip_unknown: true" do
+
+      it "should successfully read this file containing an unknown record definition (the unknown record being discarded)" do
+        rtp = Plan.read(RTP_UNKNOWN_RECORD, skip_unknown: true)
+        expect(rtp.patient_id).to eql "99999"
+        expect(rtp.prescriptions.length).to eql 1
+        expect(rtp.prescriptions.first.course_id).to eql "2"
+      end
+
+    end
+
   end
 
 end
