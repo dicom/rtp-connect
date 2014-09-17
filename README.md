@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.11752.png)](http://dx.doi.org/10.5281/zenodo.11752)
+
 # RTPConnect
 
 The RTPConnect library allows you to read, edit and write RTPConnect files in Ruby.
