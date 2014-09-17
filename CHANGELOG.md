@@ -1,9 +1,17 @@
 # 1.7
 
-## (Unreleased)
+## 17th September 2014
 
-* Added support for the Extended Plan Definition record.
+* Added a repair option for trying to fix records containing invalid CSV format (i.e. unescaped " characters).
+* Added an option for skipping unknown record types when reading an RTPConnect file (instead of raising an error).
+* Fixed an issue with writing records containing attributes of mixed encoding.
+* Added attributes for table top displacements in the Site Setup record (Mosaiq 2.6).
+* Upgraded test suite for Rspec 3.
+* Added support for the Extended Plan Definition record (Mosaiq 2.5).
+* Added option for ignoring invalid checksums.
+* Switched from RDoc to Markdown format.
 * Plan#to_dcm improvements.
+
 
 # 1.6
 
