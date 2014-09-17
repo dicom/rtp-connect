@@ -43,6 +43,17 @@ external dependencies.
     # Export the instance to an RTP string (with CRC):
     output = rtp.to_s
 
+### Fix invalid RTP files:
+
+    # Read an RTP file containing invalid checksum(s):
+    rtp = Plan.read('invalid_crc.rtp', ignore_crc: true)
+    # Read an RTP file containing unknown record type(s):
+    rtp = Plan.read('custom.rtp', skip_unknown: true)
+    # Read an RTP file containing invalid CSV format:
+    rtp = Plan.read('invalid_csv.rtp', repair: true)
+    # Write a corrected RTP file:
+    rtp.write('valid.rtp')
+
 ### Convert an RTP file to DICOM:
 
     p = Plan.read('some_file.rtp')
