@@ -1,6 +1,6 @@
 module RTP
 
   # The RTPConnect library version string.
-  VERSION = '1.7g'
+  VERSION = '1.7'
 
 end
