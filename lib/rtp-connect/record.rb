@@ -110,7 +110,9 @@ module RTP
     # @param [Array<String>] values the record attributes (as parsed from a record string)
     #
     def set_attributes(values)
-      @attributes.each_index {|i| self.send("#{@attributes[i]}=", values[i])}
+      ([values.length - 1, @max_elements - 1].min).times do |i|
+        self.send("#{@attributes[i]}=", values[i])
+      end
       @crc = values[-1]
     end
 

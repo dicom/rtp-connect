@@ -48,6 +48,15 @@ module RTP
         expect(ss.frame_of_ref_uid).to eql '1.2.840.3'
       end
 
+      it "properly sets the crc and missing attributes when given a string which doesn't contain all optional attributes" do
+        str = '"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"'
+        ss = SiteSetup.load(str, @p)
+        expect(ss.crc).to eql '24183' # note that when re-encoded, this crc will be different
+        expect(ss.table_top_vert_displacement).to be_nil
+        expect(ss.table_top_long_displacement).to be_nil
+        expect(ss.table_top_lat_displacement).to be_nil
+      end
+
     end
 
 
