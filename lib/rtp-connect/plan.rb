@@ -273,9 +273,9 @@ module RTP
     # @return [String] an RTP string with a single or multiple lines/records
     #
     def to_s
-      str = encode #.force_encoding('utf-8')
+      str = encode
       children.each do |child|
-        str += child.to_s #.force_encoding('utf-8')
+        str += child.to_s
       end
       return str
     end
