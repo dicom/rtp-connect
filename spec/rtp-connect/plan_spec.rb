@@ -268,6 +268,18 @@ module RTP
         expect(p.patient_first_name).to eql str
       end
 
+      it "returns a string including the EXTENDED_PLAN_DEF record when a version of 2.5 is specified" do
+        p = Plan.new
+        ep = ExtendedPlan.new(p)
+        expect(p.to_s(version: 2.5).include?('EXTENDED_PLAN_DEF')).to be true
+      end
+
+      it "returns a string which does not include the EXTENDED_PLAN_DEF record when a version of 2.4 is specified" do
+        p = Plan.new
+        ep = ExtendedPlan.new(p)
+        expect(p.to_s(version: 2.4).include?('EXTENDED_PLAN_DEF')).to be false
+      end
+
     end
 
 

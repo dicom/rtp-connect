@@ -29,6 +29,8 @@ module RTP
     attr_reader :parent
     # An array of Prescription records (if any) that belongs to this Plan.
     attr_reader :prescriptions
+    # The ExtendedPlan record (if any) that belongs to this Plan.
+    attr_reader :extended_plan
     # An array of DoseTracking records (if any) that belongs to this Plan.
     attr_reader :dose_trackings
     attr_reader :patient_id
@@ -270,12 +272,14 @@ module RTP
     # Encodes the Plan object + any hiearchy of child objects,
     # to a properly formatted RTPConnect ascii string.
     #
+    # @param [Hash] options an optional hash parameter
+    # @option options [Float] :version the Mosaiq compatibility version number (e.g. 2.4) used for the output
     # @return [String] an RTP string with a single or multiple lines/records
     #
-    def to_s
-      str = encode
+    def to_s(options={})
+      str = encode(options)
       children.each do |child|
-        str += child.to_s
+        str += child.to_s(options) unless child.class == ExtendedPlan && options[:version].to_f < 2.5
       end
       return str
     end
@@ -286,10 +290,12 @@ module RTP
     # to a properly formatted RTPConnect ascii file.
     #
     # @param [String] file a path/file string
+    # @param [Hash] options an optional hash parameter
+    # @option options [Float] :version the Mosaiq compatibility version number (e.g. 2.4) used for the output
     #
-    def write(file)
+    def write(file, options={})
       f = open_file(file)
-      f.write(to_s)
+      f.write(to_s(options))
       f.close
     end
 
@@ -525,7 +531,7 @@ module RTP
     #
     # @param [String] string a string line containing an extended plan definition
     #
-    def extended_plan(string)
+    def extended_plan_def(string)
       ep = ExtendedPlan.load(string, @current_parent)
       @current_parent = ep
     end

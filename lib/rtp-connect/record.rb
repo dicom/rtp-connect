@@ -35,10 +35,13 @@ module RTP
     #
     # This produces the full record string line, including a computed CRC checksum.
     #
+    # @param [Hash] options an optional hash parameter
+    # @option options [Float] :version the Mosaiq compatibility version number (e.g. 2.4) used for the output
     # @return [String] a proper RTPConnect type CSV string
     #
-    def encode
+    def encode(options={})
       encoded_values = values.collect {|v| v && v.encode('ISO8859-1')}
+      encoded_values = discard_unsupported_attributes(encoded_values, options) if options[:version]
       content = CSV.generate_line(encoded_values, force_quotes: true, row_sep: '') + ","
       checksum = content.checksum
       # Complete string is content + checksum (in double quotes) + carriage return + line feed
@@ -114,6 +117,26 @@ module RTP
         self.send("#{@attributes[i]}=", values[i])
       end
       @crc = values[-1]
+    end
+
+    # Removes any attributes that are newer than the given compatibility target version.
+    # E.g. if a compatibility version of Mosaiq 2.4 is specified, attributes that were
+    # introduced in Mosaiq 2.5 or later is removed before the RTP string is created.
+    #
+    # @param [Array<String>] values the complete set of values of this record
+    # @param [Hash] options an optional hash parameter
+    # @option options [Float] :version the Mosaiq compatibility version number (e.g. 2.4) used for the output
+    # @return [Array<String>] an array of attributes where some of the recent attributes may have been removed
+    #
+    def discard_unsupported_attributes(values, options={})
+      case self
+      when SiteSetup
+        options[:version].to_f >= 2.6 ? values : values[0..-4]
+      when ExtendedField
+        options[:version].to_f >= 2.4 ? values : values[0..-5]
+      else
+        values
+      end
     end
 
   end

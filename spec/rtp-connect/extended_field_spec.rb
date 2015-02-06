@@ -102,6 +102,19 @@ module RTP
     end
 
 
+    describe "#encode" do
+
+      it "returns 10 attributes (including CRC) when a version of 2.4 is specified" do
+        expect(@ef.encode(version: 2.4).values.length).to eql 10
+      end
+
+      it "returns 6 attributes (including CRC) when a version of 2.3 is specified" do
+        expect(@ef.encode(version: 2.3).values.length).to eql 6
+      end
+
+    end
+
+
     describe "#eql?" do
 
       it "should be true when comparing two instances having the same attribute values" do

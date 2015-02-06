@@ -87,37 +87,106 @@ module RTP
         expect(rtp.class).to eql Plan
       end
 
-    end
+      context "with ignore_crc: true" do
 
+        it "should successfully read this file with invalid CRCs" do
+          rtp = Plan.read(RTP_INVALID_CRC, ignore_crc: true)
+          expect(rtp.patient_id).to eql "123"
+          expect(rtp.prescriptions.first.course_id).to eql "7"
+        end
 
-    context "with ignore_crc: true" do
+      end
 
-      it "should successfully read this file with invalid CRCs" do
-        rtp = Plan.read(RTP_INVALID_CRC, ignore_crc: true)
-        expect(rtp.patient_id).to eql "123"
-        expect(rtp.prescriptions.first.course_id).to eql "7"
+      context "with skip_unknown: true" do
+
+        it "should successfully read this file containing an unknown record definition (the unknown record being discarded)" do
+          rtp = Plan.read(RTP_UNKNOWN_RECORD, skip_unknown: true)
+          expect(rtp.patient_id).to eql "99999"
+          expect(rtp.prescriptions.length).to eql 1
+          expect(rtp.prescriptions.first.course_id).to eql "2"
+        end
+
+      end
+
+      context "with repair: true" do
+
+        it "should successfully read this file containing invalid CSV attributes (by repairing the invalid CSV attributes)" do
+          rtp = Plan.read(RTP_INVALID_QUOTE, repair: true)
+          expect(rtp.patient_id).to eql "123"
+        end
+
       end
 
     end
 
+    describe "::write" do
 
-    context "with skip_unknown: true" do
-
-      it "should successfully read this file containing an unknown record definition (the unknown record being discarded)" do
-        rtp = Plan.read(RTP_UNKNOWN_RECORD, skip_unknown: true)
-        expect(rtp.patient_id).to eql "99999"
-        expect(rtp.prescriptions.length).to eql 1
-        expect(rtp.prescriptions.first.course_id).to eql "2"
+      before :all do
+        @p = Plan.new
+        @pr = Prescription.new(@p)
+        @ss = SiteSetup.new(@pr)
+        @f = Field.new(@pr)
+        @ef = ExtendedField.new(@f)
+        @ep = ExtendedPlan.new(@p)
+        @ss.table_top_vert_displacement = '44.4'
+        @ss.table_top_long_displacement = '22.2'
+        @ss.table_top_lat_displacement = '33.3'
+        @ef.is_fff = '1'
+        @ef.accessory_code = 'CC'
+        @ef.accessory_type = 'TT'
+        @ef.high_dose_authorization = 'YY'
       end
 
-    end
+      it "discards the SiteSetup table top displacement elements when a version less than 2.6 is used" do
+        file = File.join(TMPDIR, 'site_setup_pre_2.6.rtp')
+        @p.write(file, version: 2.5)
+        res = Plan.read(file)
+        expect(res.prescriptions.first.site_setup.table_top_vert_displacement).to be_nil
+        expect(res.prescriptions.first.site_setup.table_top_long_displacement).to be_nil
+        expect(res.prescriptions.first.site_setup.table_top_lat_displacement).to be_nil
+      end
 
+      it "includes the SiteSetup table top displacement elements when a version greater or equal than 2.6 is used" do
+        file = File.join(TMPDIR, 'site_setup_2.6.rtp')
+        @p.write(file, version: 2.6)
+        res = Plan.read(file)
+        expect(res.prescriptions.first.site_setup.table_top_vert_displacement).to eql @ss.table_top_vert_displacement
+        expect(res.prescriptions.first.site_setup.table_top_long_displacement).to eql @ss.table_top_long_displacement
+        expect(res.prescriptions.first.site_setup.table_top_lat_displacement).to eql @ss.table_top_lat_displacement
+      end
 
-    context "with repair: true" do
+      it "discards the ExtendedField elements 6-9 when a version less than 2.4 is used" do
+        file = File.join(TMPDIR, 'extended_field_pre_2.4.rtp')
+        @p.write(file, version: 2.3)
+        res = Plan.read(file)
+        expect(res.prescriptions.first.fields.first.extended_field.is_fff).to be_nil
+        expect(res.prescriptions.first.fields.first.extended_field.accessory_code).to be_nil
+        expect(res.prescriptions.first.fields.first.extended_field.accessory_type).to be_nil
+        expect(res.prescriptions.first.fields.first.extended_field.high_dose_authorization).to be_nil
+      end
 
-      it "should successfully read this file containing invalid CSV attributes (by repairing the invalid CSV attributes)" do
-        rtp = Plan.read(RTP_INVALID_QUOTE, repair: true)
-        expect(rtp.patient_id).to eql "123"
+      it "includes the ExtendedField elements 6-9 when a version greater or equal than 2.4 is used" do
+        file = File.join(TMPDIR, 'extended_field_2.4.rtp')
+        @p.write(file, version: 2.4)
+        res = Plan.read(file)
+        expect(res.prescriptions.first.fields.first.extended_field.is_fff).to eql @ef.is_fff
+        expect(res.prescriptions.first.fields.first.extended_field.accessory_code).to eql @ef.accessory_code
+        expect(res.prescriptions.first.fields.first.extended_field.accessory_type).to eql @ef.accessory_type
+        expect(res.prescriptions.first.fields.first.extended_field.high_dose_authorization).to eql @ef.high_dose_authorization
+      end
+
+      it "discards the ExtendedPlan record when a version less than 2.5 is used" do
+        file = File.join(TMPDIR, 'extended_plan_pre_2.5.rtp')
+        @p.write(file, version: 2.4)
+        res = Plan.read(file)
+        expect(res.extended_plan).to be_nil
+      end
+
+      it "includes the ExtendedPlan record when a version greater or equal than 2.5 is used" do
+        file = File.join(TMPDIR, 'extended_plan_2.5.rtp')
+        @p.write(file, version: 2.5)
+        res = Plan.read(file)
+        expect(res.extended_plan).to be_a ExtendedPlan
       end
 
     end
