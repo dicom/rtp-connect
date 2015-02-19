@@ -1,3 +1,12 @@
+# 1.8
+
+## 19th February 2015
+
+* Fixed an issue with misinterpretation of crc in RTP files from older Mosaiq versions.
+* Added support for versioning in RTP file output (supporting versions 2.4, 2.5 & 2.6).
+* Fixed an issue where you couldn't access the ExtendedPlan record from its parent Plan record.
+
+
 # 1.7
 
 ## 17th September 2014
