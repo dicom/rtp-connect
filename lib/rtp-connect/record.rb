@@ -5,6 +5,8 @@ module RTP
   #
   class Record
 
+    # An array of the record's attributes.
+    attr_reader :attributes
     # The keyword defines the record type of a particular RTP string line.
     attr_reader :keyword
     # The CRC is used to validate the integrity of the content of the RTP string line.
