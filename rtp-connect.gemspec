@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.author = 'Christoffer Lervag'
   s.email = 'chris.lervag@gmail.com'
   s.homepage = 'https://github.com/dicom/rtp-connect'
-  s.license = 'GPLv3'
+  s.license = 'GPL-3.0'
   s.description = 'RTPConnect is a file format used in radiotherapy for export & import of treatment planning data.'
   s.files = Dir["{lib}/**/*", "[A-Z]*"]
 
