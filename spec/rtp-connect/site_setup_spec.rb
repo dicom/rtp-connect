@@ -20,7 +20,7 @@ module RTP
       end
 
       it "should raise an error when a non-Prescription is passed as the 'parent' argument" do
-        expect {SiteSetup.load('"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"', 'not-an-rx')}.to raise_error
+        expect {SiteSetup.load('"SITE_SETUP_DEF","STE:0-20:4","HFS","ALX","","-0.38","14.10","-12.50","1.3.6.1","1.2.840.3","","","","","","24183"', 'not-an-rx')}.to raise_error(/to_prescription/)
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do

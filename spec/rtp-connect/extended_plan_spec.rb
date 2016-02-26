@@ -19,7 +19,7 @@ module RTP
       end
 
       it "should raise an error when a non-Plan is passed as the 'parent' argument" do
-        expect {ExtendedPlan.load('"EXTENDED_PLAN_DEF","ENCODING=BASE64","FULLNAME=QQBsAGQAZQByAHMAbwBuAF4AUAByAG8AcwB0AGEAdABhAA==","6504"', 'not-a-plan')}.to raise_error
+        expect {ExtendedPlan.load('"EXTENDED_PLAN_DEF","ENCODING=BASE64","FULLNAME=QQBsAGQAZQByAHMAbwBuAF4AUAByAG8AcwB0AGEAdABhAA==","6504"', 'not-a-plan')}.to raise_error(/to_record/)
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do

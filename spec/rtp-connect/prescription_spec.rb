@@ -19,7 +19,7 @@ module RTP
       end
 
       it "should raise an error when a non-Plan is passed as the 'parent' argument" do
-        expect {Prescription.load('"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","17677"', 'not-a-plan')}.to raise_error
+        expect {Prescription.load('"RX_DEF","20","STE:0-20:4","","Xrays","","","","","","","1","17677"', 'not-a-plan')}.to raise_error(/to_record/)
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
@@ -108,7 +108,7 @@ module RTP
     describe "#add_field" do
 
       it "should raise an error when a non-Field is passed as the 'child' argument" do
-        expect {@p.add_field(42)}.to raise_error
+        expect {@p.add_field(42)}.to raise_error(/to_field/)
       end
 
       it "should add the field" do
@@ -124,7 +124,7 @@ module RTP
     describe "#add_site_setup" do
 
       it "should raise an error when a non-SiteSetup is passed as the 'child' argument" do
-        expect {@p.add_site_setup(42)}.to raise_error
+        expect {@p.add_site_setup(42)}.to raise_error(/to_site_setup/)
       end
 
       it "should add the site setup" do

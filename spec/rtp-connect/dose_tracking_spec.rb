@@ -20,7 +20,7 @@ module RTP
 
       it "should raise an error when a non-Plan is passed as the 'parent' argument" do
         str = '"DOSE_DEF","V.Orbita 0-30","","6","1.00000","","","","","","","","","","","","","","","","","","","","","29762"'
-        expect {DoseTracking.load(str, 'not-a-plan')}.to raise_error
+        expect {DoseTracking.load(str, 'not-a-plan')}.to raise_error(/to_record/)
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do

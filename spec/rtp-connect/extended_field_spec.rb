@@ -22,7 +22,7 @@ module RTP
 
       it "should raise an error when a non-Field is passed as the 'parent' argument" do
         str = '"EXTENDED_FIELD_DEF","BAKFR","1.3.6.1.4","8","BAKFRA","10442"'
-        expect {ExtendedField.load(str, 'not-a-field')}.to raise_error
+        expect {ExtendedField.load(str, 'not-a-field')}.to raise_error(/to_record/)
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do

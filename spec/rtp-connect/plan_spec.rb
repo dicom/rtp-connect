@@ -48,7 +48,7 @@ module RTP
     describe "::parse" do
 
       it "should raise an error when a non-String is passed as the 'string' argument" do
-        expect {Plan.parse(42)}.to raise_error
+        expect {Plan.parse(42)}.to raise_error(ArgumentError)
       end
 
       it "should raise an ArgumentError when an invalid RTP string is passed as the 'string' argument" do
@@ -157,7 +157,7 @@ module RTP
     describe "#add_prescription" do
 
       it "should raise an error when a non-Prescription is passed as the 'child' argument" do
-        expect {@rtp.add_prescription(42)}.to raise_error
+        expect {@rtp.add_prescription(42)}.to raise_error(/to_prescription/)
       end
 
       it "should add the prescription" do

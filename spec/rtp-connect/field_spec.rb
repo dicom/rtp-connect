@@ -20,7 +20,7 @@ module RTP
       end
 
       it "should raise an error when a non-Prescription is passed as the 'parent' argument" do
-        expect {Field.load('"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"', 'not-an-rx')}.to raise_error
+        expect {Field.load('"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"', 'not-an-rx')}.to raise_error(/to_record/)
       end
 
       it "should raise an ArgumentError when a string with too few values is passed as the 'string' argument" do
@@ -100,7 +100,7 @@ module RTP
     describe "#add_control_point" do
 
       it "should raise an error when a non-ControlPoint is passed as the 'child' argument" do
-        expect {@f.add_control_point(42)}.to raise_error
+        expect {@f.add_control_point(42)}.to raise_error(/to_control_point/)
       end
 
       it "should add the control point" do
@@ -116,7 +116,7 @@ module RTP
     describe "#add_extended_field" do
 
       it "should raise an error when a non-ExtendedField is passed as the 'child' argument" do
-        expect {@f.add_extended_field(42)}.to raise_error
+        expect {@f.add_extended_field(42)}.to raise_error(/to_extended_field/)
       end
 
       it "should add the extended field" do
