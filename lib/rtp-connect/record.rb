@@ -97,6 +97,24 @@ module RTP
       self
     end
 
+    # Encodes the record + any hiearchy of child objects,
+    # to a properly formatted RTPConnect ascii string.
+    #
+    # @param [Hash] options an optional hash parameter
+    # @option options [Float] :version the Mosaiq compatibility version number (e.g. 2.4) used for the output
+    # @return [String] an RTP string with a single or multiple lines/records
+    #
+    def to_s(options={})
+      str = encode(options)
+      children.each do |child|
+        # Note that the extended plan record was introduced in Mosaiq 2.5.
+        str += child.to_s(options) unless child.class == ExtendedPlan && options[:version].to_f < 2.5
+      end
+      str
+    end
+
+    alias :to_str :to_s
+
     # Collects the values (attributes) of this instance.
     #
     # @note The CRC is not considered part of the actual values and is excluded.

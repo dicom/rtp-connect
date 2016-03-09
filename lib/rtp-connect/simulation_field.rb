@@ -183,25 +183,6 @@ module RTP
       self
     end
 
-    # Encodes the SimulationField object + any hiearchy of child objects,
-    # to a properly formatted RTPConnect ascii string.
-    #
-    # @param [Hash] options an optional hash parameter
-    # @option options [Float] :version the Mosaiq compatibility version number (e.g. 2.4) used for the output
-    # @return [String] an RTP string with a single or multiple lines/records
-    #
-    def to_s(options={})
-      str = encode(options)
-      if children
-        children.each do |child|
-          str += child.to_s(options)
-        end
-      end
-      return str
-    end
-
-    alias :to_str :to_s
-
     # Sets the rx_site_name attribute.
     #
     # @param [nil, #to_s] value the new attribute value
