@@ -152,7 +152,7 @@ module RTP
       elsif scale == :varian
         coeff = -1
       end
-      dcm_collimator1(axis, coeff)
+      dcm_collimator(axis, coeff, side=1)
     end
 
     # Converts the collimator_x2 attribute to proper DICOM format.
@@ -162,7 +162,7 @@ module RTP
     #
     def dcm_collimator_x2(scale=nil)
       axis = (scale == :elekta ? :y : :x)
-      dcm_collimator2(axis, coeff=1)
+      dcm_collimator(axis, coeff=1, side=2)
     end
 
     # Converts the collimator_y1 attribute to proper DICOM format.
@@ -179,7 +179,7 @@ module RTP
       elsif scale == :varian
         coeff = -1
       end
-      dcm_collimator1(axis, coeff)
+      dcm_collimator(axis, coeff, side=1)
     end
 
     # Converts the collimator_y2 attribute to proper DICOM format.
@@ -189,7 +189,7 @@ module RTP
     #
     def dcm_collimator_y2(scale=nil)
       axis = (scale == :elekta ? :x : :y)
-      dcm_collimator2(axis, coeff=1)
+      dcm_collimator(axis, coeff=1, side=2)
     end
 
     # Converts the mlc_lp_a & mlc_lp_b attributes to a proper DICOM formatted string.
@@ -559,32 +559,17 @@ module RTP
     #
     # @param [Symbol] axis a representation for the axis of interest (x or y)
     # @param [Integer] coeff a coeffecient (of -1 or 1) which the attribute is multiplied with
+    # @param [Integer] nr collimator side/index (1 or 2)
     # @return [Float] the DICOM-formatted collimator attribute
     #
-    def dcm_collimator1(axis, coeff)
+    def dcm_collimator(axis, coeff, nr)
       mode = self.send("field_#{axis}_mode")
       if mode && !mode.empty?
         target = self
       else
         target = @parent
       end
-      target.send("collimator_#{axis}1").to_f * 10 * coeff
-    end
-
-    # Converts the collimator attribute to proper DICOM format.
-    #
-    # @param [Symbol] axis a representation for the axis of interest (x or y)
-    # @param [Integer] coeff a coeffecient (of -1 or 1) which the attribute is multiplied with
-    # @return [Float] the DICOM-formatted collimator attribute
-    #
-    def dcm_collimator2(axis, coeff)
-      mode = self.send("field_#{axis}_mode")
-      if mode && !mode.empty?
-        target = self
-      else
-        target = @parent
-      end
-      target.send("collimator_#{axis}2").to_f * 10 * coeff
+      target.send("collimator_#{axis}#{nr}").to_f * 10 * coeff
     end
 
     # Sets the attributes of the record instance.
