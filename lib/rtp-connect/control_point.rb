@@ -144,15 +144,7 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_x1 attribute
     #
     def dcm_collimator_x1(scale=nil)
-      coeff = 1
-      axis = :x
-      if scale == :elekta
-        axis = :y
-        coeff = -1
-      elsif scale == :varian
-        coeff = -1
-      end
-      dcm_collimator(axis, coeff, side=1)
+      dcm_collimator_1(scale, default_axis=:x)
     end
 
     # Converts the collimator_x2 attribute to proper DICOM format.
@@ -171,15 +163,7 @@ module RTP
     # @return [Float] the DICOM-formatted collimator_y1 attribute
     #
     def dcm_collimator_y1(scale=nil)
-      coeff = 1
-      axis = :y
-      if scale == :elekta
-        axis = :x
-        coeff = -1
-      elsif scale == :varian
-        coeff = -1
-      end
-      dcm_collimator(axis, coeff, side=1)
+      dcm_collimator_1(scale, default_axis=:y)
     end
 
     # Converts the collimator_y2 attribute to proper DICOM format.
@@ -570,6 +554,22 @@ module RTP
         target = @parent
       end
       target.send("collimator_#{axis}#{nr}").to_f * 10 * coeff
+    end
+
+    # Converts the collimator1 attribute to proper DICOM format.
+    #
+    # @param [Symbol] scale if set, relevant device parameters are converted from a native readout format to IEC1217 (supported values are :elekta & :varian)
+    # @return [Float] the DICOM-formatted collimator_x1 attribute
+    #
+    def dcm_collimator_1(scale=nil, axis)
+      coeff = 1
+      if scale == :elekta
+        axis = (axis == :x ? :y : :x)
+        coeff = -1
+      elsif scale == :varian
+        coeff = -1
+      end
+      dcm_collimator(axis, coeff, side=1)
     end
 
     # Sets the attributes of the record instance.
