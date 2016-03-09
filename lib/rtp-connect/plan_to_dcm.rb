@@ -560,16 +560,10 @@ module RTP
       dp_seq = DICOM::Sequence.new('300A,011A', :parent => cp_item)
       # The ASYMX item ('backup jaws') doesn't exist on all models:
       if ['SYM', 'ASY'].include?(cp.parent.field_x_mode.upcase)
-        dp_item_x = DICOM::Item.new(:parent => dp_seq)
-        DICOM::Element.new('300A,00B8', "ASYMX", :parent => dp_item_x)
-        DICOM::Element.new('300A,011C', "#{cp.dcm_collimator_x1(options[:scale])}\\#{cp.dcm_collimator_x2(options[:scale])}", :parent => dp_item_x)
+        dp_item_x = create_asym_item(cp, dp_seq, axis=:x, options)
       end
       # Always create one ASYMY item:
-      dp_item_y = DICOM::Item.new(:parent => dp_seq)
-      # RT Beam Limiting Device Type:
-      DICOM::Element.new('300A,00B8', "ASYMY", :parent => dp_item_y)
-      # Leaf/Jaw Positions:
-      DICOM::Element.new('300A,011C', "#{cp.dcm_collimator_y1(options[:scale])}\\#{cp.dcm_collimator_y2(options[:scale])}", :parent => dp_item_y)
+      dp_item_y = create_asym_item(cp, dp_seq, axis=:y, options)
       # MLCX:
       dp_item_mlcx = DICOM::Item.new(:parent => dp_seq)
       # RT Beam Limiting Device Type:
@@ -577,6 +571,24 @@ module RTP
       # Leaf/Jaw Positions:
       DICOM::Element.new('300A,011C', cp.dcm_mlc_positions(options[:scale]), :parent => dp_item_mlcx)
       dp_seq
+    end
+
+    # Creates an ASYMX or ASYMY item.
+    #
+    # @param [ControlPoint] cp the RTP control point to fetch device parameters from
+    # @param [DICOM::Sequence] dcm_parent the DICOM sequence in which to insert the item
+    # @param [Symbol] axis the axis for the item (:x or :y)
+    # @return [DICOM::Item] the constructed ASYMX or ASYMY item
+    #
+    def create_asym_item(cp, dcm_parent, axis, options={})
+      val1 = cp.send("dcm_collimator_#{axis.to_s}1", options[:scale])
+      val2 = cp.send("dcm_collimator_#{axis.to_s}2", options[:scale])
+      item = DICOM::Item.new(:parent => dcm_parent)
+      # RT Beam Limiting Device Type:
+      DICOM::Element.new('300A,00B8', "ASYM#{axis.to_s.upcase}", :parent => item)
+      # Leaf/Jaw Positions:
+      DICOM::Element.new('300A,011C', "#{val1}\\#{val2}", :parent => item)
+      item
     end
 
     # Creates a beam limiting device positions sequence in the given DICOM object.
