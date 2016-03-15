@@ -22,9 +22,7 @@ module RTP
       when 41
         leaf_boundaries_odd(41)
       when 60
-        Array.new(10) {|i| (i * 10 - 200).to_i}
-          .concat(Array.new(41) {|i| (i * 5 - 100).to_i})
-          .concat(Array.new(10) {|i| (i * 10 + 110).to_i})
+        leaf_boundaries_varian_60
       when 80
         leaf_boundaries_even(80)
       else
@@ -50,6 +48,16 @@ module RTP
     #
     def leaf_boundaries_odd(nr_leaves)
       Array.new(nr_leaves-1) {|i| (10 * (i - (0.5 * nr_leaves - 1))).to_i}.unshift(-200).push(200)
+    end
+
+    # Gives an array of MLC leaf position boundaries for the Varian 120 leaf MLC (60 leaves on each bank).
+    #
+    # @return [Array<Fixnum>] the leaf boundary positions
+    #
+    def leaf_boundaries_varian_60
+      Array.new(10) {|i| (i * 10 - 200).to_i}
+          .concat(Array.new(41) {|i| (i * 5 - 100).to_i})
+          .concat(Array.new(10) {|i| (i * 10 + 110).to_i})
     end
 
     # Computes the CRC checksum of the given line and verifies that
