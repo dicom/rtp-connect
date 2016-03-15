@@ -89,12 +89,12 @@ module RTP
       lines = string.to_s.split("\r\n")
       # Create the Plan object:
       line = lines.first
-      RTP::verify(line, options)
+      RTP.verify(line, options)
       rtp = self.load(line, options)
       lines[1..-1].each do |line|
         # Validate, determine type, and process the line accordingly to
         # build the hierarchy of records:
-        RTP::verify(line, options)
+        RTP.verify(line, options)
         values = line.values(options[:repair])
         keyword = values.first
         method = RTP::PARSE_METHOD[keyword]
@@ -142,7 +142,7 @@ module RTP
           end
         end
       end
-      # Parse the file contents and create the RTP::Connect object:
+      # Parse the file contents and create the RTP instance:
       if str
         rtp = self.parse(str, options)
       else
