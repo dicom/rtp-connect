@@ -8,6 +8,9 @@ module RTP
   #
   class DoseTracking < Record
 
+    # The number of attributes not having their own variable for this record (20 - 2).
+    NR_SURPLUS_ATTRIBUTES = 18
+
     # The Record which this instance belongs to.
     attr_reader :parent
     # The DoseAction records (if any) that belongs to this DoseTracking.
@@ -183,32 +186,21 @@ module RTP
     #
     alias_method :state, :values
 
-    # Sets the attributes of the record instance.
+    # Gives an array of indices indicating where the attributes of this record gets its
+    # values from in the comma separated string which the instance is created from.
     #
-    # @param [Array<String>] values the record attributes (as parsed from a record string)
+    # @param [Integer] length the number of elements to create in the indices array
     #
-    def set_attributes(values)
+    def import_indices(length)
       # Note that this method is defined in the parent Record class, where it is
       # used for most record types. However, because this record has two attributes
-      # which contain an array of values, we use a custom set_attributes method.
-      import_indices.each_with_index do |indices, i|
-        param = values.values_at(*indices)
-        param = param[0] if param.length == 1
-        self.send("#{@attributes[i]}=", param)
-      end
-      @crc = values[-1]
-    end
-
-    # Gives an array of indices indicating where the attributes of this record gets its
-    # values from the comma separated string which the instance is created from.
-    #
-    def import_indices
-      i = Array.new(7) { |i| i }
+      # which contain an array of values, we use a custom import_indices method.
+      ind = Array.new(length - NR_SURPLUS_ATTRIBUTES) { |i| i }
       # Override indices for field_ids and region_coeffs:
-      i[3] = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21]
-      i[4] = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22]
-      i[5, 6] = [23, 24]
-      i
+      ind[3] = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21]
+      ind[4] = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22]
+      ind[5, 6] = [23, 24]
+      ind
     end
 
   end

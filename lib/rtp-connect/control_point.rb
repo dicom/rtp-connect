@@ -8,6 +8,9 @@ module RTP
   #
   class ControlPoint < Record
 
+    # The number of attributes not having their own variable for this record (200 - 2).
+    NR_SURPLUS_ATTRIBUTES = 198
+
     # The Record which this instance belongs to.
     attr_reader :parent
     # The MLC shape record (if any) that belongs to this ControlPoint.
@@ -572,31 +575,20 @@ module RTP
       dcm_collimator(axis, coeff, side=1)
     end
 
-    # Sets the attributes of the record instance.
+    # Gives an array of indices indicating where the attributes of this record gets its
+    # values from in the comma separated string which the instance is created from.
     #
-    # @param [Array<String>] values the record attributes (as parsed from a record string)
+    # @param [Integer] length the number of elements to create in the indices array
     #
-    def set_attributes(values)
+    def import_indices(length)
       # Note that this method is defined in the parent Record class, where it is
       # used for most record types. However, because this record has two attributes
-      # which contain an array of values, we use a custom set_attributes method.
-      import_indices.each_with_index do |indices, i|
-        param = values.values_at(*indices)
-        param = param[0] if param.length == 1
-        self.send("#{@attributes[i]}=", param)
-      end
-      @crc = values[-1]
-    end
-
-    # Gives an array of indices indicating where the attributes of this record gets its
-    # values from the comma separated string which the instance is created from.
-    #
-    def import_indices
-      i = Array.new(34) { |i| [i] }
+      # which contain an array of values, we use a custom import_indices method.
+      ind = Array.new(length - NR_SURPLUS_ATTRIBUTES) { |i| [i] }
       # Override indices for mlc_pl_a and mlc_lp_b:
-      i[32] = (32..131).to_a
-      i[33] = (132..231).to_a
-      i
+      ind[32] = (32..131).to_a
+      ind[33] = (132..231).to_a
+      ind
     end
 
   end

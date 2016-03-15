@@ -5,6 +5,9 @@ module RTP
   #
   class Record
 
+    # For most record types, there are no surplus (grouped) attributes.
+    NR_SURPLUS_ATTRIBUTES = 0
+
     # An array of the record's attributes.
     attr_reader :attributes
     # The keyword defines the record type of a particular RTP string line.
@@ -133,10 +136,21 @@ module RTP
     # @param [Array<String>] values the record attributes (as parsed from a record string)
     #
     def set_attributes(values)
-      ([values.length - 1, @max_elements - 1].min).times do |i|
-        self.send("#{@attributes[i]}=", values[i])
+      import_indices([values.length - 1, @max_elements - 1].min).each_with_index do |indices, i|
+        param = values.values_at(*indices)
+        param = param[0] if param.length == 1
+        self.send("#{@attributes[i]}=", param)
       end
       @crc = values[-1]
+    end
+
+    # Gives an array of indices indicating where the attributes of this record gets its
+    # values from in the comma separated string which the instance is created from.
+    #
+    # @param [Integer] length the number of elements to create in the indices array
+    #
+    def import_indices(length)
+      Array.new(length - NR_SURPLUS_ATTRIBUTES) { |i| [i] }
     end
 
     # Removes any attributes that are newer than the given compatibility target version.
