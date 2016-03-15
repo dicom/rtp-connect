@@ -188,14 +188,27 @@ module RTP
     # @param [Array<String>] values the record attributes (as parsed from a record string)
     #
     def set_attributes(values)
-      self.keyword = values[0]
-      @region_name = values[1]
-      @region_prior_dose = values[2]
-      @field_ids = values.values_at(3, 5, 7, 9, 11, 13, 15, 17, 19, 21)
-      @region_coeffs = values.values_at(4, 6, 8, 10, 12, 14, 16, 18, 20, 22)
-      @actual_dose = values[23]
-      @actual_fractions = values[24]
+      # Note that this method is defined in the parent Record class, where it is
+      # used for most record types. However, because this record has two attributes
+      # which contain an array of values, we use a custom set_attributes method.
+      import_indices.each_with_index do |indices, i|
+        param = values.values_at(*indices)
+        param = param[0] if param.length == 1
+        self.send("#{@attributes[i]}=", param)
+      end
       @crc = values[-1]
+    end
+
+    # Gives an array of indices indicating where the attributes of this record gets its
+    # values from the comma separated string which the instance is created from.
+    #
+    def import_indices
+      i = Array.new(7) { |i| i }
+      # Override indices for field_ids and region_coeffs:
+      i[3] = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21]
+      i[4] = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22]
+      i[5, 6] = [23, 24]
+      i
     end
 
   end

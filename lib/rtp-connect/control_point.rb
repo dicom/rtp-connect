@@ -577,41 +577,26 @@ module RTP
     # @param [Array<String>] values the record attributes (as parsed from a record string)
     #
     def set_attributes(values)
-      self.keyword = values[0]
-      @field_id = values[1]
-      @mlc_type = values[2]
-      @mlc_leaves = values[3]
-      @total_control_points = values[4]
-      @control_pt_number = values[5]
-      @mu_convention = values[6]
-      @monitor_units = values[7]
-      @wedge_position = values[8]
-      @energy = values[9]
-      @doserate = values[10]
-      @ssd = values[11]
-      @scale_convention = values[12]
-      @gantry_angle = values[13]
-      @gantry_dir = values[14]
-      @collimator_angle = values[15]
-      @collimator_dir = values[16]
-      @field_x_mode = values[17]
-      @field_x = values[18]
-      @collimator_x1 = values[19]
-      @collimator_x2 = values[20]
-      @field_y_mode = values[21]
-      @field_y = values[22]
-      @collimator_y1 = values[23]
-      @collimator_y2 = values[24]
-      @couch_vertical = values[25]
-      @couch_lateral = values[26]
-      @couch_longitudinal = values[27]
-      @couch_angle = values[28]
-      @couch_dir = values[29]
-      @couch_pedestal = values[30]
-      @couch_ped_dir = values[31]
-      @mlc_lp_a = [*values[32..131]]
-      @mlc_lp_b = [*values[132..231]]
+      # Note that this method is defined in the parent Record class, where it is
+      # used for most record types. However, because this record has two attributes
+      # which contain an array of values, we use a custom set_attributes method.
+      import_indices.each_with_index do |indices, i|
+        param = values.values_at(*indices)
+        param = param[0] if param.length == 1
+        self.send("#{@attributes[i]}=", param)
+      end
       @crc = values[-1]
+    end
+
+    # Gives an array of indices indicating where the attributes of this record gets its
+    # values from the comma separated string which the instance is created from.
+    #
+    def import_indices
+      i = Array.new(34) { |i| [i] }
+      # Override indices for mlc_pl_a and mlc_lp_b:
+      i[32] = (32..131).to_a
+      i[33] = (132..231).to_a
+      i
     end
 
   end
