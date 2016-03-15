@@ -12,7 +12,7 @@ module RTP
     NR_SURPLUS_ATTRIBUTES = 18
 
     # The Record which this instance belongs to.
-    attr_reader :parent
+    attr_accessor :parent
     # The DoseAction records (if any) that belongs to this DoseTracking.
     attr_reader :dose_actions
     attr_reader :region_name

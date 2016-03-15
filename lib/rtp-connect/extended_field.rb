@@ -9,7 +9,7 @@ module RTP
   class ExtendedField < Record
 
     # The Record which this instance belongs to.
-    attr_reader :parent
+    attr_accessor :parent
     attr_reader :field_id
     attr_reader :original_plan_uid
     attr_reader :original_beam_number

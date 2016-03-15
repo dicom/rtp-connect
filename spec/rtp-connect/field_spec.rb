@@ -110,6 +110,13 @@ module RTP
         expect(@f.control_points).to eql [cp]
       end
 
+      it "should set self as the parent of an added control point" do
+        f_other = Field.new(@p)
+        cp = ControlPoint.new(f_other)
+        @f.add_control_point(cp)
+        expect(cp.parent).to equal @f
+      end
+
     end
 
 
@@ -124,6 +131,13 @@ module RTP
         ef = ExtendedField.new(f_other)
         @f.add_extended_field(ef)
         expect(@f.extended_field).to eql ef
+      end
+
+      it "should set self as the parent of an added extended field" do
+        f_other = Field.new(@p)
+        ef = ExtendedField.new(f_other)
+        @f.add_extended_field(ef)
+        expect(ef.parent).to equal @f
       end
 
     end

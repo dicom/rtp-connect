@@ -118,6 +118,36 @@ module RTP
         expect(@p.fields).to eql [f]
       end
 
+      it "should set self as the parent of an added field" do
+        p_other = Prescription.new(@rtp)
+        f = Field.new(p_other)
+        @p.add_field(f)
+        expect(f.parent).to equal @p
+      end
+
+    end
+
+
+    describe "#add_simulation_field" do
+
+      it "should raise an error when a non-SimulationField is passed as the 'child' argument" do
+        expect {@p.add_simulation_field(42)}.to raise_error(/to_simulation_field/)
+      end
+
+      it "should add the simulation field" do
+        p_other = Prescription.new(@rtp)
+        sf = SimulationField.new(p_other)
+        @p.add_simulation_field(sf)
+        expect(@p.simulation_fields).to eql [sf]
+      end
+
+      it "should set self as the parent of an added simulation field" do
+        p_other = Prescription.new(@rtp)
+        sf = SimulationField.new(p_other)
+        @p.add_simulation_field(sf)
+        expect(sf.parent).to equal @p
+      end
+
     end
 
 
@@ -132,6 +162,14 @@ module RTP
         ss = SiteSetup.new(p_other)
         @p.add_site_setup(ss)
         expect(@p.site_setup).to eql ss
+      end
+
+      it "should set self as the parent of an added site setup" do
+        p_other = Prescription.new(@rtp)
+        ss = SiteSetup.new(p_other)
+        #expect(ss.parent).to equal @p
+        @p.add_site_setup(ss)
+        expect(ss.parent).to equal @p
       end
 
     end

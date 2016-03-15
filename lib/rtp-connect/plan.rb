@@ -217,6 +217,7 @@ module RTP
     #
     def add_dose_tracking(child)
       @dose_trackings << child.to_dose_tracking
+      child.parent = self
     end
 
     # Adds an extended plan record to this instance.
@@ -225,6 +226,7 @@ module RTP
     #
     def add_extended_plan(child)
       @extended_plan = child.to_extended_plan
+      child.parent = self
     end
 
     # Adds a prescription site record to this instance.
@@ -233,6 +235,7 @@ module RTP
     #
     def add_prescription(child)
       @prescriptions << child.to_prescription
+      child.parent = self
     end
 
     # Collects the child records of this instance in a properly sorted array.

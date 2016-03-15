@@ -9,7 +9,7 @@ module RTP
   class SiteSetup < Record
 
     # The Record which this instance belongs to.
-    attr_reader :parent
+    attr_accessor :parent
     attr_reader :rx_site_name
     attr_reader :patient_orientation
     attr_reader :treatment_machine

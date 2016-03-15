@@ -9,7 +9,7 @@ module RTP
   class ExtendedPlan < Record
 
     # The Record which this instance belongs to.
-    attr_reader :parent
+    attr_accessor :parent
     attr_reader :encoding
     attr_reader :fullname
 

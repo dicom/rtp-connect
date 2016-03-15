@@ -12,7 +12,7 @@ module RTP
     NR_SURPLUS_ATTRIBUTES = 198
 
     # The Record which this instance belongs to.
-    attr_reader :parent
+    attr_accessor :parent
     # The MLC shape record (if any) that belongs to this ControlPoint.
     attr_reader :mlc_shape
     attr_reader :field_id

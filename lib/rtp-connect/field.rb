@@ -9,7 +9,7 @@ module RTP
   class Field < Record
 
     # The Record which this instance belongs to.
-    attr_reader :parent
+    attr_accessor :parent
     # The ExtendedField record (if any) that belongs to this Field.
     attr_reader :extended_field
     # An array of ControlPoint records (if any) that belongs to this Field.
@@ -162,6 +162,7 @@ module RTP
     #
     def add_control_point(child)
       @control_points << child.to_control_point
+      child.parent = self
     end
 
     # Adds an extended treatment field record to this instance.
@@ -170,6 +171,7 @@ module RTP
     #
     def add_extended_field(child)
       @extended_field = child.to_extended_field
+      child.parent = self
     end
 
     # Collects the child records of this instance in a properly sorted array.

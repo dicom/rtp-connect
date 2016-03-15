@@ -9,7 +9,7 @@ module RTP
   class Prescription < Record
 
     # The Record which this instance belongs to.
-    attr_reader :parent
+    attr_accessor :parent
     # The SiteSetup record (if any) that belongs to this Prescription.
     attr_reader :site_setup
     # An array of SimulationField records (if any) that belongs to this Prescription.
@@ -93,6 +93,7 @@ module RTP
     #
     def add_field(child)
       @fields << child.to_field
+      child.parent = self
     end
 
     # Adds a simulation field record to this instance.
@@ -101,6 +102,7 @@ module RTP
     #
     def add_simulation_field(child)
       @simulation_fields << child.to_simulation_field
+      child.parent = self
     end
 
     # Adds a site setup record to this instance.
@@ -109,6 +111,7 @@ module RTP
     #
     def add_site_setup(child)
       @site_setup = child.to_site_setup
+      child.parent = self
     end
 
     # Collects the child records of this instance in a properly sorted array.

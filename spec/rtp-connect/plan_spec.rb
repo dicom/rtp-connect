@@ -154,6 +154,52 @@ module RTP
     end
 
 
+    describe "#add_dose_tracking" do
+
+      it "should raise an error when a non-DoseTracking is passed as the 'child' argument" do
+        expect {@rtp.add_dose_tracking(42)}.to raise_error(/to_dose_tracking/)
+      end
+
+      it "should add the dose tracking" do
+        r = Plan.new
+        dt = DoseTracking.new(r)
+        @rtp.add_dose_tracking(dt)
+        expect(@rtp.dose_trackings).to eql [dt]
+      end
+
+      it "should set self as the parent of an added dose tracking" do
+        r = Plan.new
+        dt = DoseTracking.new(r)
+        @rtp.add_dose_tracking(dt)
+        expect(dt.parent).to equal @rtp
+      end
+
+    end
+
+
+    describe "#add_extended_plan" do
+
+      it "should raise an error when a non-ExtendedPlan is passed as the 'child' argument" do
+        expect {@rtp.add_extended_plan(42)}.to raise_error(/to_extended_plan/)
+      end
+
+      it "should add the extended plan" do
+        r = Plan.new
+        ep = ExtendedPlan.new(r)
+        @rtp.add_extended_plan(ep)
+        expect(@rtp.extended_plan).to eql ep
+      end
+
+      it "should set self as the parent of an added extended plan" do
+        r = Plan.new
+        ep = ExtendedPlan.new(r)
+        @rtp.add_extended_plan(ep)
+        expect(ep.parent).to equal @rtp
+      end
+
+    end
+
+
     describe "#add_prescription" do
 
       it "should raise an error when a non-Prescription is passed as the 'child' argument" do
@@ -167,7 +213,15 @@ module RTP
         expect(@rtp.prescriptions).to eql [p]
       end
 
+      it "should set self as the parent of an added prescription" do
+        r = Plan.new
+        p = Prescription.new(r)
+        @rtp.add_prescription(p)
+        expect(p.parent).to equal @rtp
+      end
+
     end
+
 
 
     describe "#children" do
