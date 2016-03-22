@@ -122,6 +122,41 @@ module RTP
       return [@site_setup, @simulation_fields, @fields].flatten.compact
     end
 
+    # Removes the reference of the given instance from this instance.
+    #
+    # @param [Field, SimulationField, SiteSetup] record a child record to be removed from this instance
+    #
+    def delete(record)
+      case record
+      when Field
+        delete_child(:fields, record)
+      when SimulationField
+        delete_child(:simulation_fields, record)
+      when SiteSetup
+        delete_site_setup
+      else
+        logger.warn("Unknown class (record) given to Prescription#delete: #{record.class}")
+      end
+    end
+
+    # Removes all field references from this instance.
+    #
+    def delete_fields
+      delete_children(:fields)
+    end
+
+    # Removes all simulation_field references from this instance.
+    #
+    def delete_simulation_fields
+      delete_children(:simulation_fields)
+    end
+
+    # Removes the site setup reference from this instance.
+    #
+    def delete_site_setup
+      delete_child(:site_setup)
+    end
+
     # Computes a hash code for this object.
     #
     # @note Two objects with the same attributes will have the same hash code.

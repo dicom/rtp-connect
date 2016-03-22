@@ -131,6 +131,30 @@ module RTP
     private
 
 
+    # Removes the reference of the given instance from the attribute of this record.
+    #
+    # @param [Symbol] attribute the name of the child attribute from which to remove a child
+    # @param [Record] instance a child record to be removed from this instance
+    #
+    def delete_child(attribute, instance=nil)
+      if self.send(attribute).is_a?(Array)
+        deleted = self.send(attribute).delete(instance)
+        deleted.parent = nil if deleted
+      else
+        self.send(attribute).parent = nil if self.send(attribute)
+        self.instance_variable_set("@#{attribute}", nil)
+      end
+    end
+
+    # Removes all child references of the given type from this instance.
+    #
+    # @param [Symbol] attribute the name of the child attribute to be cleared
+    #
+    def delete_children(attribute)
+      self.send(attribute).each { |c| c.parent = nil }
+      self.send(attribute).clear
+    end
+
     # Sets the attributes of the record instance.
     #
     # @param [Array<String>] values the record attributes (as parsed from a record string)

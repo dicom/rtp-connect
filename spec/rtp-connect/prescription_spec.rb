@@ -201,6 +201,100 @@ module RTP
     end
 
 
+    describe "#delete" do
+
+      it "properly deletes a given field instance" do
+        f = Field.new(@p)
+        @p.add_field(f)
+        @p.delete(f)
+        expect(@p.fields.include?(f)).to be false
+        expect(f.parent).to be_nil
+      end
+
+      it "properly deletes a given simulation_field instance" do
+        sf = SimulationField.new(@p)
+        @p.add_simulation_field(sf)
+        @p.delete(sf)
+        expect(@p.simulation_fields.include?(sf)).to be false
+        expect(sf.parent).to be_nil
+      end
+
+      it "properly deletes a given site setup instance" do
+        ss = SiteSetup.new(@p)
+        @p.add_site_setup(ss)
+        @p.delete_site_setup
+        expect(@p.site_setup).to be_nil
+        expect(ss.parent).to be_nil
+      end
+
+    end
+
+
+    describe "#delete_fields" do
+
+      before :each do
+        @f1 = Field.new(@p)
+        @f2 = Field.new(@p)
+        @p.add_field(@f1)
+        @p.add_field(@f2)
+        @p.delete_fields
+      end
+
+      it "resets the fields attribute" do
+        expect(@p.fields).to eql Array.new
+      end
+
+      it "resets the parent attribute of the previously referenced fields" do
+        [@f1, @f2].each do |f|
+          expect(f.parent).to be_nil
+        end
+      end
+
+    end
+
+
+    describe "#delete_simulation_fields" do
+
+      before :each do
+        @sf1 = SimulationField.new(@p)
+        @sf2 = SimulationField.new(@p)
+        @p.add_simulation_field(@sf1)
+        @p.add_simulation_field(@sf2)
+        @p.delete_simulation_fields
+      end
+
+      it "resets the simulation_fields attribute" do
+        expect(@p.simulation_fields).to eql Array.new
+      end
+
+      it "resets the parent attribute of the previously referenced simulation_fields" do
+        [@sf1, @sf2].each do |sf|
+          expect(sf.parent).to be_nil
+        end
+      end
+
+    end
+
+
+    describe "#delete_site_setup" do
+
+      it "resets the site_setup attribute" do
+        ss = SiteSetup.new(@p)
+        @p.add_site_setup(ss)
+        @p.delete_site_setup
+        expect(@p.site_setup).to be_nil
+      end
+
+      it "resets the parent attribute of the previously referenced site setup" do
+        ss = SiteSetup.new(@p)
+        @p.add_site_setup(ss)
+        @p.delete_site_setup
+        expect(ss.parent).to be_nil
+      end
+
+    end
+
+
     describe "#eql?" do
 
       it "should be true when comparing two instances having the same attribute values" do
