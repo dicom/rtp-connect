@@ -241,6 +241,69 @@ module RTP
     end
 
 
+    describe "#delete" do
+
+      it "properly deletes a given control point instance" do
+        cp = ControlPoint.new(@f)
+        @f.add_control_point(cp)
+        @f.delete(cp)
+        expect(@f.control_points.include?(cp)).to be false
+        expect(cp.parent).to be_nil
+      end
+
+      it "properly deletes a given extended field instance" do
+        ef = ExtendedField.new(@f)
+        @f.add_extended_field(ef)
+        @f.delete_extended_field
+        expect(@f.extended_field).to be_nil
+        expect(ef.parent).to be_nil
+      end
+
+    end
+
+
+    describe "#delete_control_points" do
+
+      before :each do
+        @cp1 = ControlPoint.new(@f)
+        @cp2 = ControlPoint.new(@f)
+        @f.add_control_point(@cp1)
+        @f.add_control_point(@cp2)
+        @f.delete_control_points
+      end
+
+      it "resets the control_points attribute" do
+        expect(@f.control_points).to eql Array.new
+      end
+
+      it "resets the parent attribute of the previously referenced control_points" do
+        [@cp1, @cp2].each do |cp|
+          expect(cp.parent).to be_nil
+        end
+      end
+
+    end
+
+
+    describe "#delete_extended_field" do
+
+      it "resets the extended_field attribute" do
+        ef = ExtendedField.new(@f)
+        @f.add_extended_field(ef)
+        @f.delete_extended_field
+        expect(@f.extended_field).to be_nil
+      end
+
+      it "resets the parent attribute of the previously referenced extended field" do
+        ef = ExtendedField.new(@f)
+        @f.add_extended_field(ef)
+        @f.delete_extended_field
+        expect(ef.parent).to be_nil
+      end
+
+    end
+
+
     describe "#eql?" do
 
       it "should be true when comparing two instances having the same attribute values" do

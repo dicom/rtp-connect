@@ -244,6 +244,100 @@ module RTP
     end
 
 
+    describe "#delete" do
+
+      it "properly deletes a given prescription instance" do
+        rx = Prescription.new(@rtp)
+        @rtp.add_prescription(rx)
+        @rtp.delete(rx)
+        expect(@rtp.prescriptions.include?(rx)).to be false
+        expect(rx.parent).to be_nil
+      end
+
+      it "properly deletes a given dose_tracking instance" do
+        dt = DoseTracking.new(@rtp)
+        @rtp.add_dose_tracking(dt)
+        @rtp.delete(dt)
+        expect(@rtp.dose_trackings.include?(dt)).to be false
+        expect(dt.parent).to be_nil
+      end
+
+      it "properly deletes a given extended plan instance" do
+        ep = ExtendedPlan.new(@rtp)
+        @rtp.add_extended_plan(ep)
+        @rtp.delete_extended_plan
+        expect(@rtp.extended_plan).to be_nil
+        expect(ep.parent).to be_nil
+      end
+
+    end
+
+
+    describe "#delete_dose_trackings" do
+
+      before :each do
+        @dt1 = DoseTracking.new(@rtp)
+        @dt2 = DoseTracking.new(@rtp)
+        @rtp.add_dose_tracking(@dt1)
+        @rtp.add_dose_tracking(@dt2)
+        @rtp.delete_dose_trackings
+      end
+
+      it "resets the dose_trackings attribute" do
+        expect(@rtp.dose_trackings).to eql Array.new
+      end
+
+      it "resets the parent attribute of the previously referenced dose_trackings" do
+        [@dt1, @dt2].each do |dt|
+          expect(dt.parent).to be_nil
+        end
+      end
+
+    end
+
+
+    describe "#delete_prescriptions" do
+
+      before :each do
+        @p1 = Prescription.new(@rtp)
+        @p2 = Prescription.new(@rtp)
+        @rtp.add_prescription(@p1)
+        @rtp.add_prescription(@p2)
+        @rtp.delete_prescriptions
+      end
+
+      it "resets the prescriptions attribute" do
+        expect(@rtp.prescriptions).to eql Array.new
+      end
+
+      it "resets the parent attribute of the previously referenced prescriptions" do
+        [@p1, @p2].each do |rx|
+          expect(rx.parent).to be_nil
+        end
+      end
+
+    end
+
+
+    describe "#delete_extended_plan" do
+
+      it "resets the extended_plan attribute" do
+        ep = ExtendedPlan.new(@rtp)
+        @rtp.add_extended_plan(ep)
+        @rtp.delete_extended_plan
+        expect(@rtp.extended_plan).to be_nil
+      end
+
+      it "resets the parent attribute of the previously referenced extended plan" do
+        ep = ExtendedPlan.new(@rtp)
+        @rtp.add_extended_plan(ep)
+        @rtp.delete_extended_plan
+        expect(ep.parent).to be_nil
+      end
+
+    end
+
+
     describe "#eql?" do
 
       it "should be true when comparing two instances having the same attribute values" do

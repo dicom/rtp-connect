@@ -246,6 +246,41 @@ module RTP
       return [@extended_plan, @prescriptions, @dose_trackings].flatten.compact
     end
 
+    # Removes the reference of the given instance from this instance.
+    #
+    # @param [ExtendedPlan, Prescription, DoseTracking] record a child record to be removed from this instance
+    #
+    def delete(record)
+      case record
+      when Prescription
+        delete_child(:prescriptions, record)
+      when DoseTracking
+        delete_child(:dose_trackings, record)
+      when ExtendedPlan
+        delete_extended_plan
+      else
+        logger.warn("Unknown class (record) given to Plan#delete: #{record.class}")
+      end
+    end
+
+    # Removes all dose_tracking references from this instance.
+    #
+    def delete_dose_trackings
+      delete_children(:dose_trackings)
+    end
+
+    # Removes the extended plan reference from this instance.
+    #
+    def delete_extended_plan
+      delete_child(:extended_plan)
+    end
+
+    # Removes all prescription references from this instance.
+    #
+    def delete_prescriptions
+      delete_children(:prescriptions)
+    end
+
     # Computes a hash code for this object.
     #
     # @note Two objects with the same attributes will have the same hash code.

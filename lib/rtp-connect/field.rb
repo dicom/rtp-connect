@@ -214,6 +214,33 @@ module RTP
       value = @collimator_y2.to_f * 10
     end
 
+    # Removes the reference of the given instance from this instance.
+    #
+    # @param [ControlPoint, ExtendedField] record a child record to be removed from this instance
+    #
+    def delete(record)
+      case record
+      when ControlPoint
+        delete_child(:control_points, record)
+      when ExtendedField
+        delete_extended_field
+      else
+        logger.warn("Unknown class (record) given to Field#delete: #{record.class}")
+      end
+    end
+
+    # Removes all control point references from this instance.
+    #
+    def delete_control_points
+      delete_children(:control_points)
+    end
+
+    # Removes the extended field reference from this instance.
+    #
+    def delete_extended_field
+      delete_child(:extended_field)
+    end
+
     # Computes a hash code for this object.
     #
     # @note Two objects with the same attributes will have the same hash code.
