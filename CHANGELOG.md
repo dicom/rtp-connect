@@ -1,3 +1,13 @@
+# 1.9
+
+## (Unreleased)
+
+* Added an variable for retrieving a record's attributes (in an array).
+* Added a sample script for beam parameter modification (useful for linac/plan QA purposes).
+* Made the parent attribute accessible, and properly update the parent attribute when assigning a record to a new parent.
+* Added methods for deleting child records (applies to Plan, Prescription and Field records).
+
+
 # 1.8
 
 ## 19th February 2015
