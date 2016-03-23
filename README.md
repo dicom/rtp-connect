@@ -125,7 +125,7 @@ If you encounter an RTP file with an unsupported record type, please contact me.
 
 ## COPYRIGHT
 
-Copyright 2011-2015 Christoffer Lervåg
+Copyright 2011-2016 Christoffer Lervåg
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
