@@ -1,6 +1,6 @@
 # 1.9
 
-## (Unreleased)
+## 23rd March 2016
 
 * Added an variable for retrieving a record's attributes (in an array).
 * Added a sample script for beam parameter modification (useful for linac/plan QA purposes).
