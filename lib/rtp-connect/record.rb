@@ -161,8 +161,11 @@ module RTP
     #
     def set_attributes(values)
       import_indices([values.length - 1, @max_elements - 1].min).each_with_index do |indices, i|
-        param = values.values_at(*indices)
-        param = param[0] if param.length == 1
+        param = nil
+        if indices
+          param = values.values_at(*indices)
+          param = param[0] if param.length == 1
+        end
         self.send("#{@attributes[i]}=", param)
       end
       @crc = values[-1]
@@ -190,8 +193,12 @@ module RTP
       case self
       when SiteSetup
         options[:version].to_f >= 2.6 ? values : values[0..-4]
+      when Field
+        options[:version].to_f >= 2.64 ? values : values[0..-4]
       when ExtendedField
         options[:version].to_f >= 2.4 ? values : values[0..-5]
+      when ControlPoint
+        options[:version].to_f >= 2.64 ? values : values[0..31] + values[35..-1]
       else
         values
       end

@@ -30,7 +30,8 @@ module RTP
 
       it "should give a warning when a string with too many values is passed as the 'string' argument" do
         RTP.logger.expects(:warn).once
-        str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","extra","8612"'
+        #str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","extra","8612"'
+        str = '"FIELD_DEF","Boost VMAT","1 1cs ","1CS","","","244.75","","Synergy1","Dynamic","Xrays","6","","485","100.0","92.3","182.0","0.0","","","","","ASY","0.0","-6.0","5.5","","","","0.0","0.0","1","CW","182.0","178.0","0.69","","","","","","","","","","","","","3.30","-0.90","4.00","extra","11203"'
         f = Field.load(str, @p)
       end
 
@@ -333,7 +334,7 @@ module RTP
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
-        arr = ["FIELD_DEF", [nil]*47].flatten
+        arr = ["FIELD_DEF", [nil]*50].flatten
         expect(@f.values).to eql arr
       end
 
@@ -351,14 +352,32 @@ module RTP
 
     describe "#to_s" do
 
+      describe "(version: 2.6)" do
+
+        it "should return a string which matches the original version 2.6 string" do
+          str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"' + "\r\n"
+          f = Field.load(str, @p)
+          expect(f.to_s(version: 2.6)).to eql str
+        end
+
+        it "should return a string that matches the original string (which contains a unique value for each element)" do
+          values = '"FIELD_DEF",' + Array.new(47){|i| i.to_s}.encode + ','
+          crc = values.checksum.to_s.wrap
+          str = values + crc + "\r\n"
+          f = Field.load(str, @p)
+          expect(f.to_s(version: 2.6)).to eql str
+        end
+
+      end
+
       it "should return a string which matches the original string" do
-        str = '"FIELD_DEF","STE:0-20:4","8 Bakfra","BAKFR","","400.00","348.248310","","ALX","Static","Xrays","15","","","100.0","96.3","180.0","0.0","ASY","0.0","-5.0","5.0","ASY","0.0","-7.1","5.8","","","","0.0","0.0","","","","","","","","","","","","","","","","","","24065"' + "\r\n"
+        str = '"FIELD_DEF","Boost VMAT","1 1cs ","1CS","","","244.75","","Synergy1","Dynamic","Xrays","6","","485","100.0","92.3","182.0","0.0","","","","","ASY","0.0","-6.0","5.5","","","","0.0","0.0","1","CW","182.0","178.0","0.69","","","","","","","","","","","","","3.30","-0.90","4.00","18228"' + "\r\n"
         f = Field.load(str, @p)
         expect(f.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
-        values = '"FIELD_DEF",' + Array.new(47){|i| i.to_s}.encode + ','
+        values = '"FIELD_DEF",' + Array.new(50){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         f = Field.load(str, @p)

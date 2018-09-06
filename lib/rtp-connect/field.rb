@@ -61,6 +61,9 @@ module RTP
     attr_reader :portfilm_delta_open
     attr_reader :portfilm_mu_treat
     attr_reader :portfilm_coeff_treat
+    attr_reader :iso_pos_x
+    attr_reader :iso_pos_y
+    attr_reader :iso_pos_z
 
     # Creates a new (treatment) Field by parsing a RTPConnect string line.
     #
@@ -79,7 +82,7 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
-      super('FIELD_DEF', 27, 49)
+      super('FIELD_DEF', 27, 52)
       # Child records:
       @control_points = Array.new
       @extended_field = nil
@@ -136,7 +139,10 @@ module RTP
         :portfilm_coeff_open,
         :portfilm_delta_open,
         :portfilm_mu_treat,
-        :portfilm_coeff_treat
+        :portfilm_coeff_treat,
+        :iso_pos_x,
+        :iso_pos_y,
+        :iso_pos_z
       ]
     end
 
@@ -633,6 +639,30 @@ module RTP
     #
     def portfilm_coeff_treat=(value)
       @portfilm_coeff_treat = value && value.to_s
+    end
+
+    # Sets the iso_pos_x attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def iso_pos_x=(value)
+      @iso_pos_x = value && value.to_s.strip
+    end
+
+    # Sets the iso_pos_y attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def iso_pos_y=(value)
+      @iso_pos_y = value && value.to_s.strip
+    end
+
+    # Sets the iso_pos_z attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def iso_pos_z=(value)
+      @iso_pos_z = value && value.to_s.strip
     end
 
 

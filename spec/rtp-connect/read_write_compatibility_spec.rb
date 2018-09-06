@@ -87,6 +87,11 @@ module RTP
         expect(rtp.class).to eql Plan
       end
 
+      it "should parse this RTPConnect file and build a valid record object hierarchy" do
+        rtp = Plan.read(RTP_MOSAIQ_264)
+        expect(rtp.class).to eql Plan
+      end
+
       context "with ignore_crc: true" do
 
         it "should successfully read this file with invalid CRCs" do
@@ -123,18 +128,25 @@ module RTP
 
       before :all do
         @p = Plan.new
+        @ep = ExtendedPlan.new(@p)
         @pr = Prescription.new(@p)
         @ss = SiteSetup.new(@pr)
         @f = Field.new(@pr)
         @ef = ExtendedField.new(@f)
-        @ep = ExtendedPlan.new(@p)
+        @cp = ControlPoint.new(@f)
         @ss.table_top_vert_displacement = '44.4'
         @ss.table_top_long_displacement = '22.2'
         @ss.table_top_lat_displacement = '33.3'
+        @f.iso_pos_x = '2.2'
+        @f.iso_pos_y = '3.3'
+        @f.iso_pos_z = '4.4'
         @ef.is_fff = '1'
         @ef.accessory_code = 'CC'
         @ef.accessory_type = 'TT'
         @ef.high_dose_authorization = 'YY'
+        @cp.iso_pos_x = '-1.3'
+        @cp.iso_pos_y = '-5.7'
+        @cp.iso_pos_z = '-9.1'
       end
 
       it "discards the SiteSetup table top displacement elements when a version less than 2.6 is used" do
@@ -187,6 +199,30 @@ module RTP
         @p.write(file, version: 2.5)
         res = Plan.read(file)
         expect(res.extended_plan).to be_a ExtendedPlan
+      end
+
+      it "discards the Field and ControlPoint iso_pos_x/y/z elements when a version less than 2.64 is used" do
+        file = File.join(TMPDIR, 'field_and_control_point_pre_2.6.rtp')
+        @p.write(file, version: 2.6)
+        res = Plan.read(file)
+        expect(res.prescriptions.first.fields.first.iso_pos_x).to be_nil
+        expect(res.prescriptions.first.fields.first.iso_pos_y).to be_nil
+        expect(res.prescriptions.first.fields.first.iso_pos_z).to be_nil
+        expect(res.prescriptions.first.fields.first.control_points.first.iso_pos_x).to be_nil
+        expect(res.prescriptions.first.fields.first.control_points.first.iso_pos_y).to be_nil
+        expect(res.prescriptions.first.fields.first.control_points.first.iso_pos_z).to be_nil
+      end
+
+      it "includes the Field and ControlPoint iso_pos_x/y/z elements when a version greater or equal than 2.64 is used" do
+        file = File.join(TMPDIR, 'field_and_control_point_2.6.rtp')
+        @p.write(file, version: 2.64)
+        res = Plan.read(file)
+        expect(res.prescriptions.first.fields.first.iso_pos_x).to eql @f.iso_pos_x
+        expect(res.prescriptions.first.fields.first.iso_pos_y).to eql @f.iso_pos_y
+        expect(res.prescriptions.first.fields.first.iso_pos_z).to eql @f.iso_pos_z
+        expect(res.prescriptions.first.fields.first.control_points.first.iso_pos_x).to eql @cp.iso_pos_x
+        expect(res.prescriptions.first.fields.first.control_points.first.iso_pos_y).to eql @cp.iso_pos_y
+        expect(res.prescriptions.first.fields.first.control_points.first.iso_pos_z).to eql @cp.iso_pos_z
       end
 
     end

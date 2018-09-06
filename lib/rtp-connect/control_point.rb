@@ -46,6 +46,9 @@ module RTP
     attr_reader :couch_dir
     attr_reader :couch_pedestal
     attr_reader :couch_ped_dir
+    attr_reader :iso_pos_x
+    attr_reader :iso_pos_y
+    attr_reader :iso_pos_z
     # Note: This attribute contains an array of all MLC LP A values (leaves 1..100).
     attr_reader :mlc_lp_a
     # Note: This attribute contains an array of all MLC LP B values (leaves 1..100).
@@ -68,7 +71,7 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
-      super('CONTROL_PT_DEF', 233, 233)
+      super('CONTROL_PT_DEF', 233, 236)
       # Child:
       @mlc_shape = nil
       # Parent relation (may get more than one type of record here):
@@ -110,6 +113,9 @@ module RTP
         :couch_dir,
         :couch_pedestal,
         :couch_ped_dir,
+        :iso_pos_x,
+        :iso_pos_y,
+        :iso_pos_z,
         :mlc_lp_a,
         :mlc_lp_b
       ]
@@ -250,6 +256,9 @@ module RTP
         @couch_dir,
         @couch_pedestal,
         @couch_ped_dir,
+        @iso_pos_x,
+        @iso_pos_y,
+        @iso_pos_z,
         *@mlc_lp_a,
         *@mlc_lp_b
       ]
@@ -531,6 +540,30 @@ module RTP
       @couch_ped_dir = value && value.to_s
     end
 
+    # Sets the iso_pos_x attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def iso_pos_x=(value)
+      @iso_pos_x = value && value.to_s.strip
+    end
+
+    # Sets the iso_pos_y attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def iso_pos_y=(value)
+      @iso_pos_y = value && value.to_s.strip
+    end
+
+    # Sets the iso_pos_z attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def iso_pos_z=(value)
+      @iso_pos_z = value && value.to_s.strip
+    end
+
 
     private
 
@@ -584,10 +617,30 @@ module RTP
       # Note that this method is defined in the parent Record class, where it is
       # used for most record types. However, because this record has two attributes
       # which contain an array of values, we use a custom import_indices method.
-      ind = Array.new(length - NR_SURPLUS_ATTRIBUTES) { |i| [i] }
+      #
+      # Furthermore, as of Mosaiq version 2.64, the RTP ControlPoint record includes
+      # 3 new attributes: iso_pos_x/y/z. Since these (unfortunately) are not placed
+      # at the end of the record (which is the norm), but rather inserted before the
+      # MLC leaf positions, we have to take special care here to make sure that this
+      # gets right for records where these are included or excluded.
+      #
+      # Override length:
+      applied_length = 235
+      ind = Array.new(applied_length - NR_SURPLUS_ATTRIBUTES) { |i| [i] }
       # Override indices for mlc_pl_a and mlc_lp_b:
-      ind[32] = (32..131).to_a
-      ind[33] = (132..231).to_a
+      # Allocation here is dependent on the RTP file version:
+      # For 2.62 and earlier, where length is 232, we dont have the 3 iso_pos_x/y/z values preceeding the mlc arrays leaf position arrays.
+      # For 2.64 (and later), where length is 235, we have the 3 iso_pos_x/y/z values preceeding the mlc leaf position arrays.
+      if length == 232
+        ind[32] = nil
+        ind[33] = nil
+        ind[34] = nil
+        ind[35] = (32..131).to_a
+        ind[36] = (132..231).to_a
+      else # (length = 235)
+        ind[35] = (35..134).to_a
+        ind[36] = (135..234).to_a
+      end
       ind
     end
 
