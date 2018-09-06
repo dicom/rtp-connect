@@ -58,8 +58,10 @@ external dependencies.
 
 ### Write RTP files for specific Mosaiq versions:
 
-    # Mosaiq 2.4 (and 2.5):
+    # Mosaiq 2.4:
     rtp.write('treatment_plan.rtp', version: 2.4)
+    # Mosaiq 2.5:
+    rtp.write('treatment_plan.rtp', version: 2.5)
     # Mosaiq 2.6 (and 2.62):
     rtp.write('treatment_plan.rtp', version: 2.6)
     # By default files are outputted at the latest supported version (currently 2.64) when omitting the version parameter:
