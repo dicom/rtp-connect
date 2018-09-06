@@ -56,6 +56,15 @@ external dependencies.
     # Write a corrected RTP file:
     rtp.write('valid.rtp')
 
+### Write RTP files for specific Mosaiq versions:
+
+    # Mosaiq 2.4 (and 2.5):
+    rtp.write('treatment_plan.rtp', version: 2.4)
+    # Mosaiq 2.6 (and 2.62):
+    rtp.write('treatment_plan.rtp', version: 2.6)
+    # By default files are outputted at the latest supported version (currently 2.64) when omitting the version parameter:
+    rtp.write('treatment_plan.rtp')
+
 ### Convert an RTP file to DICOM:
 
     p = Plan.read('some_file.rtp')
