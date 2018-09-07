@@ -16,13 +16,13 @@ Gem::Specification.new do |s|
   s.description = 'RTPConnect is a file format used in radiotherapy for export & import of treatment planning data.'
   s.files = Dir["{lib}/**/*", "[A-Z]*"]
 
-  s.required_ruby_version = '>= 1.9.3'
+  s.required_ruby_version = '>= 2.2'
 
-  s.add_development_dependency('bundler', '~> 1.8')
-  s.add_development_dependency('dicom', '~> 0.9', '>= 0.9.6')
+  s.add_development_dependency('bundler', '~> 1.11')
+  s.add_development_dependency('dicom', '~> 0.9', '>= 0.9.8')
   s.add_development_dependency('mocha', '~> 1.1')
-  s.add_development_dependency('rake', '~> 10.4')
-  s.add_development_dependency('redcarpet', '~> 3.2')
-  s.add_development_dependency('rspec', '~> 3.2')
-  s.add_development_dependency('yard', '~> 0.8', '>= 0.8.7')
+  s.add_development_dependency('rake', '~> 12.3')
+  s.add_development_dependency('redcarpet', '~> 3.4')
+  s.add_development_dependency('rspec', '~> 3.7')
+  s.add_development_dependency('yard', '~> 0.9', '>= 0.9.12')
 end
