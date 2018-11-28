@@ -1,6 +1,6 @@
 # 1.10
 
-## (Unreleased)
+## 28th November 2018
 
 * Added support for Mosaiq 2.64, which includes three new iso_pos_x/y/z attributes in the Field and ControlPoint records.
 
