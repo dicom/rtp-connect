@@ -92,6 +92,11 @@ module RTP
         expect(rtp.class).to eql Plan
       end
 
+      it "should parse this RTPConnect file and build a valid record object hierarchy" do
+        rtp = Plan.read(RTP_MOSAIQ_281)
+        expect(rtp.class).to eql Plan
+      end
+
       context "with ignore_crc: true" do
 
         it "should successfully read this file with invalid CRCs" do

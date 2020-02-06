@@ -1,3 +1,10 @@
+# 1.11
+
+## (Unreleased)
+
+* Added support for Mosaiq 2.65, which includes four new attributes in the SiteSetup record and two new attributes in the ExtendedField record.
+* Added support for Mosaiq 2.81, which includes two new attributes in the SiteSetup record and one new attribute in the ExtendedPlan record.
+
 # 1.10
 
 ## 28th November 2018

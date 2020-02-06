@@ -29,7 +29,7 @@ module RTP
 
       it "should give a warning when a string with too many values is passed as the 'string' argument" do
         RTP.logger.expects(:warn).once
-        str = '"EXTENDED_PLAN_DEF","ENCODING=BASE64","AAFFEEDD==","ANOTHER","39220"'
+        str = '"EXTENDED_PLAN_DEF","ENCODING=BASE64","AAFFEEDD==","ANOTHER","extra","3310"'
         ep = ExtendedPlan.load(str, @rtp)
       end
 
@@ -103,6 +103,19 @@ module RTP
     end
 
 
+    describe "#encode" do
+
+      it "returns 5 attributes (including CRC) when a version of 2.81 is specified" do
+        expect(@ep.encode(version: 2.81).values.length).to eql 5
+      end
+
+      it "returns 4 attributes (including CRC) when a version of 2.65 is specified" do
+        expect(@ep.encode(version: 2.65).values.length).to eql 4
+      end
+
+    end
+
+
     describe "#eql?" do
 
       it "should be true when comparing two instances having the same attribute values" do
@@ -132,7 +145,7 @@ module RTP
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
-        arr = ["EXTENDED_PLAN_DEF", [nil]*2].flatten
+        arr = ["EXTENDED_PLAN_DEF", [nil]*3].flatten
         expect(@ep.values).to eql arr
       end
 
@@ -151,13 +164,13 @@ module RTP
     describe "#to_s" do
 
       it "should return a string which matches the original string" do
-        str = '"EXTENDED_PLAN_DEF","ENCODING=BASE64","FULLNAME=QQBsAGQAZQByAHMAbwBuAF4AUAByAG8AcwB0AGEAdABhAA==","6504"' + "\r\n"
+        str = '"EXTENDED_PLAN_DEF","ENCODING=BASE64","FULLNAME=VABlAHMAdABeAE0AbwBzAGEAaQBxADUA","PATIENTCOMMENTS=","49041"' + "\r\n"
         ep = ExtendedPlan.load(str, @rtp)
         expect(ep.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
-        values = '"EXTENDED_PLAN_DEF",' + Array.new(2){|i| i.to_s}.encode + ','
+        values = '"EXTENDED_PLAN_DEF",' + Array.new(3){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ep = ExtendedPlan.load(str, @rtp)

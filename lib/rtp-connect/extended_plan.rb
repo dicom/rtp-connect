@@ -12,6 +12,7 @@ module RTP
     attr_accessor :parent
     attr_reader :encoding
     attr_reader :fullname
+    attr_reader :patient_comments
 
     # Creates a new ExtendedPlan by parsing a RTPConnect string line.
     #
@@ -30,7 +31,7 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
-      super('EXTENDED_PLAN_DEF', 4, 4)
+      super('EXTENDED_PLAN_DEF', 4, 5)
       # Parent relation (may get more than one type of record here):
       @parent = get_parent(parent.to_record, Plan)
       @parent.add_extended_plan(self)
@@ -38,7 +39,9 @@ module RTP
         # Required:
         :keyword,
         :encoding,
-        :fullname
+        :fullname,
+        # Optional:
+        :patient_comments
       ]
     end
 
@@ -98,6 +101,14 @@ module RTP
     #
     def fullname=(value)
       @fullname = value && value.to_s
+    end
+
+    # Sets the patient_comments attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def patient_comments=(value)
+      @patient_comments = value && value.to_s
     end
 
 

@@ -27,6 +27,12 @@ module RTP
     attr_reader :table_top_vert_displacement
     attr_reader :table_top_long_displacement
     attr_reader :table_top_lat_displacement
+    attr_reader :mrl_coil_name
+    attr_reader :mrl_coil_index
+    attr_reader :couch_reference
+    attr_reader :couch_reference_index
+    attr_reader :respiratory_motion_compensation_technique
+    attr_reader :respiratory_signal_source
 
     # Creates a new SiteSetup by parsing a RTPConnect string line.
     #
@@ -45,7 +51,7 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
-      super('SITE_SETUP_DEF', 5, 19)
+      super('SITE_SETUP_DEF', 5, 25)
       # Parent relation (always expecting a Prescription here):
       @parent = get_parent(parent.to_prescription, Prescription)
       @parent.add_site_setup(self)
@@ -69,7 +75,13 @@ module RTP
         :couch_pedestal,
         :table_top_vert_displacement,
         :table_top_long_displacement,
-        :table_top_lat_displacement
+        :table_top_lat_displacement,
+        :mrl_coil_name,
+        :mrl_coil_index,
+        :couch_reference,
+        :couch_reference_index,
+        :respiratory_motion_compensation_technique,
+        :respiratory_signal_source
       ]
     end
 
@@ -249,6 +261,54 @@ module RTP
     #
     def table_top_lat_displacement=(value)
       @table_top_lat_displacement = value && value.to_s.strip
+    end
+
+    # Sets the mrl_coil_name attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def mrl_coil_name=(value)
+      @mrl_coil_name = value && value.to_s.strip
+    end
+
+    # Sets the mrl_coil_index attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def mrl_coil_index=(value)
+      @mrl_coil_index = value && value.to_s.strip
+    end
+
+    # Sets the couch_reference attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def couch_reference=(value)
+      @couch_reference = value && value.to_s.strip
+    end
+
+    # Sets the couch_reference_index attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def couch_reference_index=(value)
+      @couch_reference_index = value && value.to_s.strip
+    end
+
+    # Sets the respiratory_motion_compensation_technique attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def respiratory_motion_compensation_technique=(value)
+      @respiratory_motion_compensation_technique = value && value.to_s.strip
+    end
+
+    # Sets the respiratory_signal_source attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def respiratory_signal_source=(value)
+      @respiratory_signal_source = value && value.to_s.strip
     end
 
 

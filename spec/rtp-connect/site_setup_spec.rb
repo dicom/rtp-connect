@@ -30,7 +30,7 @@ module RTP
 
       it "should give a warning when a string with too many values is passed as the 'string' argument" do
         RTP.logger.expects(:warn).once
-        str = '"SITE_SETUP_DEF","test","HFS","SB3","","2.78","7.66","-7.25","1.3.6.1","1.2.840","","","","","","-3.0","-3.0","-3.0","extra","6386"'
+        str = '"SITE_SETUP_DEF","Site1","HFS","","","?","?","?","1.2.752.243.1.1.20200131104504794.6000.21413","1.2.752.243.1.1.20200131104504762.5000.17723","","","","","","?","?","?","","","","","","","extra","29330"'
         ss = SiteSetup.load(str, @p)
       end
 
@@ -111,6 +111,14 @@ module RTP
 
     describe "#encode" do
 
+      it "returns 25 attributes (including CRC) when a version of 2.81 is specified" do
+        expect(@ss.encode(version: 2.81).values.length).to eql 25
+      end
+
+      it "returns 23 attributes (including CRC) when a version of 2.65 is specified" do
+        expect(@ss.encode(version: 2.65).values.length).to eql 23
+      end
+
       it "returns 19 attributes (including CRC) when a version of 2.6 is specified" do
         expect(@ss.encode(version: 2.6).values.length).to eql 19
       end
@@ -151,7 +159,7 @@ module RTP
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
-        arr = ["SITE_SETUP_DEF", [nil]*17].flatten
+        arr = ["SITE_SETUP_DEF", [nil]*23].flatten
         expect(@ss.values).to eql arr
       end
 
@@ -161,13 +169,13 @@ module RTP
     describe "#to_s" do
 
       it "should return a string which matches the original string" do
-        str = '"SITE_SETUP_DEF","test","HFS","SB3","","2.78","7.66","-7.25","1.3.6.1","1.2.840","","","","","","-3.0","-3.0","-3.0","47438"' + "\r\n"
+        str = '"SITE_SETUP_DEF","Site1","HFS","","","?","?","?","1.2.752.243.1.1.20200131104504794.6000.21413","1.2.752.243.1.1.20200131104504762.5000.17723","","","","","","?","?","?","","","","","","","35858"' + "\r\n"
         ss = SiteSetup.load(str, @p)
         expect(ss.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
-        values = '"SITE_SETUP_DEF",' + Array.new(17){|i| i.to_s}.encode + ','
+        values = '"SITE_SETUP_DEF",' + Array.new(23){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ss = SiteSetup.load(str, @p)

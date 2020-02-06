@@ -18,6 +18,8 @@ module RTP
     attr_reader :accessory_code
     attr_reader :accessory_type
     attr_reader :high_dose_authorization
+    attr_reader :referenced_rt_plan_uid
+    attr_reader :referenced_rt_plan_relationship
 
     # Creates a new (treatment) ExtendedField by parsing a RTPConnect string line.
     #
@@ -36,7 +38,7 @@ module RTP
     # @param [Record] parent a record which is used to determine the proper parent of this instance
     #
     def initialize(parent)
-      super('EXTENDED_FIELD_DEF', 4, 10)
+      super('EXTENDED_FIELD_DEF', 4, 12)
       # Parent relation (may get more than one type of record here):
       @parent = get_parent(parent.to_record, Field)
       @parent.add_extended_field(self)
@@ -51,7 +53,9 @@ module RTP
         :is_fff,
         :accessory_code,
         :accessory_type,
-        :high_dose_authorization
+        :high_dose_authorization,
+        :referenced_rt_plan_uid,
+        :referenced_rt_plan_relationship
       ]
     end
 
@@ -159,6 +163,22 @@ module RTP
     #
     def high_dose_authorization=(value)
       @high_dose_authorization = value && value.to_s
+    end
+
+    # Sets the referenced_rt_plan_uid attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def referenced_rt_plan_uid=(value)
+      @referenced_rt_plan_uid = value && value.to_s
+    end
+
+    # Sets the referenced_rt_plan_relationship attribute.
+    #
+    # @param [nil, #to_s] value the new attribute value
+    #
+    def referenced_rt_plan_relationship=(value)
+      @referenced_rt_plan_relationship = value && value.to_s
     end
 
 

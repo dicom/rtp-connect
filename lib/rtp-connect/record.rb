@@ -190,15 +190,32 @@ module RTP
     # @return [Array<String>] an array of attributes where some of the recent attributes may have been removed
     #
     def discard_unsupported_attributes(values, options={})
+      ver = options[:version].to_f
       case self
       when SiteSetup
-        options[:version].to_f >= 2.6 ? values : values[0..-4]
+        if ver >= 2.81
+          values
+        elsif ver >= 2.65
+          values[0..-3]
+        elsif ver >= 2.6
+          values[0..-7]
+        else
+          values[0..-10]
+        end
       when Field
-        options[:version].to_f >= 2.64 ? values : values[0..-4]
+        ver >= 2.64 ? values : values[0..-4]
       when ExtendedField
-        options[:version].to_f >= 2.4 ? values : values[0..-5]
+        if ver >= 2.65
+          values
+        elsif ver >= 2.4
+          values[0..-3]
+        else
+          values[0..-7]
+        end
       when ControlPoint
-        options[:version].to_f >= 2.64 ? values : values[0..31] + values[35..-1]
+        ver >= 2.64 ? values : values[0..31] + values[35..-1]
+      when ExtendedPlan
+        ver >= 2.81 ? values : values[0..-2]
       else
         values
       end

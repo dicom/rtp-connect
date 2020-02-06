@@ -32,7 +32,7 @@ module RTP
 
       it "should give a warning when a string with too many values is passed as the 'string' argument" do
         RTP.logger.expects(:warn).once
-        str = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","1","2","35677"'
+        str = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","1","2","3","4","52324"'
         ef = ExtendedField.load(str, @f)
       end
 
@@ -104,6 +104,10 @@ module RTP
 
     describe "#encode" do
 
+      it "returns 12 attributes (including CRC) when a version of 2.65 is specified" do
+        expect(@ef.encode(version: 2.65).values.length).to eql 12
+      end
+
       it "returns 10 attributes (including CRC) when a version of 2.4 is specified" do
         expect(@ef.encode(version: 2.4).values.length).to eql 10
       end
@@ -144,7 +148,7 @@ module RTP
     describe "#values" do
 
       it "should return an array containing the keyword, but otherwise nil values when called on an empty instance" do
-        arr = ["EXTENDED_FIELD_DEF", [nil]*8].flatten
+        arr = ["EXTENDED_FIELD_DEF", [nil]*10].flatten
         expect(@ef.values).to eql arr
       end
 
@@ -163,13 +167,13 @@ module RTP
     describe "#to_s" do
 
       it "should return a string which matches the original string" do
-        str = '"EXTENDED_FIELD_DEF","2","1.3.6.1","2","AP","1","SQUARE","Applicator","0","9083"' + "\r\n"
+        str = '"EXTENDED_FIELD_DEF","17","1.2.752.243.1.1.20200131104504762.2000.40821","1","17","","","","","","","31762"' + "\r\n"
         ef = ExtendedField.load(str, @f)
         expect(ef.to_s).to eql str
       end
 
       it "should return a string that matches the original string (which contains a unique value for each element)" do
-        values = '"EXTENDED_FIELD_DEF",' + Array.new(8){|i| i.to_s}.encode + ','
+        values = '"EXTENDED_FIELD_DEF",' + Array.new(10){|i| i.to_s}.encode + ','
         crc = values.checksum.to_s.wrap
         str = values + crc + "\r\n"
         ef = ExtendedField.load(str, @f)
